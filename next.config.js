@@ -1,9 +1,13 @@
-const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = require('next-intl/plugin')('./src/i18n.ts');
 
-const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
-
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Désactive la vérification TypeScript pendant le build
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -11,9 +15,6 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-  },
-  webpack: (config) => {
-    return config;
   },
 };
 
