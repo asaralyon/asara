@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
@@ -35,11 +37,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const token = sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET || 'secret-key',
-      { expiresIn: '7d' }
-    );
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    
+    const token = await new SignJWT({ userId: user.id, role: user.role })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('7d')
+      .sign(secret);
 
     cookies().set('token', token, {
       httpOnly: true,
