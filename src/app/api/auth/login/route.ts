@@ -44,12 +44,14 @@ export async function POST(request: Request) {
       .setExpirationTime('7d')
       .sign(secret);
 
+    // Set cookie with domain for both www and non-www
     cookies().set('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
+      domain: '.asara-lyon.fr', // Note the leading dot for subdomains
     });
 
     await prisma.user.update({
