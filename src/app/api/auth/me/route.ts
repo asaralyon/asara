@@ -3,9 +3,15 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    const token = cookies().get('token')?.value;
+    const cookieStore = cookies();
+    const token = cookieStore.get('token')?.value;
+    
+    console.log('Auth/me - All cookies:', cookieStore.getAll().map(c => c.name));
+    console.log('Auth/me - Token exists:', !!token);
 
     if (!token) {
       return NextResponse.json(
@@ -16,6 +22,8 @@ export async function GET() {
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
     const { payload } = await jwtVerify(token, secret);
+    
+    console.log('Auth/me - Token valid, userId:', payload.userId);
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId as string },
@@ -51,6 +59,7 @@ export async function GET() {
       subscription: user.subscriptions[0] || null,
     });
   } catch (error) {
+    console.error('Auth/me error:', error);
     return NextResponse.json(
       { error: 'Session invalide' },
       { status: 401 }
