@@ -7,28 +7,32 @@ export async function POST(request: Request) {
   const localeMatch = referer.match(/\/(fr|ar)\//);
   const locale = localeMatch?.[1] || 'fr';
   
-  // Créer la réponse de redirection
   const response = NextResponse.redirect(new URL(`/${locale}`, request.url));
   
-  // Supprimer le cookie EN L'ATTACHANT À LA RÉPONSE
-  // Cookie avec domain (pour www.asara-lyon.fr et asara-lyon.fr)
-  response.cookies.set('token', '', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    maxAge: 0,
-    path: '/',
-    domain: '.asara-lyon.fr',
-  });
+  // Supprimer le cookie de TOUTES les façons possibles
+  // Car il peut avoir été créé avec différentes configurations
   
-  // Aussi supprimer sans domain (pour Vercel preview URLs et localhost)
-  response.cookies.set('token', '', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    maxAge: 0,
-    path: '/',
-  });
+  const deleteOptions = [
+    // Avec domain .asara-lyon.fr
+    { domain: '.asara-lyon.fr', path: '/' },
+    // Sans domain (pour cookies créés sans domain)
+    { path: '/' },
+    // Avec domain www.asara-lyon.fr
+    { domain: 'www.asara-lyon.fr', path: '/' },
+    // Avec domain asara-lyon.fr (sans point)
+    { domain: 'asara-lyon.fr', path: '/' },
+  ];
+  
+  for (const opts of deleteOptions) {
+    response.cookies.set('token', '', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 0,
+      expires: new Date(0),
+      ...opts,
+    });
+  }
   
   return response;
 }
