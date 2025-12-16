@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { Users, Building2, UserCheck, Clock, Calendar, LogOut } from 'lucide-react';
+import { Users, Building2, UserCheck, Clock, Calendar, Mail } from 'lucide-react';
 import { LogoutButton } from '@/components/admin/LogoutButton';
 
 export const metadata: Metadata = {
@@ -21,7 +21,8 @@ async function getStats() {
   return { totalUsers, professionals, members, pending };
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({ params }: { params: { locale: string } }) {
+  const { locale } = params;
   const stats = await getStats();
 
   return (
@@ -87,28 +88,45 @@ export default async function AdminPage() {
         </div>
 
         {/* Navigation rapide */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Link href="/admin/utilisateurs" className="card hover:shadow-strong transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">Gerer les utilisateurs</h3>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Link href={'/' + locale + '/admin/utilisateurs'} className="card hover:shadow-strong transition-shadow">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-5 h-5 text-primary-500" />
+              <h3 className="font-semibold text-lg">Gérer les utilisateurs</h3>
+            </div>
             <p className="text-neutral-500 text-sm">Voir, valider ou supprimer des comptes</p>
           </Link>
 
-          <Link href="/admin/professionnels" className="card hover:shadow-strong transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">Professionnels</h3>
-            <p className="text-neutral-500 text-sm">Gerer les profils de l annuaire</p>
+          <Link href={'/' + locale + '/admin/professionnels'} className="card hover:shadow-strong transition-shadow">
+            <div className="flex items-center gap-2 mb-2">
+              <Building2 className="w-5 h-5 text-secondary-500" />
+              <h3 className="font-semibold text-lg">Professionnels</h3>
+            </div>
+            <p className="text-neutral-500 text-sm">Gérer les profils de l'annuaire</p>
           </Link>
 
-          <Link href="/admin/evenements" className="card hover:shadow-strong transition-shadow">
+          <Link href={'/' + locale + '/admin/evenements'} className="card hover:shadow-strong transition-shadow">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-5 h-5 text-primary-500" />
-              <h3 className="font-semibold text-lg">Evenements</h3>
+              <h3 className="font-semibold text-lg">Événements</h3>
             </div>
-            <p className="text-neutral-500 text-sm">Ajouter et gerer les evenements</p>
+            <p className="text-neutral-500 text-sm">Ajouter et gérer les événements</p>
           </Link>
 
-          <Link href="/admin/categories" className="card hover:shadow-strong transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">Categories</h3>
-            <p className="text-neutral-500 text-sm">Ajouter ou modifier les categories</p>
+          <Link href={'/' + locale + '/admin/emails'} className="card hover:shadow-strong transition-shadow border-2 border-primary-200 bg-primary-50">
+            <div className="flex items-center gap-2 mb-2">
+              <Mail className="w-5 h-5 text-primary-600" />
+              <h3 className="font-semibold text-lg text-primary-700">Emails en masse</h3>
+            </div>
+            <p className="text-primary-600 text-sm">Envoyer des emails aux membres et professionnels</p>
+          </Link>
+
+          <Link href={'/' + locale + '/admin/categories'} className="card hover:shadow-strong transition-shadow">
+            <div className="flex items-center gap-2 mb-2">
+              <UserCheck className="w-5 h-5 text-neutral-500" />
+              <h3 className="font-semibold text-lg">Catégories</h3>
+            </div>
+            <p className="text-neutral-500 text-sm">Ajouter ou modifier les catégories</p>
           </Link>
         </div>
       </div>
