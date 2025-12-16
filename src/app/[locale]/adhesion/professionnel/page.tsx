@@ -6,8 +6,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 
-// Catégories prédéfinies
-const categories = [
+// Catégories uniformisées
+const CATEGORIES = [
   { value: 'Santé', labelFr: 'Santé', labelAr: 'الصحة' },
   { value: 'Juridique', labelFr: 'Juridique', labelAr: 'القانون' },
   { value: 'Finance', labelFr: 'Finance', labelAr: 'المالية' },
@@ -16,40 +16,35 @@ const categories = [
   { value: 'Commerce', labelFr: 'Commerce', labelAr: 'التجارة' },
   { value: 'Artisanat', labelFr: 'Artisanat', labelAr: 'الحرف' },
   { value: 'Technologie', labelFr: 'Technologie', labelAr: 'التكنولوجيا' },
-  { value: 'Education', labelFr: 'Éducation', labelAr: 'التعليم' },
+  { value: 'Éducation', labelFr: 'Éducation', labelAr: 'التعليم' },
   { value: 'Transport', labelFr: 'Transport', labelAr: 'النقل' },
   { value: 'Beauté', labelFr: 'Beauté & Bien-être', labelAr: 'الجمال' },
   { value: 'Construction', labelFr: 'Construction', labelAr: 'البناء' },
   { value: 'Autre', labelFr: 'Autre', labelAr: 'أخرى' },
 ];
 
-// Villes d'Auvergne-Rhône-Alpes prédéfinies
-const cities = [
-  // Ain (01)
-  'Bourg-en-Bresse', 'Oyonnax', 'Ambérieu-en-Bugey', 'Bellegarde-sur-Valserine', 'Gex', 'Ferney-Voltaire', 'Divonne-les-Bains', 'Belley', 'Meximieux', 'Miribel',
-  // Allier (03)
-  'Moulins', 'Montluçon', 'Vichy', 'Cusset', 'Yzeure', 'Bellerive-sur-Allier', 'Commentry', 'Gannat', 'Dompierre-sur-Besbre', 'Désertines',
-  // Ardèche (07)
-  'Annonay', 'Aubenas', 'Guilherand-Granges', 'Tournon-sur-Rhône', 'Privas', 'Le Teil', 'Bourg-Saint-Andéol', 'La Voulte-sur-Rhône', 'Saint-Péray', 'Vals-les-Bains',
-  // Cantal (15)
-  'Aurillac', 'Saint-Flour', 'Mauriac', 'Arpajon-sur-Cère', 'Riom-ès-Montagnes', 'Ytrac', 'Murat', 'Ydes', 'Vic-sur-Cère', 'Maurs',
-  // Drôme (26)
-  'Valence', 'Romans-sur-Isère', 'Montélimar', 'Pierrelatte', 'Bourg-lès-Valence', 'Portes-lès-Valence', 'Saint-Paul-Trois-Châteaux', 'Livron-sur-Drôme', 'Crest', 'Die',
-  // Isère (38)
-  'Grenoble', 'Vienne', 'Échirolles', 'Bourgoin-Jallieu', 'Fontaine', 'Voiron', 'Saint-Martin-d\'Hères', 'Villefontaine', 'Meylan', 'L\'Isle-d\'Abeau', 'Sassenage', 'Vif', 'Roussillon', 'La Tour-du-Pin',
-  // Loire (42)
-  'Saint-Étienne', 'Roanne', 'Saint-Chamond', 'Firminy', 'Montbrison', 'Rive-de-Gier', 'Riorges', 'Le Chambon-Feugerolles', 'Saint-Just-Saint-Rambert', 'Andrézieux-Bouthéon',
-  // Haute-Loire (43)
-  'Le Puy-en-Velay', 'Monistrol-sur-Loire', 'Yssingeaux', 'Brioude', 'Sainte-Sigolène', 'Langeac', 'Vals-près-le-Puy', 'Craponne-sur-Arzon', 'Saint-Germain-Laprade', 'Aurec-sur-Loire',
-  // Puy-de-Dôme (63)
-  'Clermont-Ferrand', 'Riom', 'Cournon-d\'Auvergne', 'Chamalières', 'Aubière', 'Beaumont', 'Issoire', 'Thiers', 'Gerzat', 'Pont-du-Château', 'Ambert', 'Lempdes',
-  // Rhône (69)
-  'Lyon', 'Villeurbanne', 'Vénissieux', 'Vaulx-en-Velin', 'Caluire-et-Cuire', 'Bron', 'Rillieux-la-Pape', 'Saint-Priest', 'Oullins', 'Meyzieu', 'Décines-Charpieu', 'Givors', 'Tassin-la-Demi-Lune', 'Tarare',
-  // Savoie (73)
-  'Chambéry', 'Aix-les-Bains', 'Albertville', 'La Motte-Servolex', 'Saint-Jean-de-Maurienne', 'Bourg-Saint-Maurice', 'Montmélian', 'Cognin', 'Ugine', 'Modane',
-  // Haute-Savoie (74)
-  'Annecy', 'Thonon-les-Bains', 'Annemasse', 'Évian-les-Bains', 'Cluses', 'Seynod', 'Rumilly', 'Sallanches', 'Bonneville', 'Cran-Gevrier', 'Passy', 'Gaillard', 'Saint-Julien-en-Genevois', 'Archamps',
-].sort((a, b) => a.localeCompare(b, 'fr'));
+// Villes d'Auvergne-Rhône-Alpes
+const CITIES = [
+  'Aix-les-Bains', 'Albertville', 'Ambérieu-en-Bugey', 'Ambert', 'Andrézieux-Bouthéon', 'Annecy', 'Annemasse', 'Annonay', 'Archamps', 'Arpajon-sur-Cère',
+  'Aubenas', 'Aubière', 'Aurec-sur-Loire', 'Aurillac',
+  'Beaumont', 'Bellegarde-sur-Valserine', 'Bellerive-sur-Allier', 'Belley', 'Bonneville', 'Bourg-en-Bresse', 'Bourg-lès-Valence', 'Bourg-Saint-Andéol', 'Bourg-Saint-Maurice', 'Bourgoin-Jallieu', 'Brioude', 'Bron',
+  'Caluire-et-Cuire', 'Chamalières', 'Chambéry', 'Clermont-Ferrand', 'Cluses', 'Cognin', 'Commentry', 'Cournon-d\'Auvergne', 'Cran-Gevrier', 'Craponne-sur-Arzon', 'Crest', 'Cusset',
+  'Décines-Charpieu', 'Désertines', 'Die', 'Divonne-les-Bains', 'Dompierre-sur-Besbre',
+  'Échirolles', 'Évian-les-Bains',
+  'Ferney-Voltaire', 'Firminy', 'Fontaine',
+  'Gaillard', 'Gannat', 'Gerzat', 'Gex', 'Givors', 'Grenoble', 'Guilherand-Granges',
+  'Issoire',
+  'L\'Isle-d\'Abeau', 'La Motte-Servolex', 'La Tour-du-Pin', 'La Voulte-sur-Rhône', 'Langeac', 'Le Chambon-Feugerolles', 'Le Puy-en-Velay', 'Le Teil', 'Lempdes', 'Livron-sur-Drôme', 'Lyon',
+  'Mauriac', 'Maurs', 'Meximieux', 'Meylan', 'Meyzieu', 'Miribel', 'Modane', 'Monistrol-sur-Loire', 'Montbrison', 'Montélimar', 'Montluçon', 'Montmélian', 'Moulins', 'Murat',
+  'Oullins', 'Oyonnax',
+  'Passy', 'Pierrelatte', 'Pont-du-Château', 'Portes-lès-Valence', 'Privas',
+  'Rillieux-la-Pape', 'Riom', 'Riom-ès-Montagnes', 'Riorges', 'Rive-de-Gier', 'Roanne', 'Romans-sur-Isère', 'Roussillon', 'Rumilly',
+  'Saint-Chamond', 'Saint-Étienne', 'Saint-Flour', 'Saint-Germain-Laprade', 'Saint-Jean-de-Maurienne', 'Saint-Julien-en-Genevois', 'Saint-Just-Saint-Rambert', 'Saint-Martin-d\'Hères', 'Saint-Paul-Trois-Châteaux', 'Saint-Péray', 'Saint-Priest', 'Sainte-Sigolène', 'Sallanches', 'Sassenage', 'Seynod',
+  'Tarare', 'Tassin-la-Demi-Lune', 'Thiers', 'Thonon-les-Bains', 'Tournon-sur-Rhône',
+  'Ugine',
+  'Valence', 'Vals-les-Bains', 'Vals-près-le-Puy', 'Vaulx-en-Velin', 'Vénissieux', 'Vic-sur-Cère', 'Vichy', 'Vienne', 'Vif', 'Villefontaine', 'Villeurbanne', 'Voiron',
+  'Ydes', 'Yssingeaux', 'Ytrac', 'Yzeure',
+];
 
 export default function ProfessionalSignupPage() {
   const router = useRouter();
@@ -62,22 +57,18 @@ export default function ProfessionalSignupPage() {
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
-    // Étape 1 - Personnel
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    // Étape 2 - Professionnel
     companyName: '',
-    profession: '', // Champ libre
-    category: '',   // Select prédéfini
-    specialty: '',
+    profession: '',
+    category: '',
     description: '',
-    // Étape 3 - Adresse
     address: '',
-    city: '',       // Select prédéfini
+    city: '',
     postalCode: '',
     professionalPhone: '',
     professionalEmail: '',
@@ -127,7 +118,6 @@ export default function ProfessionalSignupPage() {
     <main dir={isRTL ? 'rtl' : 'ltr'}>
       <section className="section bg-neutral-50 min-h-screen">
         <div className="container-app max-w-2xl">
-          {/* Header */}
           <div className="mb-8">
             <Link
               href={'/' + locale + '/adhesion'}
@@ -144,19 +134,15 @@ export default function ProfessionalSignupPage() {
             </p>
           </div>
 
-          {/* Progress */}
           <div className="flex gap-2 mb-8">
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className={`h-2 flex-1 rounded-full ${
-                  s <= step ? 'bg-primary-500' : 'bg-neutral-200'
-                }`}
+                className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-primary-500' : 'bg-neutral-200'}`}
               />
             ))}
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="card">
             {error && (
               <div className="flex items-center gap-2 p-4 bg-red-50 text-red-600 rounded-xl mb-6">
@@ -165,7 +151,6 @@ export default function ProfessionalSignupPage() {
               </div>
             )}
 
-            {/* Étape 1 - Informations personnelles */}
             {step === 1 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold mb-4">
@@ -175,74 +160,48 @@ export default function ProfessionalSignupPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="label">{t('firstName')} *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.firstName}
+                    <input type="text" required value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="input"
-                    />
+                      className="input" />
                   </div>
                   <div>
                     <label className="label">{t('lastName')} *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.lastName}
+                    <input type="text" required value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="input"
-                    />
+                      className="input" />
                   </div>
                 </div>
 
                 <div>
                   <label className="label">{t('email')} *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
+                  <input type="email" required value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div>
                   <label className="label">{t('phone')}</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
+                  <input type="tel" value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div>
                   <label className="label">{t('password')} *</label>
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    value={formData.password}
+                  <input type="password" required minLength={8} value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div>
                   <label className="label">{t('confirmPassword')} *</label>
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    value={formData.confirmPassword}
+                  <input type="password" required minLength={8} value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
               </div>
             )}
 
-            {/* Étape 2 - Informations professionnelles */}
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold mb-4">
@@ -250,44 +209,26 @@ export default function ProfessionalSignupPage() {
                 </h2>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'اسم الشركة' : 'Nom de l\'entreprise'}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.companyName}
+                  <label className="label">{isRTL ? 'اسم الشركة' : 'Nom de l\'entreprise'}</label>
+                  <input type="text" value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    className="input"
-                    placeholder={isRTL ? 'اختياري' : 'Optionnel'}
-                  />
+                    className="input" placeholder={isRTL ? 'اختياري' : 'Optionnel'} />
                 </div>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'المهنة' : 'Métier / Profession'} *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.profession}
+                  <label className="label">{isRTL ? 'المهنة' : 'Métier / Profession'} *</label>
+                  <input type="text" required value={formData.profession}
                     onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                    className="input"
-                    placeholder={isRTL ? 'مثال: طبيب أسنان، محامي، مطور ويب...' : 'Ex: Dentiste, Avocat, Développeur web...'}
-                  />
+                    className="input" placeholder={isRTL ? 'مثال: طبيب أسنان، محامي...' : 'Ex: Dentiste, Avocat, Développeur...'} />
                 </div>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'الفئة' : 'Catégorie'} *
-                  </label>
-                  <select
-                    required
-                    value={formData.category}
+                  <label className="label">{isRTL ? 'الفئة' : 'Catégorie'} *</label>
+                  <select required value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="input"
-                  >
+                    className="input">
                     <option value="">{isRTL ? 'اختر فئة' : 'Sélectionnez une catégorie'}</option>
-                    {categories.map((cat) => (
+                    {CATEGORIES.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {isRTL ? cat.labelAr : cat.labelFr}
                       </option>
@@ -296,21 +237,14 @@ export default function ProfessionalSignupPage() {
                 </div>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'الوصف' : 'Description'}
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={formData.description}
+                  <label className="label">{isRTL ? 'الوصف' : 'Description'}</label>
+                  <textarea rows={4} value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="input"
-                    placeholder={isRTL ? 'وصف مختصر لنشاطك' : 'Décrivez brièvement votre activité'}
-                  />
+                    className="input" placeholder={isRTL ? 'وصف مختصر لنشاطك' : 'Décrivez brièvement votre activité'} />
                 </div>
               </div>
             )}
 
-            {/* Étape 3 - Coordonnées professionnelles */}
             {step === 3 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold mb-4">
@@ -319,113 +253,69 @@ export default function ProfessionalSignupPage() {
 
                 <div>
                   <label className="label">{isRTL ? 'العنوان' : 'Adresse'}</label>
-                  <input
-                    type="text"
-                    value={formData.address}
+                  <input type="text" value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="label">{isRTL ? 'المدينة' : 'Ville'} *</label>
-                    <select
-                      required
-                      value={formData.city}
+                    <select required value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="input"
-                    >
+                      className="input">
                       <option value="">{isRTL ? 'اختر مدينة' : 'Sélectionnez une ville'}</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
+                      {CITIES.map((city) => (
+                        <option key={city} value={city}>{city}</option>
                       ))}
                     </select>
                   </div>
                   <div>
                     <label className="label">{isRTL ? 'الرمز البريدي' : 'Code postal'}</label>
-                    <input
-                      type="text"
-                      value={formData.postalCode}
+                    <input type="text" value={formData.postalCode}
                       onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                      className="input"
-                    />
+                      className="input" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'هاتف العمل' : 'Téléphone professionnel'}
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.professionalPhone}
+                  <label className="label">{isRTL ? 'هاتف العمل' : 'Téléphone professionnel'}</label>
+                  <input type="tel" value={formData.professionalPhone}
                     onChange={(e) => setFormData({ ...formData, professionalPhone: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div>
-                  <label className="label">
-                    {isRTL ? 'البريد الإلكتروني المهني' : 'Email professionnel'}
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.professionalEmail}
+                  <label className="label">{isRTL ? 'البريد الإلكتروني المهني' : 'Email professionnel'}</label>
+                  <input type="email" value={formData.professionalEmail}
                     onChange={(e) => setFormData({ ...formData, professionalEmail: e.target.value })}
-                    className="input"
-                  />
+                    className="input" />
                 </div>
 
                 <div>
                   <label className="label">{isRTL ? 'الموقع الإلكتروني' : 'Site web'}</label>
-                  <input
-                    type="url"
-                    value={formData.website}
+                  <input type="url" value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    className="input"
-                    placeholder="https://..."
-                  />
+                    className="input" placeholder="https://..." />
                 </div>
               </div>
             )}
 
-            {/* Navigation */}
             <div className="flex justify-between mt-8 pt-6 border-t border-neutral-100">
               {step > 1 ? (
-                <button
-                  type="button"
-                  onClick={() => setStep(step - 1)}
-                  className="btn-secondary"
-                >
+                <button type="button" onClick={() => setStep(step - 1)} className="btn-secondary">
                   {isRTL ? 'السابق' : 'Précédent'}
                 </button>
-              ) : (
-                <div />
-              )}
+              ) : <div />}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary"
-              >
+              <button type="submit" disabled={loading} className="btn-primary">
                 {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    {isRTL ? 'جاري التحميل...' : 'Chargement...'}
-                  </>
-                ) : step < 3 ? (
-                  isRTL ? 'التالي' : 'Suivant'
-                ) : (
-                  isRTL ? 'إرسال' : 'Envoyer'
-                )}
+                  <><Loader2 className="w-5 h-5 animate-spin" />{isRTL ? 'جاري التحميل...' : 'Chargement...'}</>
+                ) : step < 3 ? (isRTL ? 'التالي' : 'Suivant') : (isRTL ? 'إرسال' : 'Envoyer')}
               </button>
             </div>
           </form>
 
-          {/* Info prix */}
           <div className="mt-6 p-4 bg-primary-50 rounded-xl text-center">
             <p className="text-primary-700 font-medium">
               {isRTL ? 'رسوم العضوية: 100 يورو / سنة' : 'Cotisation : 100 € / an'}

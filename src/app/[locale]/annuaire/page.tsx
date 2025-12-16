@@ -4,6 +4,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import { Search, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { CATEGORIES, translateCategory } from '@/lib/constants';
 
 type Props = {
   params: { locale: string };
@@ -26,11 +27,11 @@ async function getProfessionals(searchParams: Props['searchParams']) {
   };
 
   if (category) {
-    where.category = category;
+    where.category = { equals: category, mode: 'insensitive' };
   }
 
   if (city) {
-    where.city = city;
+    where.city = { contains: city.trim(), mode: 'insensitive' };
   }
 
   if (search) {
@@ -58,106 +59,33 @@ async function getProfessionals(searchParams: Props['searchParams']) {
   return professionals;
 }
 
-
-async function getCategories() {
-  // Liste des catégories traduites
-  const validCategories = [
-    'Sante', 'Juridique', 'Finance', 'Immobilier', 'Restauration',
-    'Commerce', 'Artisanat', 'Informatique', 'Education', 'Transport',
-    'Beaute et Bien-etre', 'Batiment', 'Autre'
-  ];
-  
-  const categories = await prisma.category.findMany({
-    where: { 
-      isActive: true,
-      name: { in: validCategories }
-    },
-    orderBy: { order: 'asc' },
+async function getCitiesFromDB() {
+  const professionals = await prisma.professionalProfile.findMany({
+    where: { isPublished: true },
+    select: { city: true },
+    distinct: ['city'],
   });
-  return categories;
-}
-
-
-async function getCities() {
-  // Villes d'Auvergne-Rhône-Alpes par département
-  const cities = [
-    // Ain (01)
-    'Bourg-en-Bresse', 'Oyonnax', 'Ambérieu-en-Bugey', 'Bellegarde-sur-Valserine', 'Gex', 'Ferney-Voltaire', 'Divonne-les-Bains', 'Belley', 'Meximieux', 'Miribel',
-    
-    // Allier (03)
-    'Moulins', 'Montluçon', 'Vichy', 'Cusset', 'Yzeure', 'Bellerive-sur-Allier', 'Commentry', 'Gannat', 'Dompierre-sur-Besbre', 'Désertines',
-    
-    // Ardèche (07)
-    'Annonay', 'Aubenas', 'Guilherand-Granges', 'Tournon-sur-Rhône', 'Privas', 'Le Teil', 'Bourg-Saint-Andéol', 'La Voulte-sur-Rhône', 'Saint-Péray', 'Vals-les-Bains',
-    
-    // Cantal (15)
-    'Aurillac', 'Saint-Flour', 'Mauriac', 'Arpajon-sur-Cère', 'Riom-ès-Montagnes', 'Ytrac', 'Murat', 'Ydes', 'Vic-sur-Cère', 'Maurs',
-    
-    // Drôme (26)
-    'Valence', 'Romans-sur-Isère', 'Montélimar', 'Pierrelatte', 'Bourg-lès-Valence', 'Portes-lès-Valence', 'Saint-Paul-Trois-Châteaux', 'Livron-sur-Drôme', 'Crest', 'Die',
-    
-    // Isère (38)
-    'Grenoble', 'Vienne', 'Échirolles', 'Bourgoin-Jallieu', 'Fontaine', 'Voiron', 'Saint-Martin-d\'Hères', 'Villefontaine', 'Meylan', 'L\'Isle-d\'Abeau', 'Sassenage', 'Vif', 'Roussillon', 'La Tour-du-Pin',
-    
-    // Loire (42)
-    'Saint-Étienne', 'Roanne', 'Saint-Chamond', 'Firminy', 'Montbrison', 'Rive-de-Gier', 'Riorges', 'Le Chambon-Feugerolles', 'Saint-Just-Saint-Rambert', 'Andrézieux-Bouthéon',
-    
-    // Haute-Loire (43)
-    'Le Puy-en-Velay', 'Monistrol-sur-Loire', 'Yssingeaux', 'Brioude', 'Sainte-Sigolène', 'Langeac', 'Vals-près-le-Puy', 'Craponne-sur-Arzon', 'Saint-Germain-Laprade', 'Aurec-sur-Loire',
-    
-    // Puy-de-Dôme (63)
-    'Clermont-Ferrand', 'Riom', 'Cournon-d\'Auvergne', 'Chamalières', 'Aubière', 'Beaumont', 'Issoire', 'Thiers', 'Gerzat', 'Pont-du-Château', 'Ambert', 'Lempdes',
-    
-    // Rhône (69)
-    'Lyon', 'Villeurbanne', 'Vénissieux', 'Vaulx-en-Velin', 'Caluire-et-Cuire', 'Bron', 'Rillieux-la-Pape', 'Saint-Priest', 'Oullins', 'Meyzieu', 'Décines-Charpieu', 'Givors', 'Tassin-la-Demi-Lune', 'Tarare',
-    
-    // Savoie (73)
-    'Chambéry', 'Aix-les-Bains', 'Albertville', 'La Motte-Servolex', 'Saint-Jean-de-Maurienne', 'Bourg-Saint-Maurice', 'Montmélian', 'Cognin', 'Ugine', 'Modane',
-    
-    // Haute-Savoie (74)
-    'Annecy', 'Thonon-les-Bains', 'Annemasse', 'Évian-les-Bains', 'Cluses', 'Seynod', 'Rumilly', 'Sallanches', 'Bonneville', 'Cran-Gevrier', 'Passy', 'Gaillard', 'Saint-Julien-en-Genevois', 'Archamps',
-  ].sort();
   
-  return cities;
-}
-
-
-// Fonction pour traduire les catégories
-function translateCategory(category: string, locale: string): string {
-  const translations: Record<string, Record<string, string>> = {
-    'Sante': { fr: 'Santé', ar: 'الصحة' },
-    'Juridique': { fr: 'Juridique', ar: 'القانون' },
-    'Finance': { fr: 'Finance', ar: 'المالية' },
-    'Immobilier': { fr: 'Immobilier', ar: 'العقارات' },
-    'Restauration': { fr: 'Restauration', ar: 'المطاعم' },
-    'Commerce': { fr: 'Commerce', ar: 'التجارة' },
-    'Artisanat': { fr: 'Artisanat', ar: 'الصناعة اليدوية' },
-    'Informatique': { fr: 'Informatique', ar: 'تكنولوجيا المعلومات' },
-    'Education': { fr: 'Éducation', ar: 'التعليم' },
-    'Transport': { fr: 'Transport', ar: 'النقل' },
-    'Beaute et Bien-etre': { fr: 'Beauté & Bien-être', ar: 'الجمال والرفاهية' },
-    'Batiment': { fr: 'Bâtiment', ar: 'البناء' },
-    'Autre': { fr: 'Autre', ar: 'أخرى' },
-  };
+  const cities = professionals
+    .map(p => p.city?.trim())
+    .filter(Boolean)
+    .sort((a, b) => a!.localeCompare(b!, 'fr'));
   
-  return translations[category]?.[locale] || category;
+  return [...new Set(cities)];
 }
-
 
 export default async function DirectoryPage({ params, searchParams }: Props) {
   const { locale } = params;
   const t = await getTranslations('directory');
   const isRTL = locale === 'ar';
 
-  const [professionals, categories, cities] = await Promise.all([
+  const [professionals, cities] = await Promise.all([
     getProfessionals(searchParams),
-    getCategories(),
-    getCities(),
+    getCitiesFromDB(),
   ]);
 
   return (
     <main dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Header */}
       <section className="bg-gradient-to-b from-primary-50 to-white py-12">
         <div className="container-app text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-600 mb-4">
@@ -169,11 +97,9 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* Filtres */}
       <section className="py-6 bg-white border-b border-neutral-100">
         <div className="container-app">
           <form className="flex flex-col md:flex-row gap-4">
-            {/* Recherche */}
             <div className="relative flex-1">
               <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 ${isRTL ? 'right-4' : 'left-4'}`} />
               <input
@@ -185,21 +111,19 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
               />
             </div>
 
-            {/* Catégorie - TRADUITE */}
             <select
               name="category"
               defaultValue={searchParams.category || ''}
               className="input md:w-56"
             >
               <option value="">{t('allCategories')}</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.name}>
-                  {translateCategory(cat.name, locale)}
+              {CATEGORIES.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {isRTL ? cat.labelAr : cat.labelFr}
                 </option>
               ))}
             </select>
 
-            {/* Ville - NON TRADUITE (gardée telle quelle) */}
             <select
               name="city"
               defaultValue={searchParams.city || ''}
@@ -220,7 +144,6 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* Résultats */}
       <section className="section bg-neutral-50">
         <div className="container-app">
           <p className="text-neutral-600 mb-6">
@@ -237,15 +160,14 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
               {professionals.map((pro) => (
                 <Link
                   key={pro.id}
-                  href={`/${locale}/annuaire/${pro.slug}`}
+                  href={'/' + locale + '/annuaire/' + pro.slug}
                   className="card hover:shadow-strong transition-shadow"
                 >
-                  {/* Photo */}
                   <div className={`flex items-start gap-4 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     {pro.photoUrl ? (
                       <img
                         src={pro.photoUrl}
-                        alt={pro.companyName || `${pro.user.firstName} ${pro.user.lastName}`}
+                        alt={pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
                         className="w-16 h-16 rounded-xl object-cover"
                       />
                     ) : (
@@ -257,17 +179,15 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
                     )}
                     <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
                       <h3 className="font-semibold text-lg truncate">
-                        {pro.companyName || `${pro.user.firstName} ${pro.user.lastName}`}
+                        {pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
                       </h3>
                       <p className="text-primary-500 font-medium">{pro.profession}</p>
-                      {/* Catégorie traduite */}
                       <span className="badge badge-primary text-xs mt-1">
                         {translateCategory(pro.category, locale)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Infos - Ville NON traduite */}
                   <div className={`space-y-2 text-sm text-neutral-600 ${isRTL ? 'text-right' : ''}`}>
                     {pro.city && (
                       <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -289,7 +209,6 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
                     )}
                   </div>
 
-                  {/* Lien */}
                   <div className={`mt-4 pt-4 border-t border-neutral-100 flex items-center gap-1 text-primary-500 font-medium ${isRTL ? 'flex-row-reverse' : ''}`}>
                     {t('viewProfile')}
                     <ExternalLink className="w-4 h-4" />
