@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+
+export const dynamic = "force-dynamic";
+
+// Configuration Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,46 +26,41 @@ export async function POST(request: NextRequest) {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Type de fichier non autorise. Utilisez JPG, PNG, WebP, GIF ou PDF.' },
+        { error: 'Type de fichier non autorisé. Utilisez JPG, PNG, WebP, GIF ou PDF.' },
         { status: 400 }
       );
     }
 
-    // Vérifier la taille (max 5MB)
-    const maxSize = 5 * 1024 * 1024;
+    // Vérifier la taille (max 10MB)
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'Fichier trop volumineux. Maximum 5MB.' },
+        { error: 'Fichier trop volumineux. Maximum 10MB.' },
         { status: 400 }
       );
     }
 
-    // Créer le dossier uploads s'il n'existe pas
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Générer un nom unique
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 8);
-    const extension = file.name.split('.').pop();
-    const fileName = `${timestamp}-${randomString}.${extension}`;
-
-    // Sauvegarder le fichier
+    // Convertir le fichier en base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const filePath = path.join(uploadsDir, fileName);
-    await writeFile(filePath, buffer);
+    const base64 = buffer.toString('base64');
+    const dataURI = 'data:' + file.type + ';base64,' + base64;
 
-    // Retourner l'URL
-    const url = `/uploads/${fileName}`;
+    // Upload vers Cloudinary
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'asara',
+      resource_type: 'auto',
+    });
 
-    return NextResponse.json({ success: true, url });
+    return NextResponse.json({ 
+      success: true, 
+      url: result.secure_url 
+    });
+
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de l upload' },
+      { error: 'Erreur lors de l\'upload' },
       { status: 500 }
     );
   }
