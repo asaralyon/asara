@@ -37,10 +37,7 @@ function NewsCard({ item }: { item: NewsItem }) {
   const style = getSourceStyle(item.source);
   const [imgError, setImgError] = useState(false);
 
-  // Image par défaut = logo ASARA local
   const defaultImage = '/images/logo.png';
-  
-  // Utiliser l'image de l'article ou l'image par défaut
   const imageUrl = (!item.image || imgError) ? defaultImage : item.image;
 
   const formatDate = (dateString: string) => {
@@ -56,6 +53,8 @@ function NewsCard({ item }: { item: NewsItem }) {
     }
   };
 
+  const isDefaultImg = !item.image || imgError;
+
   return (
     
       href={item.link}
@@ -64,20 +63,18 @@ function NewsCard({ item }: { item: NewsItem }) {
       className="flex bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      {/* Image */}
       <div className="w-32 sm:w-48 flex-shrink-0 bg-neutral-100">
         <img 
           src={imageUrl}
           alt={item.title}
-          className={`w-full h-full object-cover ${(!item.image || imgError) ? 'object-contain p-4' : ''}`}
+          className={'w-full h-full ' + (isDefaultImg ? 'object-contain p-4' : 'object-cover')}
           onError={() => setImgError(true)}
           loading="lazy"
         />
       </div>
 
-      {/* Contenu */}
       <div className="flex-1 flex flex-col p-4">
-        <div className={`mb-2 ${style.bg} ${style.text} px-3 py-1 rounded-full text-xs font-semibold inline-block self-start`}>
+        <div className={'mb-2 px-3 py-1 rounded-full text-xs font-semibold inline-block self-start ' + style.bg + ' ' + style.text}>
           {item.source}
         </div>
 
@@ -120,7 +117,7 @@ export function NewsSection() {
   useEffect(() => {
     fetchNews();
 
-    const interval = setInterval(fetchNews, 600000); // 10 minutes
+    const interval = setInterval(fetchNews, 600000);
     return () => clearInterval(interval);
   }, []);
 
