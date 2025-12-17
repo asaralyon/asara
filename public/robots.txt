@@ -1,14 +1,24 @@
 # ===========================================
-# ASARA - Robots.txt
+# ASARA Lyon - Robots.txt
 # ===========================================
 
 # Autoriser tous les robots
 User-agent: *
 Allow: /
 
-# Bloquer les pages admin
+# Bloquer les pages privées
 Disallow: /admin/
 Disallow: /api/
+Disallow: /mon-compte/
+Disallow: /*?*
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
 
 # Sitemap
 Sitemap: https://asara-lyon.fr/sitemap.xml
