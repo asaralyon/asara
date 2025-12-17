@@ -16,30 +16,35 @@ datasource db {
 // ===========================================
 
 enum UserRole {
-  ADMIN       // Administrateur
-  PROFESSIONAL // Professionnel (100€/an)
-  MEMBER      // Membre simple (15€/an)
+  ADMIN
+  PROFESSIONAL
+  MEMBER
 }
 
 enum UserStatus {
-  PENDING     // En attente de validation
-  ACTIVE      // Actif (cotisation à jour)
-  EXPIRED     // Cotisation expirée
-  SUSPENDED   // Suspendu
+  PENDING
+  ACTIVE
+  EXPIRED
+  SUSPENDED
 }
 
 enum SubscriptionStatus {
-  ACTIVE      // Abonnement actif
-  PAST_DUE    // Paiement en retard
-  CANCELED    // Annulé
-  EXPIRED     // Expiré
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
 }
 
 enum PaymentStatus {
-  PENDING     // En attente
-  SUCCEEDED   // Réussi
-  FAILED      // Échoué
-  REFUNDED    // Remboursé
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum EventType {
+  DOCUMENT
+  GALLERY
 }
 
 // ===========================================
@@ -61,7 +66,7 @@ model User {
   city          String?
   postalCode    String?
   
-  // Profil professionnel (uniquement pour PROFESSIONAL)
+  // Profil professionnel
   profile       ProfessionalProfile?
   
   // Stripe
@@ -80,14 +85,19 @@ model User {
   emailVerified Boolean     @default(false)
   emailVerifiedAt DateTime?
   
+  // Password reset
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+  
   @@index([email])
   @@index([status])
   @@index([role])
+  @@index([resetToken])
   @@map("users")
 }
 
 // ===========================================
-// Professional Profile (pour l'annuaire)
+// Professional Profile
 // ===========================================
 
 model ProfessionalProfile {
@@ -95,14 +105,12 @@ model ProfessionalProfile {
   userId          String    @unique
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Informations professionnelles
   companyName     String?
-  profession      String    // Ex: "Médecin", "Avocat", "Restaurateur"
-  category        String    // Ex: "Santé", "Juridique", "Restauration"
-  specialty       String?   // Ex: "Cardiologie", "Droit des affaires"
+  profession      String
+  category        String
+  specialty       String?
   description     String?   @db.Text
   
-  // Coordonnées professionnelles
   address         String?
   city            String?
   postalCode      String?
@@ -110,28 +118,22 @@ model ProfessionalProfile {
   latitude        Float?
   longitude       Float?
   
-  // Contact professionnel
   professionalPhone String?
   professionalEmail String?
   website         String?
   
-  // Réseaux sociaux
   linkedinUrl     String?
   facebookUrl     String?
   instagramUrl    String?
   
-  // Images
   photoUrl        String?
   logoUrl         String?
   
-  // Visibilité dans l'annuaire
   isPublished     Boolean   @default(false)
   publishedAt     DateTime?
   
-  // SEO
   slug            String    @unique
   
-  // Timestamps
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   
@@ -143,15 +145,15 @@ model ProfessionalProfile {
 }
 
 // ===========================================
-// Categories (pour organiser les professions)
+// Categories
 // ===========================================
 
 model Category {
   id          String    @id @default(cuid())
-  name        String    @unique // Ex: "Santé", "Juridique"
+  name        String    @unique
   slug        String    @unique
   description String?
-  icon        String?   // Nom de l'icône Lucide
+  icon        String?
   order       Int       @default(0)
   isActive    Boolean   @default(true)
   
@@ -162,7 +164,7 @@ model Category {
 }
 
 // ===========================================
-// Subscription (Abonnements)
+// Subscription
 // ===========================================
 
 model Subscription {
@@ -170,26 +172,20 @@ model Subscription {
   userId              String
   user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Type d'abonnement
-  type                UserRole            // PROFESSIONAL (100€) ou MEMBER (15€)
+  type                UserRole
   
-  // Stripe
   stripeSubscriptionId String?            @unique
   stripePriceId       String?
   
-  // Période
   status              SubscriptionStatus  @default(ACTIVE)
   currentPeriodStart  DateTime
   currentPeriodEnd    DateTime
   
-  // Annulation
   cancelAtPeriodEnd   Boolean             @default(false)
   canceledAt          DateTime?
   
-  // Paiements liés
   payments            Payment[]
   
-  // Timestamps
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   
@@ -200,7 +196,7 @@ model Subscription {
 }
 
 // ===========================================
-// Payment (Historique des paiements)
+// Payment
 // ===========================================
 
 model Payment {
@@ -210,25 +206,19 @@ model Payment {
   subscriptionId      String?
   subscription        Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
   
-  // Montant
-  amount              Int           // En centimes (10000 = 100€)
+  amount              Int
   currency            String        @default("eur")
   
-  // Stripe
   stripePaymentIntentId String?     @unique
   stripeInvoiceId     String?       @unique
   
-  // Statut
   status              PaymentStatus @default(PENDING)
   
-  // Facture
   invoiceNumber       String?       @unique
   invoiceUrl          String?
   
-  // Description
   description         String?
   
-  // Timestamps
   createdAt           DateTime      @default(now())
   paidAt              DateTime?
   
@@ -244,7 +234,7 @@ model Payment {
 
 model EmailTemplate {
   id          String    @id @default(cuid())
-  name        String    @unique // Ex: "welcome", "renewal_reminder"
+  name        String    @unique
   subject     String
   htmlContent String    @db.Text
   textContent String?   @db.Text
@@ -258,7 +248,7 @@ model EmailTemplate {
 }
 
 // ===========================================
-// Email Logs (pour suivi)
+// Email Logs
 // ===========================================
 
 model EmailLog {
@@ -266,7 +256,7 @@ model EmailLog {
   to          String
   subject     String
   templateId  String?
-  status      String    // "sent", "failed", "bounced"
+  status      String
   error       String?
   
   sentAt      DateTime  @default(now())
@@ -277,7 +267,7 @@ model EmailLog {
 }
 
 // ===========================================
-// Settings (Configuration de l'app)
+// Settings
 // ===========================================
 
 model Setting {
@@ -290,21 +280,23 @@ model Setting {
   
   @@map("settings")
 }
+
+// ===========================================
+// Event
+// ===========================================
+
 model Event {
   id          String    @id @default(cuid())
   title       String
   description String?   @db.Text
   type        EventType @default(GALLERY)
   
-  // Pour type DOCUMENT
   documentUrl String?
   
-  // Pour type GALLERY (max 3 images)
   imageUrl1   String?
   imageUrl2   String?
   imageUrl3   String?
   
-  // Dates
   eventDate   DateTime?
   location    String?
   
@@ -313,9 +305,4 @@ model Event {
   updatedAt   DateTime  @updatedAt
   
   @@map("events")
-}
-
-enum EventType {
-  DOCUMENT
-  GALLERY
 }

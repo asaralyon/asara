@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 interface LoginFormProps {
   locale: string;
 }
+
 export function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
   const t = useTranslations('auth.login');
@@ -36,16 +38,14 @@ export function LoginForm({ locale }: LoginFormProps) {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Validation stricte
         if (!data.user?.role) {
           throw new Error('invalid_user_data');
         }
 
         const redirectPath = data.user.role === 'ADMIN'
-          ? `/${locale}/admin`
-          : `/${locale}/mon-compte`;
+          ? '/' + locale + '/admin'
+          : '/' + locale + '/mon-compte';
 
-        // ✅ Navigation fluide et fiable
         await router.push(redirectPath);
         return;
       }
@@ -82,21 +82,29 @@ export function LoginForm({ locale }: LoginFormProps) {
           autoFocus
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
           autoComplete="email"
         />
       </div>
 
       <div>
-        <label className="block mb-1 font-medium text-gray-700">
-          {t('password')}
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="font-medium text-gray-700">
+            {t('password')}
+          </label>
+          <Link
+            href={'/' + locale + '/mot-de-passe-oublie'}
+            className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            {isRTL ? 'نسيت كلمة المرور؟' : 'Mot de passe oublié ?'}
+          </Link>
+        </div>
         <input
           type="password"
           required
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
           autoComplete="current-password"
         />
       </div>
