@@ -66,8 +66,9 @@ function NewsCard({ item }: { item: NewsItem }) {
         <div className="w-32 sm:w-48 flex-shrink-0">
           <img 
             src={item.image} 
-            alt={item.title}
+            alt=""
             className="w-full h-full object-cover"
+            onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.parentElement.style.display = "none"; }}
           />
         </div>
       )}
