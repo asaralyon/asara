@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { Users, Building2, UserCheck, Clock, Calendar, Mail } from 'lucide-react';
+import { Users, Building2, UserCheck, Clock, Calendar, Mail, Newspaper } from 'lucide-react';
 import { LogoutButton } from '@/components/admin/LogoutButton';
 
 export const metadata: Metadata = {
@@ -111,6 +112,14 @@ export default async function AdminPage({ params }: { params: { locale: string }
               <h3 className="font-semibold text-lg">Événements</h3>
             </div>
             <p className="text-neutral-500 text-sm">Ajouter et gérer les événements</p>
+          </Link>
+
+          <Link href={'/' + locale + '/admin/newsletter'} className="card hover:shadow-strong transition-shadow border-2 border-green-200 bg-green-50">
+            <div className="flex items-center gap-2 mb-2">
+              <Newspaper className="w-5 h-5 text-green-600" />
+              <h3 className="font-semibold text-lg text-green-700">Newsletter</h3>
+            </div>
+            <p className="text-green-600 text-sm">Envoyer la newsletter hebdomadaire</p>
           </Link>
 
           <Link href={'/' + locale + '/admin/emails'} className="card hover:shadow-strong transition-shadow border-2 border-primary-200 bg-primary-50">
