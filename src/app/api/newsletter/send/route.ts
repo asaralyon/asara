@@ -96,8 +96,8 @@ function generateNewsletterHTML(customLinks: NewsLink[], events: any[], articles
     <tr>
       <td style="padding: 16px; background: #f9fafb; border-radius: 8px; margin-bottom: 12px;">
         <p style="margin: 0 0 8px; font-weight: 600; color: #1f2937; font-size: 16px;">${article.title}</p>
-        <p style="margin: 0 0 8px; color: #4b5563; font-size: 14px; line-height: 1.6;">
-          ${article.content.substring(0, 500)}${article.content.length > 500 ? '...' : ''}
+        <p style="margin: 0 0 8px; color: #4b5563; font-size: 14px; line-height: 1.6; white-space: pre-line;">
+          ${article.content.substring(0, 800)}${article.content.length > 800 ? '...' : ''}
         </p>
         <p style="margin: 0; color: #6b7280; font-size: 12px;">Par ${article.authorName}</p>
       </td>
@@ -107,7 +107,7 @@ function generateNewsletterHTML(customLinks: NewsLink[], events: any[], articles
 
   return `
 <!DOCTYPE html>
-<html>
+<html dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -203,6 +203,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non autorise' }, { status: 401 });
     }
 
+    // Verifier la configuration SMTP
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('SMTP config missing:', {
+        host: !!process.env.SMTP_HOST,
+        user: !!process.env.SMTP_USER,
+        pass: !!process.env.SMTP_PASS
+      });
+      return NextResponse.json({ 
+        error: 'Configuration SMTP manquante. Verifiez les variables SMTP_HOST, SMTP_USER, SMTP_PASS dans Vercel.' 
+      }, { status: 500 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const { testEmail, customLinks = [] } = body;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
@@ -230,14 +242,20 @@ export async function POST(request: Request) {
     const subject = `Newsletter ASARA - ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
 
     if (testEmail) {
-      await transporter.sendMail({
-        from: `"ASARA Lyon" <${process.env.SMTP_USER}>`,
-        to: testEmail,
-        subject: `[TEST] ${subject}`,
-        html,
-      });
-
-      return NextResponse.json({ success: true, message: 'Email test envoye', recipientCount: 1 });
+      try {
+        await transporter.sendMail({
+          from: `"ASARA Lyon" <${process.env.SMTP_USER}>`,
+          to: testEmail,
+          subject: `[TEST] ${subject}`,
+          html,
+        });
+        return NextResponse.json({ success: true, message: 'Email test envoye', recipientCount: 1 });
+      } catch (emailError: any) {
+        console.error('Email send error:', emailError);
+        return NextResponse.json({ 
+          error: `Erreur envoi email: ${emailError.message}` 
+        }, { status: 500 });
+      }
     }
 
     // Recuperer tous les membres
@@ -249,6 +267,8 @@ export async function POST(request: Request) {
 
     // Envoi a tous les membres
     let sentCount = 0;
+    const errors: string[] = [];
+    
     for (const member of members) {
       try {
         await transporter.sendMail({
@@ -258,8 +278,9 @@ export async function POST(request: Request) {
           html,
         });
         sentCount++;
-      } catch (err) {
-        console.error(`Erreur envoi a ${member.email}:`, err);
+      } catch (err: any) {
+        console.error(`Erreur envoi a ${member.email}:`, err.message);
+        errors.push(member.email);
       }
     }
 
@@ -274,12 +295,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Newsletter envoyee a ${sentCount} membres`,
-      recipientCount: sentCount 
+      message: `Newsletter envoyee a ${sentCount}/${members.length} membres`,
+      recipientCount: sentCount,
+      errors: errors.length > 0 ? errors : undefined
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Newsletter error:', error);
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+    return NextResponse.json({ error: `Erreur serveur: ${error.message}` }, { status: 500 });
   }
 }
