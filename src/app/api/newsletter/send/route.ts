@@ -137,9 +137,9 @@ function generateNewsletterHTML(customLinks: NewsLink[], events: any[], articles
           <tr>
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
               <img src="${baseUrl}/images/logo.png" alt="ASARA" width="100" style="margin-bottom: 20px;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
-              <p style="margin: 12px 0 0; color: #bbf7d0; font-size: 20px; font-weight: 700;">ASARA Lyon</p>
-              <p style="margin: 16px 0 0; color: #dcfce7; font-size: 16px;">النشرة الإخبارية</p>
+              <h1 style="margin: 0; color: #166534; font-size: 26px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
+              <p style="margin: 12px 0 0; color: #166534; font-size: 22px; font-weight: 700;">ASARA Lyon</p>
+              <p style="margin: 16px 0 0; color: #166534; font-size: 18px; font-weight: 600;">النشرة الإخبارية</p>
             </td>
           </tr>
 
