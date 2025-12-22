@@ -24,8 +24,6 @@ export default async function AdhesionPage({ params }: Props) {
       id: 'professional',
       icon: Briefcase,
       title: t('professional.title'),
-      price: '100 €',
-      period: isRTL ? '/سنة' : '/an',
       features: [
         t('professional.benefits.directory'),
         t('professional.benefits.profile'),
@@ -39,8 +37,6 @@ export default async function AdhesionPage({ params }: Props) {
       id: 'member',
       icon: Users,
       title: t('member.title'),
-      price: '15 €',
-      period: isRTL ? '/سنة' : '/an',
       features: [
         t('member.benefits.events'),
         t('member.benefits.community'),
@@ -94,11 +90,7 @@ export default async function AdhesionPage({ params }: Props) {
                       plan.primary ? 'text-primary-500' : 'text-neutral-500'
                     }`} />
                   </div>
-                  <h2 className="text-xl font-bold mb-2">{plan.title}</h2>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold text-primary-500">{plan.price}</span>
-                    <span className="text-neutral-500">{plan.period}</span>
-                  </div>
+                  <h2 className="text-xl font-bold">{plan.title}</h2>
                 </div>
 
                 <ul className="space-y-3 mb-8">
