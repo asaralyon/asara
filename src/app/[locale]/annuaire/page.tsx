@@ -199,9 +199,7 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
                     {pro.professionalPhone && (
                       <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <Phone className="w-4 h-4 text-neutral-400" />
-                        <a href={`tel:${pro.professionalPhone}`} className="hover:text-primary-500 transition-colors" dir="ltr">
-                          {pro.professionalPhone}
-                        </a>
+                        <span dir="ltr">{pro.professionalPhone}</span>
                       </div>
                     )}
                     {pro.professionalEmail && (
@@ -214,14 +212,13 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
                     )}
                     {pro.website && (
                       <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <Globe className="w-4 h-4 text-neutral-400" />
+                        <Globe className="w-4 h-4 text-primary-500" />
                         <a 
                           href={pro.website.startsWith('http') ? pro.website : `https://${pro.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="truncate hover:text-primary-500 transition-colors text-primary-600 font-medium"
+                          className="truncate hover:text-primary-600 transition-colors text-primary-500 font-medium"
                           dir="ltr"
-                          onClick={(e) => e.stopPropagation()}
                         >
                           {pro.website.replace(/^https?:\/\//, '')}
                         </a>
