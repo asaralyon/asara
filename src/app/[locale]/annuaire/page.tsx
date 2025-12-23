@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
-import { Search, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { Search, MapPin, Phone, Mail, ExternalLink, Globe } from 'lucide-react';
 import { CATEGORIES, translateCategory } from '@/lib/constants';
 
 type Props = {
@@ -158,35 +158,36 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {professionals.map((pro) => (
-                <Link
+                <div
                   key={pro.id}
-                  href={'/' + locale + '/annuaire/' + pro.slug}
                   className="card hover:shadow-strong transition-shadow"
                 >
-                  <div className={`flex items-start gap-4 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    {pro.photoUrl ? (
-                      <img
-                        src={pro.photoUrl}
-                        alt={pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
-                        className="w-16 h-16 rounded-xl object-cover"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-xl bg-primary-100 flex items-center justify-center">
-                        <span className="text-2xl font-bold text-primary-500">
-                          {pro.user.firstName[0]}
+                  <Link href={'/' + locale + '/annuaire/' + pro.slug}>
+                    <div className={`flex items-start gap-4 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      {pro.photoUrl ? (
+                        <img
+                          src={pro.photoUrl}
+                          alt={pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
+                          className="w-16 h-16 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-primary-100 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-primary-500">
+                            {pro.user.firstName[0]}
+                          </span>
+                        </div>
+                      )}
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
+                        <h3 className="font-semibold text-lg truncate">
+                          {pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
+                        </h3>
+                        <p className="text-primary-500 font-medium">{pro.profession}</p>
+                        <span className="badge badge-primary text-xs mt-1">
+                          {translateCategory(pro.category, locale)}
                         </span>
                       </div>
-                    )}
-                    <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
-                      <h3 className="font-semibold text-lg truncate">
-                        {pro.companyName || (pro.user.firstName + ' ' + pro.user.lastName)}
-                      </h3>
-                      <p className="text-primary-500 font-medium">{pro.profession}</p>
-                      <span className="badge badge-primary text-xs mt-1">
-                        {translateCategory(pro.category, locale)}
-                      </span>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className={`space-y-2 text-sm text-neutral-600 ${isRTL ? 'text-right' : ''}`}>
                     {pro.city && (
@@ -198,22 +199,43 @@ export default async function DirectoryPage({ params, searchParams }: Props) {
                     {pro.professionalPhone && (
                       <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <Phone className="w-4 h-4 text-neutral-400" />
-                        <span dir="ltr">{pro.professionalPhone}</span>
+                        <a href={`tel:${pro.professionalPhone}`} className="hover:text-primary-500 transition-colors" dir="ltr">
+                          {pro.professionalPhone}
+                        </a>
                       </div>
                     )}
                     {pro.professionalEmail && (
                       <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <Mail className="w-4 h-4 text-neutral-400" />
-                        <span className="truncate" dir="ltr">{pro.professionalEmail}</span>
+                        <a href={`mailto:${pro.professionalEmail}`} className="truncate hover:text-primary-500 transition-colors" dir="ltr">
+                          {pro.professionalEmail}
+                        </a>
+                      </div>
+                    )}
+                    {pro.website && (
+                      <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <Globe className="w-4 h-4 text-neutral-400" />
+                        <a 
+                          href={pro.website.startsWith('http') ? pro.website : `https://${pro.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="truncate hover:text-primary-500 transition-colors text-primary-600 font-medium"
+                          dir="ltr"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {pro.website.replace(/^https?:\/\//, '')}
+                        </a>
                       </div>
                     )}
                   </div>
 
-                  <div className={`mt-4 pt-4 border-t border-neutral-100 flex items-center gap-1 text-primary-500 font-medium ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    {t('viewProfile')}
-                    <ExternalLink className="w-4 h-4" />
-                  </div>
-                </Link>
+                  <Link href={'/' + locale + '/annuaire/' + pro.slug}>
+                    <div className={`mt-4 pt-4 border-t border-neutral-100 flex items-center gap-1 text-primary-500 font-medium ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      {t('viewProfile')}
+                      <ExternalLink className="w-4 h-4" />
+                    </div>
+                  </Link>
+                </div>
               ))}
             </div>
           )}
