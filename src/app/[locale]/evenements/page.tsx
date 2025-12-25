@@ -81,7 +81,7 @@ export default async function EventsPage({ params }: Props) {
 
                   {event.type === 'DOCUMENT' && event.documentUrl ? (
                     event.documentUrl.endsWith('.pdf') ? (
-                      
+                      <a
                         href={event.documentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
