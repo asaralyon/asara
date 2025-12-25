@@ -87,7 +87,7 @@ export default async function EventsPage({ params }: Props) {
                   {/* Contenu selon le type */}
                   {event.type === 'DOCUMENT' && event.documentUrl ? (
                     event.documentUrl.endsWith('.pdf') ? (
-                      <a
+                      
                         href={event.documentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -102,30 +102,30 @@ export default async function EventsPage({ params }: Props) {
                       <img
                         src={event.documentUrl}
                         alt={event.title}
-                        className="w-full rounded-xl"
+                        className="w-full rounded-xl object-contain"
                       />
                     )
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {event.imageUrl1 && (
                         <img
                           src={event.imageUrl1}
                           alt={event.title}
-                          className="w-full h-64 object-cover rounded-xl"
+                          className="w-full rounded-xl object-contain max-h-[500px]"
                         />
                       )}
                       {event.imageUrl2 && (
                         <img
                           src={event.imageUrl2}
                           alt={event.title}
-                          className="w-full h-64 object-cover rounded-xl"
+                          className="w-full rounded-xl object-contain max-h-[500px]"
                         />
                       )}
                       {event.imageUrl3 && (
                         <img
                           src={event.imageUrl3}
                           alt={event.title}
-                          className="w-full h-64 object-cover rounded-xl"
+                          className="w-full rounded-xl object-contain max-h-[500px]"
                         />
                       )}
                     </div>
