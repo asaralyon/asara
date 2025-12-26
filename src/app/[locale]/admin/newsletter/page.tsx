@@ -185,22 +185,38 @@ export default function NewsletterPage() {
 
       const data = await res.json();
       if (res.ok) {
-        setPdfHtml(data.html);
-        // Ouvrir dans une nouvelle fenêtre pour impression/PDF
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(data.html);
-          printWindow.document.close();
-          setTimeout(() => {
-            printWindow.print();
-          }, 500);
-        }
-        setMessage({ type: 'success', text: 'PDF genere! Utilisez Ctrl+P pour sauvegarder en PDF.' });
+        // Charger html2pdf dynamiquement
+        const html2pdf = (await import('html2pdf.js')).default;
+        
+        // Créer un conteneur temporaire
+        const container = document.createElement('div');
+        container.innerHTML = data.html;
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        document.body.appendChild(container);
+
+        // Générer le PDF avec liens cliquables
+        const today = new Date().toISOString().split('T')[0];
+        await html2pdf()
+          .set({
+            margin: 0,
+            filename: `newsletter-asara-${today}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            enableLinks: true
+          })
+          .from(container)
+          .save();
+
+        document.body.removeChild(container);
+        setMessage({ type: 'success', text: 'PDF telecharge avec succes!' });
       } else {
         setMessage({ type: 'error', text: data.error || 'Erreur' });
       }
-    } catch {
-      setMessage({ type: 'error', text: 'Erreur reseau' });
+    } catch (err) {
+      console.error('PDF error:', err);
+      setMessage({ type: 'error', text: 'Erreur generation PDF' });
     }
     setPdfLoading(false);
   };
@@ -308,7 +324,7 @@ export default function NewsletterPage() {
             <div className="card">
               <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-600" />
-                Version PDF
+                Version PDF (liens cliquables)
               </h2>
               <div className="space-y-3">
                 <button
@@ -327,9 +343,6 @@ export default function NewsletterPage() {
                   {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   Telecharger PDF
                 </button>
-                <p className="text-xs text-neutral-500">
-                  Le PDF s'ouvrira dans une nouvelle fenetre. Utilisez Ctrl+P (ou Cmd+P) puis "Enregistrer en PDF".
-                </p>
               </div>
             </div>
 
