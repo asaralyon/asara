@@ -1,33 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  Send, 
-  Mail, 
-  Calendar, 
-  Newspaper, 
-  FileText, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Loader2,
-  Users,
-  Clock,
-  ArrowLeft,
-  Link as LinkIcon,
-  X
+  Send, Loader2, Plus, Trash2, FileText, Users, 
+  CheckCircle, AlertCircle, Calendar, Download, Eye
 } from 'lucide-react';
-
-interface Article {
-  id: string;
-  title: string;
-  content: string;
-  authorName: string;
-  authorEmail?: string;
-  isPublished: boolean;
-  createdAt: string;
-}
 
 interface NewsLink {
   title: string;
@@ -35,156 +12,223 @@ interface NewsLink {
   source: string;
 }
 
-interface NewsletterData {
-  news: any[];
-  events: any[];
-  articles: Article[];
-  memberCount: number;
-  lastNewsletters: any[];
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  authorName: string;
+  authorEmail: string;
+  isPublished: boolean;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  eventDate: string;
+  location: string;
 }
 
 export default function NewsletterPage() {
-  const router = useRouter();
-  const [data, setData] = useState<NewsletterData | null>(null);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [testEmail, setTestEmail] = useState('');
+  const [customLinks, setCustomLinks] = useState<NewsLink[]>([]);
+  const [newLink, setNewLink] = useState<NewsLink>({ title: '', url: '', source: '' });
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [recipientCount, setRecipientCount] = useState(0);
   const [showArticleForm, setShowArticleForm] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Liens d'actualites personnalises (max 3)
-  const [newsLinks, setNewsLinks] = useState<NewsLink[]>([]);
-  const [showLinkForm, setShowLinkForm] = useState(false);
-  const [linkForm, setLinkForm] = useState({ title: '', url: '', source: '' });
-
   const [articleForm, setArticleForm] = useState({
     title: '',
     content: '',
-    authorName: '',
+    authorName: 'ASARA Lyon',
     authorEmail: '',
     isPublished: true
   });
+  const [history, setHistory] = useState<any[]>([]);
+  const [pdfHtml, setPdfHtml] = useState<string | null>(null);
+  const previewRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchPreview();
     fetchArticles();
-    // Charger les liens depuis localStorage
+    fetchHistory();
     const savedLinks = localStorage.getItem('newsletterLinks');
     if (savedLinks) {
-      setNewsLinks(JSON.parse(savedLinks));
+      setCustomLinks(JSON.parse(savedLinks));
     }
   }, []);
 
-  // Sauvegarder les liens dans localStorage
   useEffect(() => {
-    localStorage.setItem('newsletterLinks', JSON.stringify(newsLinks));
-  }, [newsLinks]);
+    localStorage.setItem('newsletterLinks', JSON.stringify(customLinks));
+  }, [customLinks]);
 
-  const fetchData = async () => {
+  const fetchPreview = async () => {
     try {
       const res = await fetch('/api/newsletter/preview');
       if (res.ok) {
-        const json = await res.json();
-        setData(json);
+        const data = await res.json();
+        setEvents(data.events || []);
+        setRecipientCount(data.recipientCount || 0);
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur preview:', error);
     }
-    setLoading(false);
   };
 
   const fetchArticles = async () => {
     try {
       const res = await fetch('/api/articles');
       if (res.ok) {
-        const json = await res.json();
-        setArticles(json);
+        const data = await res.json();
+        setArticles(data);
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur articles:', error);
     }
   };
 
-  const handleAddLink = () => {
-    if (!linkForm.title || !linkForm.url) {
-      setMessage({ type: 'error', text: 'Titre et URL requis' });
-      return;
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch('/api/newsletter/preview');
+      if (res.ok) {
+        const data = await res.json();
+        setHistory(data.history || []);
+      }
+    } catch (error) {
+      console.error('Erreur history:', error);
     }
-    if (newsLinks.length >= 3) {
-      setMessage({ type: 'error', text: 'Maximum 3 liens' });
-      return;
-    }
-    setNewsLinks([...newsLinks, { ...linkForm }]);
-    setLinkForm({ title: '', url: '', source: '' });
-    setShowLinkForm(false);
-    setMessage({ type: 'success', text: 'Lien ajoute' });
   };
 
-  const handleRemoveLink = (index: number) => {
-    setNewsLinks(newsLinks.filter((_, i) => i !== index));
+  const addLink = () => {
+    if (newLink.title && newLink.url) {
+      if (customLinks.length >= 3) {
+        setMessage({ type: 'error', text: 'Maximum 3 liens' });
+        return;
+      }
+      setCustomLinks([...customLinks, newLink]);
+      setNewLink({ title: '', url: '', source: '' });
+    }
+  };
+
+  const removeLink = (index: number) => {
+    setCustomLinks(customLinks.filter((_, i) => i !== index));
   };
 
   const handleSendTest = async () => {
     if (!testEmail) {
-      setMessage({ type: 'error', text: 'Veuillez entrer une adresse email' });
+      setMessage({ type: 'error', text: 'Entrez une adresse email' });
       return;
     }
+    setLoading(true);
+    setMessage(null);
 
-    setSending(true);
     try {
       const res = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ testEmail, customLinks: newsLinks })
+        body: JSON.stringify({ testEmail, customLinks })
       });
 
-      const json = await res.json();
+      const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Email test envoye !' });
+        setMessage({ type: 'success', text: 'Email test envoye!' });
       } else {
-        setMessage({ type: 'error', text: json.error || 'Erreur lors de envoi' });
+        setMessage({ type: 'error', text: data.error || 'Erreur' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur reseau' });
     }
-    setSending(false);
+    setLoading(false);
   };
 
   const handleSendAll = async () => {
-    if (!confirm('Etes-vous sur de vouloir envoyer la newsletter a ' + (data?.memberCount || 0) + ' membres ?')) {
-      return;
-    }
+    if (!confirm('Envoyer la newsletter a tous les membres et inscrits?')) return;
+    
+    setLoading(true);
+    setMessage(null);
 
-    setSending(true);
     try {
       const res = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customLinks: newsLinks })
+        body: JSON.stringify({ customLinks })
       });
 
-      const json = await res.json();
+      const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: json.message });
-        fetchData();
-        // Vider les liens apres envoi
-        setNewsLinks([]);
+        setMessage({ type: 'success', text: data.message });
+        setCustomLinks([]);
+        localStorage.removeItem('newsletterLinks');
+        fetchHistory();
       } else {
-        setMessage({ type: 'error', text: json.error || 'Erreur lors de envoi' });
+        setMessage({ type: 'error', text: data.error || 'Erreur' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur reseau' });
     }
-    setSending(false);
+    setLoading(false);
+  };
+
+  const handleGeneratePDF = async () => {
+    setPdfLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch('/api/newsletter/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customLinks })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setPdfHtml(data.html);
+        // Ouvrir dans une nouvelle fenêtre pour impression/PDF
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(data.html);
+          printWindow.document.close();
+          setTimeout(() => {
+            printWindow.print();
+          }, 500);
+        }
+        setMessage({ type: 'success', text: 'PDF genere! Utilisez Ctrl+P pour sauvegarder en PDF.' });
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Erreur' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Erreur reseau' });
+    }
+    setPdfLoading(false);
+  };
+
+  const handlePreviewPDF = async () => {
+    setPdfLoading(true);
+    try {
+      const res = await fetch('/api/newsletter/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customLinks })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setPdfHtml(data.html);
+      }
+    } catch {
+      console.error('Erreur preview');
+    }
+    setPdfLoading(false);
   };
 
   const handleSaveArticle = async () => {
     try {
-      const url = editingArticle ? '/api/articles/' + editingArticle.id : '/api/articles';
       const method = editingArticle ? 'PUT' : 'POST';
-
+      const url = editingArticle ? `/api/articles/${editingArticle.id}` : '/api/articles';
+      
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -195,33 +239,31 @@ export default function NewsletterPage() {
         setMessage({ type: 'success', text: editingArticle ? 'Article modifie' : 'Article cree' });
         setShowArticleForm(false);
         setEditingArticle(null);
-        setArticleForm({ title: '', content: '', authorName: '', authorEmail: '', isPublished: true });
+        setArticleForm({ title: '', content: '', authorName: 'ASARA Lyon', authorEmail: '', isPublished: true });
         fetchArticles();
-        fetchData();
       } else {
-        setMessage({ type: 'error', text: 'Erreur lors de la sauvegarde' });
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Erreur' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur reseau' });
     }
   };
 
   const handleDeleteArticle = async (id: string) => {
-    if (!confirm('Supprimer cet article ?')) return;
-
+    if (!confirm('Supprimer cet article?')) return;
     try {
-      const res = await fetch('/api/articles/' + id, { method: 'DELETE' });
+      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Article supprime' });
         fetchArticles();
-        fetchData();
+        setMessage({ type: 'success', text: 'Article supprime' });
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Erreur reseau' });
+    } catch {
+      setMessage({ type: 'error', text: 'Erreur' });
     }
   };
 
-  const handleEditArticle = (article: Article) => {
+  const editArticle = (article: Article) => {
     setEditingArticle(article);
     setArticleForm({
       title: article.title,
@@ -233,161 +275,179 @@ export default function NewsletterPage() {
     setShowArticleForm(true);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-neutral-50 py-8">
       <div className="container-app">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-800">Newsletter</h1>
-            <p className="text-neutral-600">Gerez et envoyez la newsletter hebdomadaire</p>
-          </div>
-          <button onClick={() => router.back()} className="btn-secondary flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" /> Retour
-          </button>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold">Newsletter</h1>
+          <p className="text-neutral-600">Creer et envoyer la newsletter hebdomadaire</p>
         </div>
 
         {message && (
-          <div className={'mb-6 p-4 rounded-lg ' + (message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
+          <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            {message.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
             {message.text}
-            <button onClick={() => setMessage(null)} className="float-right font-bold">×</button>
+            <button onClick={() => setMessage(null)} className="ml-auto">×</button>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Colonne gauche - Envoi */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="space-y-6">
             {/* Stats */}
             <div className="card">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <div className="flex items-center gap-3 mb-4">
                 <Users className="w-5 h-5 text-primary-600" />
-                Destinataires
+                <h2 className="font-semibold">Destinataires</h2>
+              </div>
+              <p className="text-3xl font-bold text-primary-600">{recipientCount}</p>
+              <p className="text-sm text-neutral-500">membres et inscrits</p>
+            </div>
+
+            {/* Actions PDF */}
+            <div className="card">
+              <h2 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-600" />
+                Version PDF
               </h2>
-              <p className="text-3xl font-bold text-primary-600">{data?.memberCount || 0}</p>
-              <p className="text-neutral-600">membres recevront la newsletter</p>
+              <div className="space-y-3">
+                <button
+                  onClick={handlePreviewPDF}
+                  disabled={pdfLoading}
+                  className="btn-secondary w-full flex items-center justify-center gap-2"
+                >
+                  {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                  Apercu
+                </button>
+                <button
+                  onClick={handleGeneratePDF}
+                  disabled={pdfLoading}
+                  className="btn-primary w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  Telecharger PDF
+                </button>
+                <p className="text-xs text-neutral-500">
+                  Le PDF s'ouvrira dans une nouvelle fenetre. Utilisez Ctrl+P (ou Cmd+P) puis "Enregistrer en PDF".
+                </p>
+              </div>
             </div>
 
             {/* Envoi test */}
             <div className="card">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Mail className="w-5 h-5 text-primary-600" />
-                Envoi test
-              </h2>
-              <input
-                type="email"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                placeholder="email@exemple.com"
-                className="input mb-3"
-              />
-              <button
-                onClick={handleSendTest}
-                disabled={sending}
-                className="btn-secondary w-full"
-              >
-                {sending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Envoyer un test'}
-              </button>
+              <h2 className="font-semibold mb-4">Envoi test</h2>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="email@test.com"
+                  className="input flex-1"
+                />
+                <button
+                  onClick={handleSendTest}
+                  disabled={loading}
+                  className="btn-secondary"
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
-            {/* Envoi reel */}
-            <div className="card bg-primary-50 border-2 border-primary-200">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Send className="w-5 h-5 text-primary-600" />
-                Envoyer la newsletter
-              </h2>
-              <p className="text-sm text-neutral-600 mb-4">
-                Envoyer a tous les {data?.memberCount || 0} membres
-              </p>
+            {/* Envoi masse */}
+            <div className="card border-2 border-green-200 bg-green-50">
+              <h2 className="font-semibold mb-4 text-green-700">Envoi a tous</h2>
               <button
                 onClick={handleSendAll}
-                disabled={sending}
-                className="btn-primary w-full"
+                disabled={loading}
+                className="btn-primary w-full bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
               >
-                {sending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Envoyer a tous'}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                Envoyer la newsletter
               </button>
             </div>
 
             {/* Historique */}
-            {data?.lastNewsletters && data.lastNewsletters.length > 0 && (
-              <div className="card">
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-primary-600" />
-                  Historique
-                </h2>
-                <div className="space-y-2">
-                  {data.lastNewsletters.map((nl: any) => (
-                    <div key={nl.id} className="text-sm p-2 bg-neutral-50 rounded">
-                      <p className="font-medium">{new Date(nl.sentAt).toLocaleDateString('fr-FR')}</p>
-                      <p className="text-neutral-600">{nl.recipientCount} destinataires</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Colonne droite - Contenu */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Liens d'actualites personnalises */}
             <div className="card">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <LinkIcon className="w-5 h-5 text-primary-600" />
-                  Liens d'actualites ({newsLinks.length}/3)
-                </h2>
-                {newsLinks.length < 3 && (
-                  <button
-                    onClick={() => setShowLinkForm(true)}
-                    className="btn-primary text-sm py-2 flex items-center gap-1"
-                  >
-                    <Plus className="w-4 h-4" /> Ajouter un lien
-                  </button>
-                )}
-              </div>
-
-              {newsLinks.length > 0 ? (
+              <h2 className="font-semibold mb-4">Historique</h2>
+              {history.length > 0 ? (
                 <div className="space-y-2">
-                  {newsLinks.map((link, index) => (
-                    <div key={index} className="p-3 bg-neutral-50 rounded-lg flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{link.title}</p>
-                        <p className="text-xs text-neutral-500">{link.source || 'Source non specifiee'}</p>
-                        <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline truncate block">
-                          {link.url}
-                        </a>
-                      </div>
-                      <button onClick={() => handleRemoveLink(index)} className="p-1 hover:bg-red-100 rounded ml-2">
-                        <X className="w-4 h-4 text-red-600" />
-                      </button>
+                  {history.slice(0, 5).map((item: any) => (
+                    <div key={item.id} className="text-sm p-2 bg-neutral-50 rounded">
+                      <p className="font-medium">{item.subject}</p>
+                      <p className="text-neutral-500">
+                        {new Date(item.sentAt).toLocaleDateString('fr-FR')} - {item.recipientCount} envois
+                      </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-neutral-500 text-sm">Ajoutez jusqu'a 3 liens d'articles pour la newsletter.</p>
+                <p className="text-neutral-500 text-sm">Aucun envoi</p>
+              )}
+            </div>
+          </div>
+
+          {/* Colonne droite - Contenu */}
+          <div className="space-y-6">
+            {/* Liens personnalises */}
+            <div className="card">
+              <h2 className="font-semibold mb-4">Liens actualites (max 3)</h2>
+              
+              {customLinks.map((link, index) => (
+                <div key={index} className="flex items-center gap-2 mb-2 p-2 bg-neutral-50 rounded">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{link.title}</p>
+                    <p className="text-xs text-neutral-500 truncate">{link.url}</p>
+                  </div>
+                  <button onClick={() => removeLink(index)} className="text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              {customLinks.length < 3 && (
+                <div className="space-y-2 mt-4">
+                  <input
+                    type="text"
+                    value={newLink.title}
+                    onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                    placeholder="Titre (en arabe)"
+                    className="input text-sm"
+                  />
+                  <input
+                    type="url"
+                    value={newLink.url}
+                    onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                    placeholder="https://..."
+                    className="input text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={newLink.source}
+                    onChange={(e) => setNewLink({ ...newLink, source: e.target.value })}
+                    placeholder="Source (optionnel)"
+                    className="input text-sm"
+                  />
+                  <button onClick={addLink} className="btn-secondary w-full flex items-center justify-center gap-2">
+                    <Plus className="w-4 h-4" /> Ajouter
+                  </button>
+                </div>
               )}
             </div>
 
             {/* Evenements */}
             <div className="card">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary-600" />
-                Evenements a venir (automatique)
+                Evenements ({events.length})
               </h2>
-              {data?.events && data.events.length > 0 ? (
+              {events.length > 0 ? (
                 <div className="space-y-2">
-                  {data.events.map((event: any) => (
-                    <div key={event.id} className="p-3 bg-neutral-50 rounded-lg">
-                      <p className="font-medium text-sm">{event.title}</p>
-                      <p className="text-xs text-neutral-500">
+                  {events.map((event) => (
+                    <div key={event.id} className="text-sm p-2 bg-neutral-50 rounded">
+                      <p className="font-medium">{event.title}</p>
+                      <p className="text-neutral-500">
                         {new Date(event.eventDate).toLocaleDateString('fr-FR')}
-                        {event.location && ' - ' + event.location}
                       </p>
                     </div>
                   ))}
@@ -395,214 +455,111 @@ export default function NewsletterPage() {
               ) : (
                 <p className="text-neutral-500 text-sm">Aucun evenement a venir</p>
               )}
+              <p className="text-xs text-neutral-400 mt-2">
+                Les evenements renvoient vers la page evenements du site
+              </p>
             </div>
 
-            {/* Articles des membres */}
+            {/* Articles */}
             <div className="card">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
+                <h2 className="font-semibold flex items-center gap-2">
                   <FileText className="w-5 h-5 text-primary-600" />
-                  Articles de la communaute
+                  Articles ({articles.filter(a => a.isPublished).length} publies)
                 </h2>
                 <button
                   onClick={() => {
-                    setEditingArticle(null);
-                    setArticleForm({ title: '', content: '', authorName: '', authorEmail: '', isPublished: true });
                     setShowArticleForm(true);
+                    setEditingArticle(null);
+                    setArticleForm({ title: '', content: '', authorName: 'ASARA Lyon', authorEmail: '', isPublished: true });
                   }}
-                  className="btn-primary text-sm py-2 flex items-center gap-1"
+                  className="btn-secondary text-sm"
                 >
-                  <Plus className="w-4 h-4" /> Ajouter
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
 
-              {articles.length > 0 ? (
-                <div className="space-y-3">
-                  {articles.map((article) => (
-                    <div key={article.id} className="p-3 bg-neutral-50 rounded-lg">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-sm">{article.title}</p>
-                            {article.isPublished ? (
-                              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Publie</span>
-                            ) : (
-                              <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full">Brouillon</span>
-                            )}
-                          </div>
-                          <p className="text-xs text-neutral-500">Par {article.authorName}</p>
-                          <p className="text-sm text-neutral-600 mt-1 line-clamp-2">{article.content}</p>
-                        </div>
-                        <div className="flex gap-1 ml-2">
-                          <button onClick={() => handleEditArticle(article)} className="p-1 hover:bg-neutral-200 rounded">
-                            <Edit className="w-4 h-4 text-neutral-600" />
-                          </button>
-                          <button onClick={() => handleDeleteArticle(article.id)} className="p-1 hover:bg-red-100 rounded">
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-neutral-500 text-sm">Aucun article. Ajoutez-en un pour inclure dans la newsletter.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Modal formulaire lien */}
-        {showLinkForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-lg w-full p-6">
-              <h3 className="text-lg font-semibold mb-4">Ajouter un lien d'actualite</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Titre de l'article *</label>
-                  <input
-                    type="text"
-                    value={linkForm.title}
-                    onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
-                    className="input"
-                    placeholder="Ex: Nouvelle loi sur l'immigration"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">URL de l'article *</label>
-                  <input
-                    type="url"
-                    value={linkForm.url}
-                    onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
-                    className="input"
-                    placeholder="https://..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">Source (optionnel)</label>
-                  <input
-                    type="text"
-                    value={linkForm.source}
-                    onChange={(e) => setLinkForm({ ...linkForm, source: e.target.value })}
-                    className="input"
-                    placeholder="Ex: Le Monde, France Info..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowLinkForm(false);
-                    setLinkForm({ title: '', url: '', source: '' });
-                  }}
-                  className="btn-secondary flex-1"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleAddLink}
-                  disabled={!linkForm.title || !linkForm.url}
-                  className="btn-primary flex-1"
-                >
-                  Ajouter
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modal formulaire article */}
-        {showArticleForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-              <h3 className="text-lg font-semibold mb-4">
-                {editingArticle ? 'Modifier article' : 'Nouvel article'}
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Titre</label>
+              {showArticleForm && (
+                <div className="mb-4 p-4 border rounded-lg bg-neutral-50">
                   <input
                     type="text"
                     value={articleForm.title}
                     onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })}
-                    className="input"
-                    placeholder="Titre de article"
+                    placeholder="Titre de l'article"
+                    className="input mb-2"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">Contenu</label>
                   <textarea
                     value={articleForm.content}
                     onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
-                    className="input min-h-[150px]"
-                    placeholder="Contenu de article..."
+                    placeholder="Contenu..."
+                    rows={8}
+                    className="input mb-2"
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Nom de auteur</label>
-                    <input
-                      type="text"
-                      value={articleForm.authorName}
-                      onChange={(e) => setArticleForm({ ...articleForm, authorName: e.target.value })}
-                      className="input"
-                      placeholder="Prenom Nom"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Email (optionnel)</label>
-                    <input
-                      type="email"
-                      value={articleForm.authorEmail}
-                      onChange={(e) => setArticleForm({ ...articleForm, authorEmail: e.target.value })}
-                      className="input"
-                      placeholder="email@exemple.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
                   <input
-                    type="checkbox"
-                    id="isPublished"
-                    checked={articleForm.isPublished}
-                    onChange={(e) => setArticleForm({ ...articleForm, isPublished: e.target.checked })}
-                    className="w-4 h-4"
+                    type="text"
+                    value={articleForm.authorName}
+                    onChange={(e) => setArticleForm({ ...articleForm, authorName: e.target.value })}
+                    placeholder="Auteur"
+                    className="input mb-2"
                   />
-                  <label htmlFor="isPublished" className="text-sm">
-                    Publier dans la newsletter
+                  <label className="flex items-center gap-2 mb-3">
+                    <input
+                      type="checkbox"
+                      checked={articleForm.isPublished}
+                      onChange={(e) => setArticleForm({ ...articleForm, isPublished: e.target.checked })}
+                    />
+                    <span className="text-sm">Publier</span>
                   </label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setShowArticleForm(false)} className="btn-secondary flex-1">
+                      Annuler
+                    </button>
+                    <button onClick={handleSaveArticle} className="btn-primary flex-1">
+                      {editingArticle ? 'Modifier' : 'Creer'}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowArticleForm(false);
-                    setEditingArticle(null);
-                  }}
-                  className="btn-secondary flex-1"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleSaveArticle}
-                  disabled={!articleForm.title || !articleForm.content || !articleForm.authorName}
-                  className="btn-primary flex-1"
-                >
-                  {editingArticle ? 'Modifier' : 'Creer'}
-                </button>
+              <div className="space-y-2">
+                {articles.map((article) => (
+                  <div key={article.id} className="p-2 bg-neutral-50 rounded flex items-start justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm truncate">{article.title}</p>
+                      <p className="text-xs text-neutral-500">{article.authorName}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded ${article.isPublished ? 'bg-green-100 text-green-700' : 'bg-neutral-200 text-neutral-600'}`}>
+                        {article.isPublished ? 'Publie' : 'Brouillon'}
+                      </span>
+                    </div>
+                    <div className="flex gap-1">
+                      <button onClick={() => editArticle(article)} className="p-1 hover:bg-neutral-200 rounded">
+                        <FileText className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDeleteArticle(article.id)} className="p-1 hover:bg-red-100 rounded text-red-500">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+
+            {/* Apercu PDF */}
+            {pdfHtml && (
+              <div className="card">
+                <h2 className="font-semibold mb-4">Apercu Newsletter</h2>
+                <div className="border rounded-lg overflow-hidden bg-white" style={{ height: '500px' }}>
+                  <iframe
+                    ref={previewRef}
+                    srcDoc={pdfHtml}
+                    className="w-full h-full"
+                    title="Newsletter Preview"
+                  />
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
