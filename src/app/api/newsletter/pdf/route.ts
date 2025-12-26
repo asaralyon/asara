@@ -21,7 +21,6 @@ async function verifyAdmin() {
   }
 }
 
-// Conversion date Hijri
 function toHijriDate(date: Date): string {
   try {
     return new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
@@ -36,6 +35,7 @@ function toHijriDate(date: Date): string {
 
 function toGregorianArabic(date: Date): string {
   return new Intl.DateTimeFormat('ar', {
+    weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric'
@@ -44,7 +44,7 @@ function toGregorianArabic(date: Date): string {
 
 async function getUpcomingEvents() {
   const today = new Date();
-  return prisma.event.findMany({
+  return (prisma as any).event.findMany({
     where: {
       isPublished: true,
       eventDate: { gte: today }
@@ -77,102 +77,121 @@ function generateNewsletterHTML(
 ) {
   const hijriDate = toHijriDate(newsletterDate);
   const gregorianDate = toGregorianArabic(newsletterDate);
+  const eventsUrl = `${baseUrl}/ar/evenements`;
+  const subscribeUrl = `${baseUrl}/ar/newsletter`;
 
   const linksHTML = customLinks.length > 0 ? customLinks.map(item => `
-    <div style="padding: 12px 16px; border-bottom: 1px solid #d1d5db; background: #ffffff;">
-      <a href="${item.url}" style="color: #166534; text-decoration: none; font-weight: 700; font-size: 14px;">
-        ${item.title}
+    <div style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #ffffff;">
+      <a href="${item.url}" target="_blank" style="color: #166534; text-decoration: underline; font-weight: 700; font-size: 15px; display: block;">
+        🔗 ${item.title}
       </a>
-      ${item.source ? `<p style="margin: 4px 0 0; color: #4b5563; font-size: 11px;">المصدر: ${item.source}</p>` : ''}
+      ${item.source ? `<p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">المصدر: ${item.source}</p>` : ''}
     </div>
   `).join('') : '';
 
   const eventsHTML = events.length > 0 ? events.map(event => `
-    <div style="padding: 10px 16px; border-bottom: 1px solid #d1d5db; background: #ffffff;">
-      <a href="${baseUrl}/ar/evenements" style="color: #166534; text-decoration: none; font-weight: 600; font-size: 14px;">
-        📅 ${event.title}
+    <div style="padding: 14px 16px; border-bottom: 1px solid #e5e7eb; background: #ffffff;">
+      <a href="${eventsUrl}" target="_blank" style="color: #166534; text-decoration: underline; font-weight: 600; font-size: 15px; display: block; cursor: pointer;">
+        �� ${event.title}
       </a>
+      <p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">
+        انقر للمزيد من التفاصيل
+      </p>
     </div>
-  `).join('') : '<div style="padding: 12px 16px; color: #4b5563; background: #ffffff;">لا توجد فعاليات قادمة حالياً</div>';
+  `).join('') : '<div style="padding: 14px 16px; color: #6b7280; background: #ffffff; text-align: center;">لا توجد فعاليات قادمة حالياً</div>';
 
   const articlesHTML = articles.length > 0 ? articles.map(article => `
-    <div style="padding: 20px; background: #f0fdf4; border-radius: 8px; border: 2px solid #86efac; margin-bottom: 16px;">
-      <h3 style="margin: 0 0 12px; font-weight: 700; color: #166534; font-size: 16px; border-bottom: 2px solid #22c55e; padding-bottom: 8px;">
+    <div style="padding: 20px; background: #f0fdf4; border-radius: 12px; border: 2px solid #86efac; margin-bottom: 16px;">
+      <h3 style="margin: 0 0 12px; font-weight: 700; color: #166534; font-size: 17px; border-bottom: 2px solid #22c55e; padding-bottom: 10px;">
         ${article.title}
       </h3>
-      <div style="color: #1f2937; font-size: 13px; line-height: 1.9; text-align: right; white-space: pre-line;">
+      <div style="color: #1f2937; font-size: 14px; line-height: 2; text-align: right; white-space: pre-line;">
         ${article.content}
       </div>
-      <p style="margin: 16px 0 0; padding-top: 10px; border-top: 1px solid #86efac; color: #166534; font-size: 12px; font-weight: 600;">
+      <p style="margin: 16px 0 0; padding-top: 12px; border-top: 1px solid #86efac; color: #166534; font-size: 13px; font-weight: 600;">
         ✍️ ${article.authorName}
       </p>
     </div>
   `).join('') : '';
 
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>النشرة الأسبوعية - ASARA Lyon</title>
   <style>
-    @page { margin: 20px; size: A4; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: #166534 !important; text-decoration: underline !important; }
+    }
     body { 
       margin: 0; 
-      padding: 0; 
+      padding: 20px;
       font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-      background: #ffffff;
+      background: #f3f4f6;
       direction: rtl;
     }
-    a { color: #166534; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: #166534; }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
-  <div style="max-width: 595px; margin: 0 auto; background: #ffffff;">
+  <div class="container">
     
-    <!-- Header -->
+    <!-- Header avec dates -->
     <div style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 30px; text-align: center;">
-      <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 12px;">
-      <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
-      <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 16px; font-weight: 600;">ASARA Lyon</p>
-      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.3);">
-        <p style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 700;">النشرة الأسبوعية</p>
-        <p style="margin: 8px 0 0; color: #dcfce7; font-size: 13px;">${hijriDate}</p>
-        <p style="margin: 4px 0 0; color: #dcfce7; font-size: 13px;">${gregorianDate}</p>
+      <div style="margin-bottom: 20px;">
+        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
+        <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 18px; font-weight: 600;">ASARA Lyon</p>
+      </div>
+      
+      <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; margin-top: 16px;">
+        <p style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 700;">📰 النشرة الأسبوعية</p>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.3);">
+          <p style="margin: 0; color: #dcfce7; font-size: 16px; font-weight: 600;">${hijriDate}</p>
+          <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">${gregorianDate}</p>
+        </div>
       </div>
     </div>
 
     ${customLinks.length > 0 ? `
     <!-- Actualites -->
-    <div style="padding: 24px 24px 16px;">
+    <div style="padding: 24px;">
       <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
         📰 للقراءة هذا الأسبوع
       </h2>
-      <div style="border-radius: 8px; overflow: hidden; border: 1px solid #d1d5db;">
+      <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
         ${linksHTML}
       </div>
     </div>
     ` : ''}
 
     <!-- Evenements -->
-    <div style="padding: 0 24px 16px;">
+    <div style="padding: 0 24px 24px;">
       <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
         🗓️ الفعاليات القادمة
       </h2>
-      <div style="border-radius: 8px; overflow: hidden; border: 1px solid #d1d5db;">
+      <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
         ${eventsHTML}
       </div>
-      <p style="margin: 12px 0 0; text-align: center;">
-        <a href="${baseUrl}/ar/evenements" style="color: #166534; font-size: 13px; font-weight: 600;">
-          عرض جميع الفعاليات ←
+      <p style="margin: 16px 0 0; text-align: center;">
+        <a href="${eventsUrl}" target="_blank" style="color: #166534; font-size: 14px; font-weight: 600; text-decoration: underline;">
+          عرض جميع الفعاليات ← ${eventsUrl}
         </a>
       </p>
     </div>
 
     ${articles.length > 0 ? `
     <!-- Articles -->
-    <div style="padding: 8px 24px 24px;">
+    <div style="padding: 0 24px 24px;">
       <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
         ✍️ مقالات من المجتمع
       </h2>
@@ -181,26 +200,25 @@ function generateNewsletterHTML(
     ` : ''}
 
     <!-- Newsletter Signup -->
-    <div style="padding: 20px 24px; background: #f0fdf4; text-align: center; border-top: 2px solid #22c55e;">
-      <p style="margin: 0 0 8px; color: #166534; font-size: 14px; font-weight: 600;">
-        للاشتراك في نشرتنا الأسبوعية
+    <div style="padding: 24px; background: #f0fdf4; text-align: center; border-top: 3px solid #22c55e;">
+      <p style="margin: 0 0 8px; color: #166534; font-size: 16px; font-weight: 700;">
+        📧 للاشتراك في نشرتنا الأسبوعية
       </p>
-      <a href="${baseUrl}/ar/newsletter" style="color: #166534; font-size: 13px; text-decoration: underline;">
-        ${baseUrl}/ar/newsletter
+      <a href="${subscribeUrl}" target="_blank" style="color: #166534; font-size: 14px; text-decoration: underline; font-weight: 600;">
+        ${subscribeUrl}
       </a>
     </div>
 
     <!-- Footer -->
     <div style="background: #1f2937; padding: 24px; text-align: center;">
       <p style="margin: 0 0 4px; color: #ffffff; font-size: 16px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</p>
-      <p style="margin: 0 0 12px; color: #d1d5db; font-size: 12px;">ASARA Lyon</p>
-      <a href="${baseUrl}" style="color: #22c55e; font-size: 13px;">www.asara-lyon.fr</a>
+      <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA Lyon</p>
+      <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-lyon.fr</a>
     </div>
 
   </div>
 </body>
-</html>
-  `;
+</html>`;
 }
 
 export async function POST(request: Request) {
@@ -219,9 +237,11 @@ export async function POST(request: Request) {
       getPublishedArticles()
     ]);
 
+    console.log('Articles found:', articles.length);
+    console.log('Events found:', events.length);
+
     const html = generateNewsletterHTML(customLinks, events, articles, baseUrl, new Date());
 
-    // Retourner le HTML pour conversion côté client
     return NextResponse.json({ 
       success: true, 
       html,
