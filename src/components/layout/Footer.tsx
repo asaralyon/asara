@@ -81,6 +81,12 @@ export function Footer() {
               >
                 {tNav('contact')}
               </Link>
+              <Link
+                href={`/${locale}/cgu`}
+                className="block text-neutral-400 hover:text-white transition-colors"
+              >
+                {isRTL ? 'الشروط والأحكام' : 'CGU'}
+              </Link>
             </nav>
           </div>
 
