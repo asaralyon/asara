@@ -5,6 +5,7 @@ import { jwtVerify } from 'jose';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import DeleteAccountButton from '@/components/DeleteAccountButton';
 
 export const dynamic = "force-dynamic";
 
@@ -230,6 +231,15 @@ export default async function AccountPage({ params }: { params: { locale: string
                     </span>
                   </div>
                 </div>
+              </div>
+              
+              {/* Suppression du compte */}
+              <div className="card border-red-200 bg-red-50/50 mt-6">
+                <h2 className="text-lg font-semibold text-red-700 mb-4">{isRTL ? "منطقة الخطر" : "Zone de danger"}</h2>
+                <p className="text-sm text-neutral-600 mb-4">
+                  {isRTL ? "حذف حسابك نهائي ولا يمكن التراجع عنه." : "La suppression de votre compte est définitive et irréversible."}
+                </p>
+                <DeleteAccountButton locale={locale} />
               </div>
             </div>
           </div>
