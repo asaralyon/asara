@@ -1,19 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2, Send, Users, Briefcase, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Loader2, Send, Users, Briefcase, CheckCircle, AlertCircle, Image as ImageIcon, Upload, Trash2 } from 'lucide-react';
 
 interface EmailCampaignFormProps {
   locale: string;
+}
+
+interface CampaignImage {
+  id: string;
+  base64: string;
+  caption: string;
 }
 
 export default function EmailCampaignForm({ locale }: EmailCampaignFormProps) {
   const isRTL = locale === 'ar';
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; count?: number } | null>(null);
+  const [images, setImages] = useState<CampaignImage[]>([]);
+  const [imageCaption, setImageCaption] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
-    target: 'all', // 'all' | 'professionals' | 'members' | 'active'
+    target: 'all',
     subject: '',
     message: '',
     includeHeader: true,
@@ -75,6 +85,49 @@ export default function EmailCampaignForm({ locale }: EmailCampaignFormProps) {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setResult({ success: false, message: isRTL ? 'الملف غير صالح. اختر صورة.' : 'Fichier non valide. Selectionnez une image.' });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setResult({ success: false, message: isRTL ? 'الصورة كبيرة جداً. الحد الأقصى 2 ميجابايت.' : 'Image trop lourde. Maximum 2 Mo.' });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        const newImage: CampaignImage = {
+          id: Date.now().toString(),
+          base64,
+          caption: imageCaption || ''
+        };
+        setImages([...images, newImage]);
+        setImageCaption('');
+        setResult({ success: true, message: isRTL ? 'تمت إضافة الصورة!' : 'Image ajoutee!' });
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      setResult({ success: false, message: isRTL ? 'خطأ في تحميل الصورة' : 'Erreur upload image' });
+    }
+    setUploadingImage(false);
+  };
+
+  const removeImage = (id: string) => {
+    setImages(images.filter(img => img.id !== id));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -99,7 +152,7 @@ export default function EmailCampaignForm({ locale }: EmailCampaignFormProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, images }),
       });
 
       const data = await res.json();
@@ -114,6 +167,7 @@ export default function EmailCampaignForm({ locale }: EmailCampaignFormProps) {
         });
         // Reset form
         setFormData({ ...formData, subject: '', message: '' });
+        setImages([]);
       } else {
         setResult({ success: false, message: data.error || 'Erreur' });
       }
@@ -241,6 +295,71 @@ export default function EmailCampaignForm({ locale }: EmailCampaignFormProps) {
           {isRTL 
             ? 'يمكنك استخدام {firstName} لإدراج اسم المستلم' 
             : 'Vous pouvez utiliser {firstName} pour insérer le prénom du destinataire'}
+        </p>
+      </div>
+
+      {/* Images */}
+      <div className="mb-6">
+        <label className="label flex items-center gap-2">
+          <ImageIcon className="w-4 h-4 text-purple-600" />
+          {isRTL ? 'الصور' : 'Images'} ({images.length})
+        </label>
+        
+        {images.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            {images.map((img) => (
+              <div key={img.id} className="relative group">
+                <img 
+                  src={img.base64} 
+                  alt={img.caption || 'Image'} 
+                  className="w-full h-24 object-cover rounded-lg"
+                />
+                {img.caption && (
+                  <p className="text-xs text-neutral-500 mt-1 truncate">{img.caption}</p>
+                )}
+                <button 
+                  type="button"
+                  onClick={() => removeImage(img.id)}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={imageCaption}
+            onChange={(e) => setImageCaption(e.target.value)}
+            placeholder={isRTL ? 'وصف الصورة (اختياري)' : 'Légende (optionnel)'}
+            className="input flex-1 text-sm"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingImage}
+            className="btn-secondary flex items-center gap-2"
+          >
+            {uploadingImage ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Upload className="w-4 h-4" />
+            )}
+            {isRTL ? 'إضافة' : 'Ajouter'}
+          </button>
+        </div>
+        <p className="text-xs text-neutral-400 mt-2">
+          {isRTL ? 'الحد الأقصى 2 ميجابايت لكل صورة' : 'Max 2 Mo par image'}
         </p>
       </div>
 

@@ -23,7 +23,19 @@ async function verifyAdmin() {
   }
 }
 
-function generateEmailHTML(content: string, includeHeader: boolean, includeFooter: boolean, firstName: string) {
+interface CampaignImage {
+  id: string;
+  base64: string;
+  caption: string;
+}
+
+function generateEmailHTML(
+  content: string, 
+  includeHeader: boolean, 
+  includeFooter: boolean, 
+  firstName: string,
+  images: CampaignImage[] = []
+) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
   
   // Remplacer les variables
@@ -52,6 +64,20 @@ function generateEmailHTML(content: string, includeHeader: boolean, includeFoote
     </tr>
   ` : '';
 
+  // Generer le HTML des images
+  const imagesHTML = images.length > 0 ? `
+    <tr>
+      <td style="padding: 0 32px 24px;">
+        ${images.map(img => `
+          <div style="margin-bottom: 16px; text-align: center;">
+            <img src="${img.base64}" alt="${img.caption || 'Image'}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+            ${img.caption ? `<p style="margin: 8px 0 0; color: #6b7280; font-size: 13px; font-style: italic;">${img.caption}</p>` : ''}
+          </div>
+        `).join('')}
+      </td>
+    </tr>
+  ` : '';
+
   return `
 <!DOCTYPE html>
 <html>
@@ -72,6 +98,7 @@ function generateEmailHTML(content: string, includeHeader: boolean, includeFoote
               </div>
             </td>
           </tr>
+          ${imagesHTML}
           ${footer}
         </table>
       </td>
@@ -96,7 +123,7 @@ export async function POST(request: Request) {
       }, { status: 500 });
     }
 
-    const { target, subject, message, includeHeader, includeFooter } = await request.json();
+    const { target, subject, message, includeHeader, includeFooter, images = [] } = await request.json();
 
     if (!subject || !message) {
       return NextResponse.json({ error: 'Sujet et message requis' }, { status: 400 });
@@ -154,7 +181,7 @@ export async function POST(request: Request) {
 
     for (const user of users) {
       try {
-        const html = generateEmailHTML(message, includeHeader, includeFooter, user.firstName);
+        const html = generateEmailHTML(message, includeHeader, includeFooter, user.firstName, images);
         
         await transporter.sendMail({
           from: process.env.SMTP_FROM || `"ASARA Lyon" <${process.env.SMTP_USER}>`,
@@ -178,6 +205,6 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Campaign error:', error);
-    return NextResponse.json({ error: `Erreur serveur: ${error.message}` }, { status: 500 });
+    return NextResponse.json({ error: 'Erreur serveur: ' + error.message }, { status: 500 });
   }
 }
