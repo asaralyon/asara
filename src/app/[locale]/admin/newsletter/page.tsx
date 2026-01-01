@@ -3,13 +3,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   Send, Loader2, Plus, Trash2, FileText, Users, 
-  CheckCircle, AlertCircle, Calendar, Download, Eye
+  CheckCircle, AlertCircle, Calendar, Download, Eye, Image as ImageIcon, Upload
 } from 'lucide-react';
 
 interface NewsLink {
   title: string;
   url: string;
   source: string;
+}
+
+interface NewsletterImage {
+  id: string;
+  base64: string;
+  caption: string;
 }
 
 interface Article {
@@ -49,6 +55,10 @@ export default function NewsletterPage() {
   });
   const [history, setHistory] = useState<any[]>([]);
   const [pdfHtml, setPdfHtml] = useState<string | null>(null);
+  const [images, setImages] = useState<NewsletterImage[]>([]);
+  const [imageCaption, setImageCaption] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -59,11 +69,19 @@ export default function NewsletterPage() {
     if (savedLinks) {
       setCustomLinks(JSON.parse(savedLinks));
     }
+    const savedImages = localStorage.getItem('newsletterImages');
+    if (savedImages) {
+      setImages(JSON.parse(savedImages));
+    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('newsletterLinks', JSON.stringify(customLinks));
   }, [customLinks]);
+
+  useEffect(() => {
+    localStorage.setItem('newsletterImages', JSON.stringify(images));
+  }, [images]);
 
   const fetchPreview = async () => {
     try {
@@ -102,6 +120,49 @@ export default function NewsletterPage() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Fichier non valide. Selectionnez une image.' });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage({ type: 'error', text: 'Image trop lourde. Maximum 2 Mo.' });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        const newImage: NewsletterImage = {
+          id: Date.now().toString(),
+          base64,
+          caption: imageCaption || ''
+        };
+        setImages([...images, newImage]);
+        setImageCaption('');
+        setMessage({ type: 'success', text: 'Image ajoutee!' });
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Erreur upload image' });
+    }
+    setUploadingImage(false);
+  };
+
+  const removeImage = (id: string) => {
+    setImages(images.filter(img => img.id !== id));
+  };
+
   const addLink = () => {
     if (newLink.title && newLink.url) {
       if (customLinks.length >= 3) {
@@ -129,7 +190,7 @@ export default function NewsletterPage() {
       const res = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ testEmail, customLinks })
+        body: JSON.stringify({ testEmail, customLinks, images })
       });
 
       const data = await res.json();
@@ -154,14 +215,16 @@ export default function NewsletterPage() {
       const res = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customLinks })
+        body: JSON.stringify({ customLinks, images })
       });
 
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: 'success', text: data.message });
         setCustomLinks([]);
+        setImages([]);
         localStorage.removeItem('newsletterLinks');
+        localStorage.removeItem('newsletterImages');
         fetchHistory();
       } else {
         setMessage({ type: 'error', text: data.error || 'Erreur' });
@@ -180,18 +243,17 @@ export default function NewsletterPage() {
       const res = await fetch("/api/newsletter/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customLinks })
+        body: JSON.stringify({ customLinks, images })
       });
 
       const data = await res.json();
       if (res.ok) {
-        // Ouvrir dans nouvelle fenetre
         const printWindow = window.open("", "_blank");
         if (printWindow) {
           printWindow.document.write(data.html);
           printWindow.document.close();
         }
-        setMessage({ type: "success", text: "Newsletter ouverte! Clic droit > Enregistrer sous pour sauvegarder en PDF avec liens cliquables." });
+        setMessage({ type: "success", text: "Newsletter ouverte! Utilisez Ctrl+P pour sauvegarder en PDF." });
       } else {
         setMessage({ type: "error", text: data.error || "Erreur" });
       }
@@ -208,7 +270,7 @@ export default function NewsletterPage() {
       const res = await fetch('/api/newsletter/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customLinks })
+        body: JSON.stringify({ customLinks, images })
       });
 
       const data = await res.json();
@@ -301,11 +363,72 @@ export default function NewsletterPage() {
               <p className="text-sm text-neutral-500">membres et inscrits</p>
             </div>
 
+            {/* Images */}
+            <div className="card">
+              <h2 className="font-semibold mb-4 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-purple-600" />
+                Images ({images.length})
+              </h2>
+              
+              {images.length > 0 && (
+                <div className="space-y-3 mb-4">
+                  {images.map((img) => (
+                    <div key={img.id} className="relative group">
+                      <img 
+                        src={img.base64} 
+                        alt={img.caption || 'Newsletter image'} 
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      {img.caption && (
+                        <p className="text-xs text-neutral-500 mt-1">{img.caption}</p>
+                      )}
+                      <button 
+                        onClick={() => removeImage(img.id)}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={imageCaption}
+                  onChange={(e) => setImageCaption(e.target.value)}
+                  placeholder="Legende (optionnel)"
+                  className="input text-sm"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="btn-secondary w-full flex items-center justify-center gap-2"
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                  Ajouter une image
+                </button>
+                <p className="text-xs text-neutral-400">Max 2 Mo par image</p>
+              </div>
+            </div>
+
             {/* Actions PDF */}
             <div className="card">
               <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-600" />
-                Version PDF (liens cliquables)
+                Version PDF
               </h2>
               <div className="space-y-3">
                 <button
@@ -449,9 +572,6 @@ export default function NewsletterPage() {
               ) : (
                 <p className="text-neutral-500 text-sm">Aucun evenement a venir</p>
               )}
-              <p className="text-xs text-neutral-400 mt-2">
-                Les evenements renvoient vers la page evenements du site
-              </p>
             </div>
 
             {/* Articles */}

@@ -68,31 +68,38 @@ interface NewsLink {
   source: string;
 }
 
+interface NewsletterImage {
+  id: string;
+  base64: string;
+  caption: string;
+}
+
 function generateNewsletterHTML(
   customLinks: NewsLink[], 
   events: any[], 
-  articles: any[], 
+  articles: any[],
+  images: NewsletterImage[],
   baseUrl: string,
   newsletterDate: Date
 ) {
   const hijriDate = toHijriDate(newsletterDate);
   const gregorianDate = toGregorianArabic(newsletterDate);
-  const eventsUrl = `${baseUrl}/ar/evenements`;
-  const subscribeUrl = `${baseUrl}/ar/newsletter`;
+  const eventsUrl = baseUrl + '/ar/evenements';
+  const subscribeUrl = baseUrl + '/ar/newsletter';
 
   const linksHTML = customLinks.length > 0 ? customLinks.map(item => `
     <div style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #ffffff;">
       <a href="${item.url}" target="_blank" style="color: #166534; text-decoration: underline; font-weight: 700; font-size: 15px; display: block;">
         🔗 ${item.title}
       </a>
-      ${item.source ? `<a href="${eventsUrl}" target="_blank" style="margin: 4px 0 0; color: #166534; font-size: 12px; text-decoration: underline; display: block;">المصدر: ${item.source}</p>` : ''}
+      ${item.source ? `<p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">المصدر: ${item.source}</p>` : ''}
     </div>
   `).join('') : '';
 
   const eventsHTML = events.length > 0 ? events.map(event => `
     <div style="padding: 14px 16px; border-bottom: 1px solid #e5e7eb; background: #ffffff;">
       <a href="${eventsUrl}" target="_blank" style="color: #166534; text-decoration: underline; font-weight: 600; font-size: 15px; display: block; cursor: pointer;">
-        �� ${event.title}
+        📅 ${event.title}
       </a>
       <a href="${eventsUrl}" target="_blank" style="margin: 4px 0 0; color: #166534; font-size: 12px; text-decoration: underline; display: block;">
         ${eventsUrl}
@@ -110,7 +117,14 @@ function generateNewsletterHTML(
       </div>
       <p style="margin: 16px 0 0; padding-top: 12px; border-top: 1px solid #86efac; color: #166534; font-size: 13px; font-weight: 600;">
         ✍️ ${article.authorName}
-      </a>
+      </p>
+    </div>
+  `).join('') : '';
+
+  const imagesHTML = images.length > 0 ? images.map(img => `
+    <div style="margin-bottom: 16px; text-align: center;">
+      <img src="${img.base64}" alt="${img.caption || 'صورة'}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+      ${img.caption ? `<p style="margin: 8px 0 0; color: #6b7280; font-size: 13px; font-style: italic;">${img.caption}</p>` : ''}
     </div>
   `).join('') : '';
 
@@ -150,17 +164,27 @@ function generateNewsletterHTML(
     <div style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 30px; text-align: center;">
       <div style="margin-bottom: 20px;">
         <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
-        <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 18px; font-weight: 600;">ASARA Lyon</a>
+        <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 18px; font-weight: 600;">ASARA Lyon</p>
       </div>
       
       <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; margin-top: 16px;">
-        <p style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 700;">📰 النشرة الأسبوعية</a>
+        <p style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 700;">📰 النشرة الأسبوعية</p>
         <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.3);">
-          <p style="margin: 0; color: #dcfce7; font-size: 16px; font-weight: 600;">${hijriDate}</a>
-          <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">${gregorianDate}</a>
+          <p style="margin: 0; color: #dcfce7; font-size: 16px; font-weight: 600;">${hijriDate}</p>
+          <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">${gregorianDate}</p>
         </div>
       </div>
     </div>
+
+    ${images.length > 0 ? `
+    <!-- Images -->
+    <div style="padding: 24px;">
+      <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
+        📷 صور
+      </h2>
+      ${imagesHTML}
+    </div>
+    ` : ''}
 
     ${customLinks.length > 0 ? `
     <!-- Actualites -->
@@ -186,7 +210,7 @@ function generateNewsletterHTML(
         <a href="${eventsUrl}" target="_blank" style="color: #166534; font-size: 14px; font-weight: 600; text-decoration: underline;">
           عرض جميع الفعاليات ← ${eventsUrl}
         </a>
-      </a>
+      </p>
     </div>
 
     ${articles.length > 0 ? `
@@ -203,7 +227,7 @@ function generateNewsletterHTML(
     <div style="padding: 24px; background: #f0fdf4; text-align: center; border-top: 3px solid #22c55e;">
       <p style="margin: 0 0 8px; color: #166534; font-size: 16px; font-weight: 700;">
         📧 للاشتراك في نشرتنا الأسبوعية
-      </a>
+      </p>
       <a href="${subscribeUrl}" target="_blank" style="color: #166534; font-size: 14px; text-decoration: underline; font-weight: 600;">
         ${subscribeUrl}
       </a>
@@ -211,8 +235,8 @@ function generateNewsletterHTML(
 
     <!-- Footer -->
     <div style="background: #1f2937; padding: 24px; text-align: center;">
-      <p style="margin: 0 0 4px; color: #ffffff; font-size: 16px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</a>
-      <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA Lyon</a>
+      <p style="margin: 0 0 4px; color: #ffffff; font-size: 16px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</p>
+      <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA Lyon</p>
       <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-lyon.fr</a>
     </div>
 
@@ -229,7 +253,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { customLinks = [] } = body;
+    const { customLinks = [], images = [] } = body;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
 
     const [events, articles] = await Promise.all([
@@ -237,10 +261,7 @@ export async function POST(request: Request) {
       getPublishedArticles()
     ]);
 
-    console.log('Articles found:', articles.length);
-    console.log('Events found:', events.length);
-
-    const html = generateNewsletterHTML(customLinks, events, articles, baseUrl, new Date());
+    const html = generateNewsletterHTML(customLinks, events, articles, images, baseUrl, new Date());
 
     return NextResponse.json({ 
       success: true, 
@@ -250,6 +271,6 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Newsletter PDF error:', error);
-    return NextResponse.json({ error: `Erreur: ${error.message}` }, { status: 500 });
+    return NextResponse.json({ error: 'Erreur: ' + error.message }, { status: 500 });
   }
 }
