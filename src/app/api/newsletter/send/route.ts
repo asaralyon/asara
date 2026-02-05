@@ -50,7 +50,8 @@ async function getAllRecipients() {
         { role: 'MEMBER' },
         { role: 'PROFESSIONAL' },
         { role: 'ADMIN' }
-      ]
+      ],
+      newsletterOptIn: true,
     },
     select: { email: true, firstName: true, lastName: true }
   });
