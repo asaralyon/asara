@@ -129,7 +129,7 @@ export default async function HomePage({ params }: Props) {
           </div>
 
           {latestArticle ? (
-            <div className="max-w-3xl mx-auto card">
+            <div className="max-w-5xl mx-auto card">
               <h3 className="text-xl sm:text-2xl font-bold text-primary-600 mb-2">
                 {latestArticle.title}
               </h3>
@@ -141,9 +141,8 @@ export default async function HomePage({ params }: Props) {
               </p>
 
               <div className="text-neutral-700 leading-relaxed whitespace-pre-line">
-                {(latestArticle.content || "").slice(0, 900)}
-                {latestArticle.content && latestArticle.content.length > 900 ? "…" : ""}
-              </div>
+                {latestArticle.content || ""}
+            </div>
             </div>
           ) : (
             <p className="text-center text-neutral-500">
