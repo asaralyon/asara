@@ -225,6 +225,13 @@ function generateNewsletterHTML(
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
+      /* ✅ Garder les liens cliquables dans l'aperçu */
+  a, a * { pointer-events: auto !important; }
+  .container, .container * { pointer-events: auto !important; }
+  a { position: relative; z-index: 10; }
+
+  /* ✅ Evite que les images "mangent" les clics */
+  img { pointer-events: none; }
   </style>
 </head>
 <body>
@@ -259,22 +266,18 @@ function generateNewsletterHTML(
     `
         : ""
     }
+    ${customLinks.length > 0 ? `
+<!-- Actualites -->
+<div style="padding: 24px;">
+  <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
+    📰 للقراءة هذا الأسبوع
+  </h2>
+  <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
+    ${linksHTML}
+  </div>
+</div>
+` : ""}
 
-    ${
-      customLinks.length > 0
-        ? `
-    <!-- Actualites -->
-    <div style="padding: 24px;">
-      <h2 style="margin: 0 0 16px; color: #1f2937; font-size: 18px; font-weight: 700; border-right: 4px solid #22c55e; padding-right: 12px;">
-        📰 للقراءة هذا الأسبوع
-      </h2>
-      <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
-        ${linksHTML}
-      </div>
-    </div>
-    `
-        : ""
-    }
 
     <!-- Evenements -->
     <div style="padding: 0 24px 24px;">
