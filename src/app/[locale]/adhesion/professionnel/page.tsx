@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import CityAutocomplete from '@/components/CityAutocomplete';
 
 // Catégories uniformisées
 const CATEGORIES = [
@@ -21,29 +22,6 @@ const CATEGORIES = [
   { value: 'Beauté', labelFr: 'Beauté & Bien-être', labelAr: 'الجمال' },
   { value: 'Construction', labelFr: 'Construction', labelAr: 'البناء' },
   { value: 'Autre', labelFr: 'Autre', labelAr: 'أخرى' },
-];
-
-// Villes d'Auvergne-Rhône-Alpes
-const CITIES = [
-  'Aix-les-Bains', 'Albertville', 'Ambérieu-en-Bugey', 'Ambert', 'Andrézieux-Bouthéon', 'Annecy', 'Annemasse', 'Annonay', 'Archamps', 'Arpajon-sur-Cère',
-  'Aubenas', 'Aubière', 'Aurec-sur-Loire', 'Aurillac',
-  'Beaumont', 'Bellegarde-sur-Valserine', 'Bellerive-sur-Allier', 'Belley', 'Bonneville', 'Bourg-en-Bresse', 'Bourg-lès-Valence', 'Bourg-Saint-Andéol', 'Bourg-Saint-Maurice', 'Bourgoin-Jallieu', 'Brioude', 'Bron',
-  'Caluire-et-Cuire', 'Chamalières', 'Chambéry', 'Clermont-Ferrand', 'Cluses', 'Cognin', 'Commentry', 'Cournon-d\'Auvergne', 'Cran-Gevrier', 'Craponne-sur-Arzon', 'Crest', 'Cusset',
-  'Décines-Charpieu', 'Désertines', 'Die', 'Divonne-les-Bains', 'Dompierre-sur-Besbre',
-  'Échirolles', 'Évian-les-Bains',
-  'Ferney-Voltaire', 'Firminy', 'Fontaine',
-  'Gaillard', 'Gannat', 'Gerzat', 'Gex', 'Givors', 'Grenoble', 'Guilherand-Granges',
-  'Issoire',
-  'L\'Isle-d\'Abeau', 'La Motte-Servolex', 'La Tour-du-Pin', 'La Voulte-sur-Rhône', 'Langeac', 'Le Chambon-Feugerolles', 'Le Puy-en-Velay', 'Le Teil', 'Lempdes', 'Livron-sur-Drôme', 'Lyon',
-  'Mauriac', 'Maurs', 'Meximieux', 'Meylan', 'Meyzieu', 'Miribel', 'Modane', 'Monistrol-sur-Loire', 'Montbrison', 'Montélimar', 'Montluçon', 'Montmélian', 'Moulins', 'Murat',
-  'Oullins', 'Oyonnax',
-  'Passy', 'Pierrelatte', 'Pont-du-Château', 'Portes-lès-Valence', 'Privas',
-  'Rillieux-la-Pape', 'Riom', 'Riom-ès-Montagnes', 'Riorges', 'Rive-de-Gier', 'Roanne', 'Romans-sur-Isère', 'Roussillon', 'Rumilly',
-  'Saint-Chamond', 'Saint-Étienne', 'Saint-Flour', 'Saint-Germain-Laprade', 'Saint-Jean-de-Maurienne', 'Saint-Julien-en-Genevois', 'Saint-Just-Saint-Rambert', 'Saint-Martin-d\'Hères', 'Saint-Paul-Trois-Châteaux', 'Saint-Péray', 'Saint-Priest', 'Sainte-Sigolène', 'Sallanches', 'Sassenage', 'Seynod',
-  'Tarare', 'Tassin-la-Demi-Lune', 'Thiers', 'Thonon-les-Bains', 'Tournon-sur-Rhône',
-  'Ugine',
-  'Valence', 'Vals-les-Bains', 'Vals-près-le-Puy', 'Vaulx-en-Velin', 'Vénissieux', 'Vic-sur-Cère', 'Vichy', 'Vienne', 'Vif', 'Villefontaine', 'Villeurbanne', 'Voiron',
-  'Ydes', 'Yssingeaux', 'Ytrac', 'Yzeure',
 ];
 
 export default function ProfessionalSignupPage() {
@@ -294,17 +272,14 @@ export default function ProfessionalSignupPage() {
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">{isRTL ? 'المدينة' : 'Ville'} *</label>
-                    <select required value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="input">
-                      <option value="">{isRTL ? 'اختر مدينة' : 'Sélectionnez une ville'}</option>
-                      {CITIES.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <CityAutocomplete
+                    value={formData.city}
+                    onChange={(city) => setFormData({ ...formData, city })}
+                    placeholder={isRTL ? 'ابحث عن مدينة...' : 'Rechercher une ville...'}
+                    required
+                    label={isRTL ? 'المدينة' : 'Ville'}
+                    isRTL={isRTL}
+                  />
                   <div>
                     <label className="label">{isRTL ? 'الرمز البريدي' : 'Code postal'}</label>
                     <input type="text" value={formData.postalCode}
