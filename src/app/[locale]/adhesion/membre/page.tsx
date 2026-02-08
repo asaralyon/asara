@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import CityAutocomplete from '@/components/CityAutocomplete';
 
 export default function MemberSignupPage() {
   const router = useRouter();
@@ -49,6 +50,7 @@ export default function MemberSignupPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           role: 'MEMBER',
@@ -60,11 +62,12 @@ export default function MemberSignupPage() {
       if (res.ok) {
         router.push('/' + locale + '/adhesion/success');
       } else {
-        setError(data.error || (isRTL ? 'خطأ في التسجيل' : 'Erreur lors de l\'inscription'));
+        setError(data.error || (isRTL ? 'خطأ في التسجيل' : "Erreur lors de l'inscription"));
       }
     } catch {
       setError(isRTL ? 'خطأ في الاتصال' : 'Erreur de connexion');
     }
+
     setLoading(false);
   };
 
@@ -106,6 +109,7 @@ export default function MemberSignupPage() {
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       className="input"
+                      autoComplete="given-name"
                     />
                   </div>
                   <div>
@@ -116,6 +120,7 @@ export default function MemberSignupPage() {
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       className="input"
+                      autoComplete="family-name"
                     />
                   </div>
                 </div>
@@ -128,6 +133,7 @@ export default function MemberSignupPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="input"
+                    autoComplete="email"
                   />
                 </div>
 
@@ -138,6 +144,7 @@ export default function MemberSignupPage() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="input"
+                    autoComplete="tel"
                   />
                 </div>
 
@@ -151,6 +158,7 @@ export default function MemberSignupPage() {
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       className="input pr-12"
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"
@@ -176,6 +184,7 @@ export default function MemberSignupPage() {
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                       className="input pr-12"
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"
@@ -195,19 +204,19 @@ export default function MemberSignupPage() {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="input"
+                    autoComplete="street-address"
                   />
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">{isRTL ? 'المدينة' : 'Ville'}</label>
-                    <input
-                      type="text"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="input"
-                    />
-                  </div>
+                  <CityAutocomplete
+                    value={formData.city}
+                    onChange={(city) => setFormData({ ...formData, city })}
+                    placeholder={isRTL ? 'ابحث عن مدينة...' : 'Rechercher une ville...'}
+                    label={isRTL ? 'المدينة' : 'Ville'}
+                    isRTL={isRTL}
+                  />
+
                   <div>
                     <label className="label">{isRTL ? 'الرمز البريدي' : 'Code postal'}</label>
                     <input
@@ -215,15 +224,12 @@ export default function MemberSignupPage() {
                       value={formData.postalCode}
                       onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                       className="input"
+                      autoComplete="postal-code"
                     />
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary w-full mt-6"
-                >
+                <button type="submit" disabled={loading} className="btn-primary w-full mt-6">
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
