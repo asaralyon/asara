@@ -12,18 +12,26 @@ const categorySchema = z.object({
   order: z.number().default(0),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const locale = searchParams.get('locale') || 'fr';
+
     const categories = await prisma.forumCategory.findMany({
       where: { isActive: true },
       include: {
-        _count: {
-          select: { threads: { where: { isDeleted: false } } },
-        },
+        _count: { select: { threads: { where: { isDeleted: false } } } },
       },
       orderBy: { order: 'asc' },
     });
-    return NextResponse.json(categories);
+
+    // Retourner le nom arabe si disponible et locale=ar
+    const localized = categories.map((cat) => ({
+      ...cat,
+      name: locale === 'ar' && cat.nameAr ? cat.nameAr : cat.name,
+    }));
+
+    return NextResponse.json(localized);
   } catch (error) {
     console.error('Forum GET categories error:', error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });

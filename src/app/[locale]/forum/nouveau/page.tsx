@@ -24,7 +24,7 @@ export default function NewThreadPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch('/api/forum/categories').then((r) => r.json()).then(setCategories).catch(console.error);
+    fetch(`/api/forum/categories?locale=${locale}`).then((r) => r.json()).then(setCategories).catch(console.error);
   }, []);
 
   const validate = () => {

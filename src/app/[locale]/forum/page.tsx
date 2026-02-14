@@ -65,7 +65,7 @@ export default function ForumPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetch('/api/forum/categories').then((r) => r.json()).then(setCategories).catch(console.error);
+    fetch(`/api/forum/categories?locale=${locale}`).then((r) => r.json()).then(setCategories).catch(console.error);
   }, []);
 
   useEffect(() => {
