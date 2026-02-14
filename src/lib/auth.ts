@@ -12,18 +12,17 @@ export interface AuthUser {
 export async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
   try {
     const token =
-      request.cookies.get('auth-token')?.value ||
       request.cookies.get('token')?.value ||
       request.headers.get('authorization')?.replace('Bearer ', '');
 
     if (!token) return null;
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
     const { payload } = await jwtVerify(token, secret);
 
-    if (!payload.sub && !(payload as any).id) return null;
-
-    const userId = (payload.sub || (payload as any).id) as string;
+    // Le login signe avec { userId, role } — on lit payload.userId
+    const userId = (payload as any).userId as string;
+    if (!userId) return null;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
