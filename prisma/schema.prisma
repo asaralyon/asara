@@ -97,6 +97,15 @@ model User {
   @@index([role])
   @@index([resetToken])
   @@map("users")
+
+
+  // forum
+forumThreads   ForumThread[]  @relation("ThreadAuthor")
+forumReplies   ForumReply[]   @relation("ReplyAuthor")
+deletedThreads ForumThread[]  @relation("ThreadDeletedBy")
+deletedReplies ForumReply[]   @relation("ReplyDeletedBy")
+forumBan       ForumBan?      @relation("BannedUser")
+forumBansGiven ForumBan[]     @relation("BannedBy")
 }
 
 // ===========================================
@@ -350,4 +359,76 @@ model NewsletterLink {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ForumCategory {
+  id          String   @id @default(cuid())
+  name        String
+  nameAr      String?
+  slug        String   @unique
+  description String?
+  color       String   @default("#16a34a")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  threads     ForumThread[]
+  @@map("forum_categories")
+}
+
+model ForumThread {
+  id           String        @id @default(cuid())
+  title        String
+  content      String        @db.Text
+  slug         String        @unique
+  authorId     String
+  categoryId   String
+  isPinned     Boolean       @default(false)
+  isLocked     Boolean       @default(false)
+  isDeleted    Boolean       @default(false)
+  deletedAt    DateTime?
+  deletedById  String?
+  viewCount    Int           @default(0)
+  replyCount   Int           @default(0)
+  lastReplyAt  DateTime      @default(now())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  author       User          @relation("ThreadAuthor", fields: [authorId], references: [id])
+  category     ForumCategory @relation(fields: [categoryId], references: [id])
+  replies      ForumReply[]
+  deletedBy    User?         @relation("ThreadDeletedBy", fields: [deletedById], references: [id])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([lastReplyAt])
+  @@map("forum_threads")
+}
+
+model ForumReply {
+  id          String      @id @default(cuid())
+  content     String      @db.Text
+  authorId    String
+  threadId    String
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+  deletedById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  author      User        @relation("ReplyAuthor", fields: [authorId], references: [id])
+  thread      ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  deletedBy   User?       @relation("ReplyDeletedBy", fields: [deletedById], references: [id])
+  @@index([threadId])
+  @@index([authorId])
+  @@map("forum_replies")
+}
+
+model ForumBan {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  reason      String
+  bannedById  String
+  bannedAt    DateTime  @default(now())
+  expiresAt   DateTime?
+  isPermanent Boolean   @default(false)
+  user        User      @relation("BannedUser", fields: [userId], references: [id])
+  bannedBy    User      @relation("BannedBy", fields: [bannedById], references: [id])
+  @@map("forum_bans")
 }
