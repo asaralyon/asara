@@ -3,12 +3,21 @@ import { hash } from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { sendEmail, emailTemplates } from '@/lib/email';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
+function generateSlug(base: string): string {
+  return base
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('Register attempt with email:', body?.email);
+    console.log('Register attempt with email:', body.email);
 
     const {
       firstName,
@@ -17,8 +26,7 @@ export async function POST(request: Request) {
       phone,
       password,
       role,
-
-      // Pro fields
+      // Champs professionnel
       profession,
       category,
       companyName,
@@ -29,20 +37,19 @@ export async function POST(request: Request) {
       professionalPhone,
       professionalEmail,
       website,
+      // Champs association
+      associationName,
+      registrationNumber,
+      activities,
+      assocPhone,
+      assocEmail,
+      facebookUrl,
+      instagramUrl,
+      tiktokUrl,
     } = body;
-
-    // Guard rails minimum (évite des créations "vides")
-    if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json(
-        { error: 'Champs obligatoires manquants' },
-        { status: 400 }
-      );
-    }
 
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    console.log('Existing user found:', existingUser ? 'YES' : 'NO');
-
     if (existingUser) {
       return NextResponse.json(
         { error: 'Cet email est deja utilise' },
@@ -50,34 +57,29 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hasher le mot de passe
     const passwordHash = await hash(password, 12);
 
-    // Normaliser le rôle
-    const finalRole = role === 'PROFESSIONAL' ? 'PROFESSIONAL' : 'MEMBER';
+    // Générer un slug de base
+    const slugBase =
+      role === 'ASSOCIATION'
+        ? generateSlug(associationName || `${firstName}-${lastName}`)
+        : generateSlug(`${firstName}-${lastName}`);
 
-    // Slug uniquement utile pour les pros
-    const baseSlug = `${firstName}-${lastName}`
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-');
-
-    let slug = baseSlug;
+    // S'assurer que le slug est unique
+    let slug = slugBase;
     let counter = 1;
 
-    if (finalRole === 'PROFESSIONAL') {
+    if (role === 'PROFESSIONAL') {
       while (await prisma.professionalProfile.findUnique({ where: { slug } })) {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
+        slug = `${slugBase}-${counter++}`;
+      }
+    } else if (role === 'ASSOCIATION') {
+      while (await prisma.associationProfile.findUnique({ where: { slug } })) {
+        slug = `${slugBase}-${counter++}`;
       }
     }
 
-    /**
-     * ✅ Enregistrement address/city/postalCode côté MEMBER
-     * - Pour MEMBER: on stocke dans User (address/city/postalCode)
-     * - Pour PROFESSIONAL: on garde User minimal (optionnellement on peut aussi stocker,
-     *   mais tu stockes déjà dans professionalProfile -> on évite la duplication)
-     */
+    // Créer l'utilisateur
     const user = await prisma.user.create({
       data: {
         email,
@@ -85,32 +87,16 @@ export async function POST(request: Request) {
         firstName,
         lastName,
         phone: phone || null,
-        role: finalRole,
+        role: role || 'MEMBER',
         status: 'PENDING',
         emailVerified: false,
-
-        ...(finalRole === 'MEMBER'
-          ? {
-              address: address || null,
-              city: city || null,
-              postalCode: postalCode || null,
-            }
-          : {}),
       },
     });
 
     console.log('User created:', user.id);
 
-    // Si professionnel, créer le profil
-    if (finalRole === 'PROFESSIONAL') {
-      // Validation minimale pro (tu peux durcir selon tes règles)
-      if (!profession || !category) {
-        return NextResponse.json(
-          { error: 'Champs professionnels obligatoires manquants' },
-          { status: 400 }
-        );
-      }
-
+    // Créer le profil selon le rôle
+    if (role === 'PROFESSIONAL') {
       await prisma.professionalProfile.create({
         data: {
           userId: user.id,
@@ -119,8 +105,8 @@ export async function POST(request: Request) {
           companyName: companyName || null,
           description: description || null,
           address: address || null,
-          city: city || null,
-          postalCode: postalCode || null,
+          city,
+          postalCode,
           professionalPhone: professionalPhone || null,
           professionalEmail: professionalEmail || null,
           website: website || null,
@@ -128,11 +114,32 @@ export async function POST(request: Request) {
           isPublished: false,
         },
       });
+    } else if (role === 'ASSOCIATION') {
+      await prisma.associationProfile.create({
+        data: {
+          userId: user.id,
+          associationName,
+          registrationNumber: registrationNumber || null,
+          activities: activities || null,
+          description: description || null,
+          address: address || null,
+          city,
+          postalCode: postalCode || null,
+          phone: assocPhone || phone || null,
+          email: assocEmail || email || null,
+          website: website || null,
+          facebookUrl: facebookUrl || null,
+          instagramUrl: instagramUrl || null,
+          tiktokUrl: tiktokUrl || null,
+          slug,
+          isPublished: false,
+        },
+      });
     }
 
-    // Envoyer l'email de confirmation (non bloquant)
+    // Email de confirmation à l'utilisateur
     try {
-      const template = emailTemplates.inscriptionPending(firstName, finalRole);
+      const template = emailTemplates.inscriptionPending(firstName, role || 'MEMBER');
       await sendEmail({
         to: email,
         subject: template.subject,
@@ -142,8 +149,15 @@ export async function POST(request: Request) {
       console.error('Email error (non-blocking):', emailError);
     }
 
-    // Notifier l'admin (non bloquant)
+    // Notifier l'admin
     try {
+      const roleLabel =
+        role === 'PROFESSIONAL'
+          ? 'Professionnel'
+          : role === 'ASSOCIATION'
+          ? `Association: ${associationName}`
+          : 'Membre';
+
       await sendEmail({
         to: 'info@asara-lyon.fr',
         subject: `Nouvelle inscription - ${firstName} ${lastName}`,
@@ -151,17 +165,10 @@ export async function POST(request: Request) {
           <h2>Nouvelle inscription sur ASARA</h2>
           <p><strong>Nom:</strong> ${firstName} ${lastName}</p>
           <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Type:</strong> ${
-            finalRole === 'PROFESSIONAL' ? 'Professionnel' : 'Membre'
-          }</p>
-          ${
-            finalRole === 'PROFESSIONAL'
-              ? `<p><strong>Profession:</strong> ${profession}</p>`
-              : ''
-          }
-          <p><a href="${
-            process.env.NEXT_PUBLIC_APP_URL
-          }/admin/utilisateurs">Voir dans l'admin</a></p>
+          <p><strong>Type:</strong> ${roleLabel}</p>
+          ${role === 'PROFESSIONAL' ? `<p><strong>Profession:</strong> ${profession}</p>` : ''}
+          ${role === 'ASSOCIATION' ? `<p><strong>Activités:</strong> ${activities}</p>` : ''}
+          <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/utilisateurs">Voir dans l'admin</a></p>
         `,
       });
     } catch (emailError) {
@@ -176,7 +183,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: "Erreur lors de l'inscription" },
+      { error: 'Erreur lors de l inscription' },
       { status: 500 }
     );
   }
