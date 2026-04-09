@@ -24,6 +24,7 @@ const publicPaths = [
   'actualites',
   'mentions-legales',
   'politique-confidentialite',
+  'annuaire-associations',
 ];
 
 // Routes réservées aux utilisateurs connectés

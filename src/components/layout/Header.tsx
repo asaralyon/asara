@@ -50,6 +50,7 @@ export function Header() {
   const navigation = [
     { name: t('home'), href: `/${locale}` },
     { name: t('directory'), href: `/${locale}/annuaire` },
+    { name: t('associations'), href: `/${locale}/annuaire-associations` },
     { name: t('events'), href: `/${locale}/evenements` },
     { name: t('contact'), href: `/${locale}/contact` },
     { name: t('newsletter'), href: `/${locale}/newsletter` },
