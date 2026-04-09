@@ -19,6 +19,7 @@ enum UserRole {
   ADMIN
   PROFESSIONAL
   MEMBER
+  ASSOCIATION
 }
 
 enum UserStatus {
@@ -68,7 +69,7 @@ model User {
   
   // Profil professionnel
   profile       ProfessionalProfile?
-  
+  associationProfile  AssociationProfile?
   // Stripe
   stripeCustomerId String?  @unique
   
@@ -431,4 +432,42 @@ model ForumBan {
   user        User      @relation("BannedUser", fields: [userId], references: [id])
   bannedBy    User      @relation("BannedBy", fields: [bannedById], references: [id])
   @@map("forum_bans")
+}
+model AssociationProfile {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  associationName    String
+  registrationNumber String?
+  
+  address            String?
+  city               String?
+  postalCode         String?
+  
+  phone              String?
+  email              String?
+  website            String?
+  
+  activities         String?   @db.Text
+  description        String?   @db.Text
+  
+  facebookUrl        String?
+  instagramUrl       String?
+  tiktokUrl          String?
+  
+  logoUrl            String?
+  
+  isPublished        Boolean   @default(false)
+  publishedAt        DateTime?
+  
+  slug               String    @unique
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  
+  @@index([city])
+  @@index([isPublished])
+  @@index([slug])
+  @@map("association_profiles")
 }
