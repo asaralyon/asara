@@ -20,11 +20,13 @@ const publicPaths = [
   'confirmation',
   'contact',
   'annuaire',
+  'annuaire-associations',
   'evenements',
   'actualites',
   'mentions-legales',
   'politique-confidentialite',
-  'annuaire-associations',
+  'newsletter',
+  'cgu',
 ];
 
 // Routes réservées aux utilisateurs connectés

@@ -6,6 +6,7 @@
   "nav": {
     "home": "Accueil",
     "directory": "Annuaire",
+    "associations": "Associations",
     "events": "Événements",
     "contact": "Contact",
     "newsletter": "Newsletter",
@@ -13,8 +14,8 @@
     "myAccount": "Mon compte",
     "logout": "Déconnexion",
     "admin": "Admin",
-    "forum": "Forum",
-    "associations": "Associations"
+    "forum": "Forum"
+    
   },
   "home": {
     "hero": {

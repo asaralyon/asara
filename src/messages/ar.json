@@ -6,6 +6,7 @@
   "nav": {
     "home": "الرئيسية",
     "directory": "الدليل",
+    "associations": "الجمعيات",
     "events": "الفعاليات",
     "contact": "اتصل بنا",
     "newsletter": "النشرة",
@@ -13,8 +14,8 @@
     "myAccount": "حسابي",
     "logout": "تسجيل الخروج",
     "admin": "الإدارة",
-    "forum": "المنتدى",
-    "associations": "الجمعيات"
+    "forum": "المنتدى"
+    
   },
   "home": {
     "hero": {

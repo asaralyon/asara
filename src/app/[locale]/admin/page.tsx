@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { Users, Building2, UserCheck, Clock, Calendar, Mail, Newspaper } from 'lucide-react';
+import { Users, Building2, UserCheck, Clock, Calendar, Mail, Newspaper, Building } from 'lucide-react';
 import { LogoutButton } from '@/components/admin/LogoutButton';
 
 export const metadata: Metadata = {
@@ -12,14 +12,15 @@ export const metadata: Metadata = {
 };
 
 async function getStats() {
-  const [totalUsers, professionals, members, pending] = await Promise.all([
+  const [totalUsers, professionals, members, pending, associations] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: 'PROFESSIONAL' } }),
     prisma.user.count({ where: { role: 'MEMBER' } }),
     prisma.user.count({ where: { status: 'PENDING' } }),
+    prisma.user.count({ where: { role: 'ASSOCIATION' } }),
   ]);
 
-  return { totalUsers, professionals, members, pending };
+  return { totalUsers, professionals, members, pending, associations };
 }
 
 export default async function AdminPage({ params }: { params: { locale: string } }) {
@@ -38,7 +39,7 @@ export default async function AdminPage({ params }: { params: { locale: string }
         </div>
 
         {/* Stats */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="card">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
@@ -86,6 +87,18 @@ export default async function AdminPage({ params }: { params: { locale: string }
               </div>
             </div>
           </div>
+
+          <div className="card">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <Building className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{stats.associations}</p>
+                <p className="text-sm text-neutral-500">Associations</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation rapide */}
@@ -104,6 +117,14 @@ export default async function AdminPage({ params }: { params: { locale: string }
               <h3 className="font-semibold text-lg">Professionnels</h3>
             </div>
             <p className="text-neutral-500 text-sm">Gérer les profils de l'annuaire</p>
+          </Link>
+
+          <Link href={'/' + locale + '/admin/associations'} className="card hover:shadow-strong transition-shadow border-2 border-green-100">
+            <div className="flex items-center gap-2 mb-2">
+              <Building className="w-5 h-5 text-green-600" />
+              <h3 className="font-semibold text-lg">Associations</h3>
+            </div>
+            <p className="text-neutral-500 text-sm">Gérer les associations référencées</p>
           </Link>
 
           <Link href={'/' + locale + '/admin/evenements'} className="card hover:shadow-strong transition-shadow">
