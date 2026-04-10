@@ -455,6 +455,7 @@ model AssociationProfile {
   facebookUrl        String?
   instagramUrl       String?
   tiktokUrl          String?
+  whatsappUrl        String?
   
   logoUrl            String?
   

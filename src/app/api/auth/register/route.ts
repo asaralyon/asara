@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       facebookUrl,
       instagramUrl,
       tiktokUrl,
+      whatsappUrl,
     } = body;
 
     // Vérifier si l'email existe déjà
@@ -131,6 +132,7 @@ export async function POST(request: Request) {
           facebookUrl: facebookUrl || null,
           instagramUrl: instagramUrl || null,
           tiktokUrl: tiktokUrl || null,
+          whatsappUrl: whatsappUrl || null,
           slug,
           isPublished: false,
         },
