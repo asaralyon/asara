@@ -23,8 +23,8 @@ export default async function AdhesionPage({ params }: Props) {
       badge: isRTL ? 'الأكثر شعبية' : 'Le plus populaire',
       badgeColor: 'bg-primary-500',
       title: isRTL ? 'عضوية مهني' : 'Adhésion Professionnel',
-      price: '100 €',
-      priceLabel: isRTL ? '/ سنة' : '/ an',
+      price: isRTL ? 'مجاناً' : 'Gratuit',
+      priceLabel: '',
       description: isRTL
         ? 'للمهنيين السوريين الراغبين في الظهور في الدليل'
         : "Pour les professionnels syriens souhaitant être visibles dans l'annuaire",
@@ -43,7 +43,7 @@ export default async function AdhesionPage({ params }: Props) {
       badge: null,
       badgeColor: '',
       title: isRTL ? 'عضوية عادية' : 'Adhésion Membre',
-      price: '15 €',
+       price: isRTL ? 'مجاناً' : 'Gratuit',
       priceLabel: isRTL ? '/ سنة' : '/ an',
       description: isRTL
         ? 'لكل من يريد الانتساب إلى جمعية ASARA ودعمها'
