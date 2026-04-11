@@ -299,24 +299,33 @@ model Setting {
 // ===========================================
 
 model Event {
-  id          String    @id @default(cuid())
+  id          String      @id @default(cuid())
   title       String
-  description String?   @db.Text
-  type        EventType @default(GALLERY)
-  
+  description String?     @db.Text
+  type        EventType   @default(GALLERY)
+
   documentUrl String?
-  
   imageUrl1   String?
   imageUrl2   String?
   imageUrl3   String?
-  
+
   eventDate   DateTime?
   location    String?
-  
-  isPublished Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
+
+  isPublished Boolean     @default(false)
+
+  // Champ pour les événements soumis par les associations
+  status      String      @default("APPROVED")
+  // APPROVED = créé par admin (publié direct)
+  // PENDING   = soumis par une association (en attente)
+  // REJECTED  = refusé par l'admin
+
+  associationId String?
+  association   AssociationProfile? @relation(fields: [associationId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
   @@map("events")
 }
 
@@ -463,6 +472,7 @@ model AssociationProfile {
   publishedAt        DateTime?
   
   slug               String    @unique
+  events             Event[]
   
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
