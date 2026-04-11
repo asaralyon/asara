@@ -40,18 +40,31 @@ export default async function AssociationAccountPage({ params }: { params: { loc
               <ArrowLeft className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
               {isRTL ? 'حسابي' : 'Mon compte'}
             </Link>
-            <h1 className={`text-2xl font-bold ${isRTL ? 'text-right' : ''}`}>
-              {isRTL ? 'لوحة تحكم الجمعية' : 'Tableau de bord Association'}
-            </h1>
-            <p className={`text-neutral-600 mt-1 ${isRTL ? 'text-right' : ''}`}>
-              {user.associationProfile?.associationName}
-            </p>
-          </div>
+            <div className={`flex items-start justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+  <div>
+    <h1 className={`text-2xl font-bold ${isRTL ? 'text-right' : ''}`}>
+      {isRTL ? 'لوحة تحكم الجمعية' : 'Tableau de bord Association'}
+    </h1>
+    <p className={`text-neutral-600 mt-1 ${isRTL ? 'text-right' : ''}`}>
+      {user.associationProfile?.associationName}
+    </p>
+  </div>
+  <Link
+    href={`/${locale}/mon-compte/modifier-association`}
+    className="btn-secondary flex items-center gap-2 text-sm"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+    {isRTL ? 'تعديل الملف' : 'Modifier le profil'}
+  </Link>
+</div>
 
           <AssociationDashboard
             locale={locale}
             associationProfile={user.associationProfile}
           />
+        </div>
         </div>
       </section>
     </main>
