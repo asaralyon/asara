@@ -127,6 +127,16 @@ export default async function AdminPage({ params }: { params: { locale: string }
             <p className="text-neutral-500 text-sm">Gérer les associations référencées</p>
           </Link>
 
+          {/* 👇 NOUVEAU LIEN AJOUTÉ ICI 👇 */}
+          <Link href={'/' + locale + '/admin/evenements-associations'} className="card hover:shadow-strong transition-shadow border-2 border-yellow-100">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="w-5 h-5 text-yellow-600" />
+              <h3 className="font-semibold text-lg">Événements associations</h3>
+            </div>
+            <p className="text-neutral-500 text-sm">Valider les événements soumis</p>
+          </Link>
+          {/* 👆 FIN DU NOUVEAU LIEN 👆 */}
+
           <Link href={'/' + locale + '/admin/evenements'} className="card hover:shadow-strong transition-shadow">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-5 h-5 text-primary-500" />
