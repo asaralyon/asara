@@ -157,6 +157,32 @@ export default async function AccountPage({ params }: { params: { locale: string
 
             {/* Colonne droite */}
             <div className="space-y-6">
+              {user.role === 'ASSOCIATION' && (
+  <Link
+    href={`/${locale}/mon-compte/association`}
+    className="card border-2 border-green-200 bg-green-50 hover:shadow-strong transition-shadow"
+  >
+    <div className="flex items-center gap-3 mb-3">
+      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-green-600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/>
+        </svg>
+      </div>
+      <h2 className="text-lg font-semibold text-green-800">
+        {isRTL ? 'لوحة تحكم الجمعية' : 'Tableau de bord Association'}
+      </h2>
+    </div>
+    <p className="text-sm text-green-700">
+      {isRTL
+        ? 'إدارة فعاليات جمعيتك'
+        : 'Gérer les événements de votre association'}
+    </p>
+    <p className="text-xs text-green-600 mt-2 font-medium">
+      {isRTL ? 'انقر للوصول ←' : '→ Accéder au dashboard'}
+    </p>
+  </Link>
+)}
+
               {user.role === 'PROFESSIONAL' && user.profile && (
                 <div className="card">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral-200">
