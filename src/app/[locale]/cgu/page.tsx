@@ -49,10 +49,10 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">1. المعلومات القانونية</h2>
-                  <p>موقع www.asara-france.fr تديره جمعية السوريين في أوفيرن رون ألب (ASARA)، وهي جمعية خاضعة لقانون 1901.</p>
+                  <p>موقع www.asara-france.fr تديره دليل السوريين في فرنسا (ASARA)، وهي جمعية خاضعة لقانون 1901.</p>
                   <ul className="list-disc pr-6 space-y-2 mt-4">
-                    <li>الاسم: ASARA - جمعية السوريين في أوفيرن رون ألب</li>
-                    <li>العنوان: ليون، فرنسا</li>
+                    <li>الاسم: ASARA - دليل السوريين في فرنسا</li>
+                    <li>العنوان: فرنسا</li>
                     <li>البريد الإلكتروني: info@asara-lyon.fr</li>
                     <li>الموقع: www.asara-france.fr</li>
                   </ul>

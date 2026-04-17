@@ -19,11 +19,11 @@ export async function generateMetadata({
   return {
     title:
       locale === "ar"
-        ? "جمعية السوريين في أوفيرن رون ألب | ASARA"
+        ? "دليل السوريين في فرنسا | ASARA"
         : "Annuaire des Syriens de France | ASARA",
     description:
       locale === "ar"
-        ? "انضم إلى مجتمع ASARA - جمعية السوريين في أوفيرن رون ألب. اكتشف المحترفين السوريين وابق على اطلاع بأحداث المجتمع."
+        ? "انضم إلى مجتمع ASARA - دليل السوريين في فرنسا. اكتشف المحترفين السوريين وابق على اطلاع بأحداث المجتمع."
         : "Rejoignez la communauté ASARA - Annuaire des Syriens de France. Découvrez les professionnels syriens et restez informé des événements.",
     alternates: {
       canonical: "https://asara-lyon.fr/" + locale,

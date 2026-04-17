@@ -11,7 +11,7 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
     url: 'https://asara-lyon.fr',
     logo: 'https://asara-lyon.fr/images/logo.png',
     description: locale === 'ar' 
-      ? 'جمعية السوريين في أوفيرن رون ألب - ليون، فرنسا'
+      ? 'دليل السوريين في فرنسا - فرنسا'
       : 'Association des Syriens d\'Auvergne Rhône-Alpes - Lyon, France',
     address: {
       '@type': 'PostalAddress',

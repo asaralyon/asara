@@ -242,7 +242,7 @@ function generateNewsletterHTML(
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
               <img src="${baseUrl}/images/logo.png" alt="ASARA" width="100" style="margin-bottom: 20px;">
               <h1 style="margin: 0; color: #166534; font-size: 26px; font-weight: 700;">
-                جمعية السوريين في أوفيرن رون ألب
+                دليل السوريين في فرنسا
               </h1>
               <p style="margin: 12px 0 0; color: #166534; font-size: 22px; font-weight: 700;">ASARA</p>
               <p style="margin: 16px 0 0; color: #166534; font-size: 18px; font-weight: 600;">
@@ -304,7 +304,7 @@ function generateNewsletterHTML(
           <!-- Footer -->
           <tr>
             <td style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%); padding: 32px; text-align: center;">
-              <p style="margin: 0 0 8px; color: #ffffff; font-size: 20px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</p>
+              <p style="margin: 0 0 8px; color: #ffffff; font-size: 20px; font-weight: 700;">دليل السوريين في فرنسا</p>
               <p style="margin: 0 0 8px; color: #d1d5db; font-size: 16px; font-weight: 600;">ASARA</p>
               <p style="margin: 16px 0 0;">
                 <a href="${baseUrl}" style="color: #22c55e; text-decoration: none; font-size: 15px; font-weight: 500;">www.asara-france.fr</a>

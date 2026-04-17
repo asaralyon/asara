@@ -20,7 +20,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
           <tr>
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
               <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 16px;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">جمعية السوريين في أوفيرن رون ألب</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">دليل السوريين في فرنسا</h1>
               <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 16px;">ASARA</p>
             </td>
           </tr>
@@ -28,7 +28,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
             <td style="padding: 40px; text-align: right;">
               <h2 style="margin: 0 0 20px; color: #166534; font-size: 22px;">مرحبا ${firstName}!</h2>
               <p style="margin: 0 0 16px; color: #1f2937; font-size: 16px; line-height: 1.8;">
-                شكرا لاشتراكك في النشرة الأسبوعية لجمعية السوريين في أوفيرن رون ألب.
+                شكرا لاشتراكك في النشرة الأسبوعية لدليل السوريين في فرنسا.
               </p>
               <p style="margin: 0 0 16px; color: #1f2937; font-size: 16px; line-height: 1.8;">
                 ستتلقى أخبارا عن فعالياتنا ومقالات من مجتمعنا كل أسبوع.

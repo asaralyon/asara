@@ -24,7 +24,7 @@ export default async function SuccessPage({ params }: Props) {
               
               <p className="text-neutral-600 mb-6">
                 {isRTL 
-                  ? 'شكراً لانضمامكم إلى أسارا ليون. سنراجع طلبكم وسنتواصل معكم قريباً.'
+                  ? 'شكراً لانضمامكم إلى أسارا. سنراجع طلبكم وسنتواصل معكم قريباً.'
                   : 'Merci de rejoindre ASARA. Nous allons examiner votre demande et vous contacter prochainement.'}
               </p>
 

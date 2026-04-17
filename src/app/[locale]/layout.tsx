@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     keywords: [
       'ASARA', 'Association Syriens', 'France',
       'communauté syrienne', 'professionnels syriens', 'annuaire',
-      'Syrian community', 'France', 'المجتمع السوري', 'ليون'
+      'Syrian community', 'France', 'المجتمع السوري', 'فرنسا'
     ],
     authors: [{ name: 'ASARA' }],
     creator: 'ASARA',
