@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         <p><strong>L'equipe ASARA</strong></p>
         <hr>
         <p style="color: #666; font-size: 12px;">
-          Association des Syriens d'Auvergne Rhone-Alpes<br>
+          Annuaire des Syriens de France<br>
           Rue Leon Blum, 69150 Decines<br>
           info@asara-lyon.fr
         </p>

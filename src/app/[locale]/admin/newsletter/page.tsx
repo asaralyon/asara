@@ -49,7 +49,7 @@ export default function NewsletterPage() {
   const [articleForm, setArticleForm] = useState({
     title: '',
     content: '',
-    authorName: 'ASARA Lyon',
+    authorName: 'ASARA',
     authorEmail: '',
     isPublished: true
   });
@@ -298,7 +298,7 @@ export default function NewsletterPage() {
         setMessage({ type: 'success', text: editingArticle ? 'Article modifie' : 'Article cree' });
         setShowArticleForm(false);
         setEditingArticle(null);
-        setArticleForm({ title: '', content: '', authorName: 'ASARA Lyon', authorEmail: '', isPublished: true });
+        setArticleForm({ title: '', content: '', authorName: 'ASARA', authorEmail: '', isPublished: true });
         fetchArticles();
       } else {
         const data = await res.json();
@@ -585,7 +585,7 @@ export default function NewsletterPage() {
                   onClick={() => {
                     setShowArticleForm(true);
                     setEditingArticle(null);
-                    setArticleForm({ title: '', content: '', authorName: 'ASARA Lyon', authorEmail: '', isPublished: true });
+                    setArticleForm({ title: '', content: '', authorName: 'ASARA', authorEmail: '', isPublished: true });
                   }}
                   className="btn-secondary text-sm"
                 >

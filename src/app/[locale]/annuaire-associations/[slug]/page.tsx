@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const assoc = await getAssociation(params.slug);
   if (!assoc) return { title: 'Not Found' };
   return {
-    title: `${assoc.associationName} | ASARA Lyon`,
+    title: `${assoc.associationName} | ASARA`,
     description: assoc.description || assoc.activities || assoc.associationName,
   };
 }

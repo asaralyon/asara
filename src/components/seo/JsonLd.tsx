@@ -6,7 +6,7 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'ASARA Lyon',
+    name: 'ASARA',
     alternateName: 'Association des Syriens d\'Auvergne Rhône-Alpes',
     url: 'https://asara-lyon.fr',
     logo: 'https://asara-lyon.fr/images/logo.png',
@@ -16,7 +16,7 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Lyon',
-      addressRegion: 'Auvergne-Rhône-Alpes',
+      addressRegion: 'France',
       addressCountry: 'FR',
     },
     areaServed: {
@@ -104,7 +104,7 @@ export function EventJsonLd({ event }: EventJsonLdProps) {
     },
     organizer: {
       '@type': 'Organization',
-      name: 'ASARA Lyon',
+      name: 'ASARA',
       url: 'https://asara-lyon.fr',
     },
   };

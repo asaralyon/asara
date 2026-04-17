@@ -203,7 +203,7 @@ function generateNewsletterHTML(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>النشرة الأسبوعية - ASARA Lyon</title>
+  <title>النشرة الأسبوعية - ASARA</title>
   <style>
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -241,7 +241,7 @@ function generateNewsletterHTML(
     <div style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 30px; text-align: center;">
       <div style="margin-bottom: 20px;">
         <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</h1>
-        <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 18px; font-weight: 600;">ASARA Lyon</p>
+        <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 18px; font-weight: 600;">ASARA</p>
       </div>
 
       <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; margin-top: 16px;">
@@ -321,8 +321,8 @@ function generateNewsletterHTML(
     <!-- Footer -->
     <div style="background: #1f2937; padding: 24px; text-align: center;">
       <p style="margin: 0 0 4px; color: #ffffff; font-size: 16px; font-weight: 700;">جمعية السوريين في أوفيرن رون ألب</p>
-      <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA Lyon</p>
-      <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-lyon.fr</a>
+      <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA</p>
+      <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-france.fr</a>
     </div>
 
   </div>

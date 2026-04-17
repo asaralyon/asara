@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 function getConfirmationEmail(firstName: string, locale: string, baseUrl: string) {
   if (locale === 'ar') {
     return {
-      subject: 'تأكيد الاشتراك في النشرة الأسبوعية - ASARA Lyon',
+      subject: 'تأكيد الاشتراك في النشرة الأسبوعية - ASARA',
       html: `
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -21,7 +21,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
               <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 16px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 24px;">جمعية السوريين في أوفيرن رون ألب</h1>
-              <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 16px;">ASARA Lyon</p>
+              <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 16px;">ASARA</p>
             </td>
           </tr>
           <tr>
@@ -34,14 +34,14 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
                 ستتلقى أخبارا عن فعالياتنا ومقالات من مجتمعنا كل أسبوع.
               </p>
               <p style="margin: 24px 0 0; color: #166534; font-size: 16px; font-weight: 600;">
-                فريق ASARA Lyon
+                فريق ASARA
               </p>
             </td>
           </tr>
           <tr>
             <td style="background: #1f2937; padding: 24px; text-align: center;">
               <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-lyon.fr</a>
+                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-france.fr</a>
               </p>
             </td>
           </tr>
@@ -56,7 +56,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
   }
 
   return {
-    subject: 'Confirmation d\'inscription a la newsletter - ASARA Lyon',
+    subject: 'Confirmation d\'inscription a la newsletter - ASARA',
     html: `
 <!DOCTYPE html>
 <html lang="fr">
@@ -69,28 +69,28 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
           <tr>
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
               <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 16px;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">ASARA Lyon</h1>
-              <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 14px;">Association des Syriens d'Auvergne Rhone-Alpes</p>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">ASARA</h1>
+              <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 14px;">Annuaire des Syriens de France</p>
             </td>
           </tr>
           <tr>
             <td style="padding: 40px;">
               <h2 style="margin: 0 0 20px; color: #166534; font-size: 22px;">Bonjour ${firstName} !</h2>
               <p style="margin: 0 0 16px; color: #1f2937; font-size: 16px; line-height: 1.8;">
-                Merci pour votre inscription a la newsletter de l'Association des Syriens d'Auvergne Rhone-Alpes.
+                Merci pour votre inscription a la newsletter de l'Annuaire des Syriens de France.
               </p>
               <p style="margin: 0 0 16px; color: #1f2937; font-size: 16px; line-height: 1.8;">
                 Vous recevrez chaque semaine des nouvelles de nos evenements et des articles de notre communaute.
               </p>
               <p style="margin: 24px 0 0; color: #166534; font-size: 16px; font-weight: 600;">
-                L'equipe ASARA Lyon
+                L'equipe ASARA
               </p>
             </td>
           </tr>
           <tr>
             <td style="background: #1f2937; padding: 24px; text-align: center;">
               <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-lyon.fr</a>
+                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-france.fr</a>
               </p>
             </td>
           </tr>
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
         const emailContent = getConfirmationEmail(firstName, locale, baseUrl);
 
         await transporter.sendMail({
-          from: process.env.SMTP_FROM || `"ASARA Lyon" <${process.env.SMTP_USER}>`,
+          from: process.env.SMTP_FROM || `"ASARA" <${process.env.SMTP_USER}>`,
           to: email,
           subject: emailContent.subject,
           html: emailContent.html,

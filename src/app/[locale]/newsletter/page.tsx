@@ -13,7 +13,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isRTL = params.locale === 'ar';
   return {
-    title: isRTL ? 'النشرة الأسبوعية - ASARA Lyon' : 'Newsletter - ASARA Lyon',
+    title: isRTL ? 'النشرة الأسبوعية - ASARA' : 'Newsletter - ASARA',
     description: isRTL 
       ? 'اشترك في نشرتنا الأسبوعية للحصول على آخر الأخبار والفعاليات'
       : 'Inscrivez-vous à notre newsletter pour recevoir les dernières actualités',
@@ -263,7 +263,7 @@ export default async function NewsletterPage({ params }: Props) {
             </h2>
             <div className="flex justify-center gap-4 flex-wrap">
               <a
-                href={'https://wa.me/?text=' + encodeURIComponent((isRTL ? 'النشرة الأسبوعية - ASARA Lyon: ' : 'Newsletter ASARA Lyon: ') + shareUrl)}
+                href={'https://wa.me/?text=' + encodeURIComponent((isRTL ? 'النشرة الأسبوعية - ASARA: ' : 'Newsletter ASARA: ') + shareUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"

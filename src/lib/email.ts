@@ -51,7 +51,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
           <p>Rue Leon Blum, 69150 Decines</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
           <p>Rue Leon Blum, 69150 Decines</p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
         </div>
       </div>
     `,
@@ -126,7 +126,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
         </div>
       </div>
     `,
@@ -152,7 +152,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
         </div>
       </div>
     `,
@@ -178,7 +178,7 @@ export const emailTemplates = {
           <p><strong>L'equipe ASARA</strong></p>
         </div>
         <div style="background: #333; color: #999; padding: 20px; text-align: center; font-size: 12px;">
-          <p>Association des Syriens d'Auvergne Rhone-Alpes</p>
+          <p>Annuaire des Syriens de France</p>
         </div>
       </div>
     `,

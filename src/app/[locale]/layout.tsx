@@ -24,17 +24,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: {
       default: title,
-      template: '%s | ASARA Lyon',
+      template: '%s | ASARA',
     },
     description,
     keywords: [
-      'ASARA', 'Association Syriens', 'Lyon', 'Auvergne-Rhône-Alpes',
+      'ASARA', 'Association Syriens', 'France',
       'communauté syrienne', 'professionnels syriens', 'annuaire',
       'Syrian community', 'France', 'المجتمع السوري', 'ليون'
     ],
-    authors: [{ name: 'ASARA Lyon' }],
+    authors: [{ name: 'ASARA' }],
     creator: 'ASARA',
-    publisher: 'ASARA Lyon',
+    publisher: 'ASARA',
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: baseUrl + '/' + locale,
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: locale === 'ar' ? 'ar_SA' : 'fr_FR',
       url: baseUrl + '/' + locale,
-      siteName: 'ASARA Lyon',
+      siteName: 'ASARA',
       title,
       description,
       images: [

@@ -8,7 +8,7 @@ type Props = { params: { locale: string } };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isRTL = params.locale === 'ar';
   return {
-    title: isRTL ? 'الانضمام | ASARA Lyon' : 'Adhésion | ASARA Lyon',
+    title: isRTL ? 'الانضمام | ASARA' : 'Adhésion | ASARA',
   };
 }
 

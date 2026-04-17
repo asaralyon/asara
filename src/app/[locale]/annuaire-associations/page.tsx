@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isRTL = params.locale === 'ar';
   return {
     title: isRTL
-      ? 'دليل الجمعيات السورية في فرنسا | ASARA Lyon'
-      : 'Annuaire des associations syriennes en France | ASARA Lyon',
+      ? 'دليل الجمعيات السورية في فرنسا | ASARA'
+      : 'Annuaire des associations syriennes en France | ASARA',
     description: isRTL
       ? 'اكتشف الجمعيات السورية الموجودة في فرنسا'
       : 'Découvrez les associations syriennes présentes en France',

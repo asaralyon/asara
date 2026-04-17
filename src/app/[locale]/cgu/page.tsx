@@ -11,7 +11,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isRTL = params.locale === 'ar';
   return {
-    title: isRTL ? 'الشروط والأحكام - ASARA Lyon' : 'CGU - ASARA Lyon',
+    title: isRTL ? 'الشروط والأحكام - ASARA' : 'CGU - ASARA',
     description: isRTL 
       ? 'الشروط والأحكام العامة للاستخدام'
       : 'Conditions Générales d\'Utilisation',
@@ -49,12 +49,12 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">1. المعلومات القانونية</h2>
-                  <p>موقع www.asara-lyon.fr تديره جمعية السوريين في أوفيرن رون ألب (ASARA Lyon)، وهي جمعية خاضعة لقانون 1901.</p>
+                  <p>موقع www.asara-france.fr تديره جمعية السوريين في أوفيرن رون ألب (ASARA)، وهي جمعية خاضعة لقانون 1901.</p>
                   <ul className="list-disc pr-6 space-y-2 mt-4">
-                    <li>الاسم: ASARA Lyon - جمعية السوريين في أوفيرن رون ألب</li>
+                    <li>الاسم: ASARA - جمعية السوريين في أوفيرن رون ألب</li>
                     <li>العنوان: ليون، فرنسا</li>
                     <li>البريد الإلكتروني: info@asara-lyon.fr</li>
-                    <li>الموقع: www.asara-lyon.fr</li>
+                    <li>الموقع: www.asara-france.fr</li>
                   </ul>
                 </section>
 
@@ -73,7 +73,7 @@ export default function CGUPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-primary-700 mb-4">3. حماية البيانات الشخصية (RGPD)</h2>
                   
                   <h3 className="text-lg font-semibold mt-6 mb-3">3.1 مسؤول معالجة البيانات</h3>
-                  <p>جمعية ASARA Lyon هي المسؤولة عن معالجة البيانات الشخصية المجمعة على هذا الموقع.</p>
+                  <p>جمعية ASARA هي المسؤولة عن معالجة البيانات الشخصية المجمعة على هذا الموقع.</p>
 
                   <h3 className="text-lg font-semibold mt-6 mb-3">3.2 البيانات المجمعة</h3>
                   <p>نجمع البيانات التالية:</p>
@@ -133,17 +133,17 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">6. المسؤولية</h2>
-                  <p>تسعى ASARA Lyon لضمان دقة المعلومات المنشورة، لكنها لا تتحمل المسؤولية عن أي أخطاء أو سهو. المعلومات المقدمة في الدليل المهني هي مسؤولية المهنيين المعنيين.</p>
+                  <p>تسعى ASARA لضمان دقة المعلومات المنشورة، لكنها لا تتحمل المسؤولية عن أي أخطاء أو سهو. المعلومات المقدمة في الدليل المهني هي مسؤولية المهنيين المعنيين.</p>
                 </section>
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">7. الروابط الخارجية</h2>
-                  <p>قد يحتوي الموقع على روابط لمواقع خارجية. ASARA Lyon ليست مسؤولة عن محتوى هذه المواقع.</p>
+                  <p>قد يحتوي الموقع على روابط لمواقع خارجية. ASARA ليست مسؤولة عن محتوى هذه المواقع.</p>
                 </section>
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">8. تعديل الشروط</h2>
-                  <p>تحتفظ ASARA Lyon بالحق في تعديل هذه الشروط في أي وقت. ستُنشر التعديلات على هذه الصفحة.</p>
+                  <p>تحتفظ ASARA بالحق في تعديل هذه الشروط في أي وقت. ستُنشر التعديلات على هذه الصفحة.</p>
                 </section>
 
                 <section>
@@ -156,7 +156,7 @@ export default function CGUPage({ params }: Props) {
                   <p>لأي سؤال حول هذه الشروط أو بياناتك الشخصية:</p>
                   <ul className="list-disc pr-6 space-y-2 mt-4">
                     <li>البريد الإلكتروني: info@asara-lyon.fr</li>
-                    <li>الموقع: www.asara-lyon.fr/ar/contact</li>
+                    <li>الموقع: www.asara-france.fr/ar/contact</li>
                   </ul>
                 </section>
               </div>
@@ -166,12 +166,12 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">1. Mentions légales</h2>
-                  <p>Le site www.asara-lyon.fr est édité par l Association des Syriens d Auvergne Rhône-Alpes (ASARA Lyon), association loi 1901.</p>
+                  <p>Le site www.asara-france.fr est édité par l Association des Syriens d Auvergne Rhône-Alpes (ASARA), association loi 1901.</p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
-                    <li>Nom : ASARA Lyon - Association des Syriens d Auvergne Rhône-Alpes</li>
+                    <li>Nom : ASARA - Association des Syriens d Auvergne Rhône-Alpes</li>
                     <li>Adresse : Lyon, France</li>
                     <li>Email : info@asara-lyon.fr</li>
-                    <li>Site : www.asara-lyon.fr</li>
+                    <li>Site : www.asara-france.fr</li>
                   </ul>
                 </section>
 
@@ -190,7 +190,7 @@ export default function CGUPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-primary-700 mb-4">3. Protection des données personnelles (RGPD)</h2>
                   
                   <h3 className="text-lg font-semibold mt-6 mb-3">3.1 Responsable du traitement</h3>
-                  <p>L association ASARA Lyon est responsable du traitement des données personnelles collectées sur ce site.</p>
+                  <p>L association ASARA est responsable du traitement des données personnelles collectées sur ce site.</p>
 
                   <h3 className="text-lg font-semibold mt-6 mb-3">3.2 Données collectées</h3>
                   <p>Nous collectons les données suivantes :</p>
@@ -250,17 +250,17 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">6. Responsabilité</h2>
-                  <p>ASARA Lyon s efforce d assurer l exactitude des informations publiées mais ne saurait être tenue responsable des erreurs ou omissions. Les informations fournies dans l annuaire professionnel sont sous la responsabilité des professionnels concernés.</p>
+                  <p>ASARA s efforce d assurer l exactitude des informations publiées mais ne saurait être tenue responsable des erreurs ou omissions. Les informations fournies dans l annuaire professionnel sont sous la responsabilité des professionnels concernés.</p>
                 </section>
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">7. Liens externes</h2>
-                  <p>Le site peut contenir des liens vers des sites externes. ASARA Lyon n est pas responsable du contenu de ces sites.</p>
+                  <p>Le site peut contenir des liens vers des sites externes. ASARA n est pas responsable du contenu de ces sites.</p>
                 </section>
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">8. Modification des CGU</h2>
-                  <p>ASARA Lyon se réserve le droit de modifier ces CGU à tout moment. Les modifications seront publiées sur cette page.</p>
+                  <p>ASARA se réserve le droit de modifier ces CGU à tout moment. Les modifications seront publiées sur cette page.</p>
                 </section>
 
                 <section>
@@ -273,7 +273,7 @@ export default function CGUPage({ params }: Props) {
                   <p>Pour toute question concernant ces CGU ou vos données personnelles :</p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
                     <li>Email : info@asara-lyon.fr</li>
-                    <li>Site : www.asara-lyon.fr/fr/contact</li>
+                    <li>Site : www.asara-france.fr/fr/contact</li>
                   </ul>
                 </section>
               </div>

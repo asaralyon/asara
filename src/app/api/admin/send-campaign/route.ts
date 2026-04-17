@@ -47,8 +47,8 @@ function generateEmailHTML(
     <tr>
       <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 32px; text-align: center;">
         <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 12px;">
-        <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">ASARA Lyon</h1>
-        <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">Association des Syriens d'Auvergne Rhone-Alpes</p>
+        <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">ASARA</h1>
+        <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">Annuaire des Syriens de France</p>
       </td>
     </tr>
   ` : '';
@@ -56,9 +56,9 @@ function generateEmailHTML(
   const footer = includeFooter ? `
     <tr>
       <td style="background: #1f2937; padding: 24px; text-align: center;">
-        <p style="margin: 0 0 8px; color: #ffffff; font-size: 14px; font-weight: 600;">ASARA Lyon</p>
+        <p style="margin: 0 0 8px; color: #ffffff; font-size: 14px; font-weight: 600;">ASARA</p>
         <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-          <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-lyon.fr</a>
+          <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-france.fr</a>
         </p>
       </td>
     </tr>
@@ -184,7 +184,7 @@ export async function POST(request: Request) {
         const html = generateEmailHTML(message, includeHeader, includeFooter, user.firstName, images);
         
         await transporter.sendMail({
-          from: process.env.SMTP_FROM || `"ASARA Lyon" <${process.env.SMTP_USER}>`,
+          from: process.env.SMTP_FROM || `"ASARA" <${process.env.SMTP_USER}>`,
           to: user.email,
           subject: subject,
           html,
