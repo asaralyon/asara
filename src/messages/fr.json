@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "ASARA - Association des Syriens Auvergne Rhône-Alpes",
-    "description": "Rejoignez la communauté syrienne de la région Auvergne Rhône-Alpes"
+    "title": "ASARA - Annuaire des Syriens de France",
+    "description": "Trouvez des professionnels et services de la communauté syrienne en France"
   },
   "nav": {
     "home": "Accueil",
@@ -15,12 +15,11 @@
     "logout": "Déconnexion",
     "admin": "Admin",
     "forum": "Forum"
-    
   },
   "home": {
     "hero": {
       "title": "ASARA",
-      "subtitle": "Association des Syriens d'Auvergne Rhône-Alpes"
+      "subtitle": "Annuaire des Syriens de France"
     },
     "events": {
       "title": "Événements",
@@ -182,7 +181,7 @@
     }
   },
   "footer": {
-    "description": "Association des Syriens d'Auvergne Rhône-Alpes",
+    "description": "Annuaire des Syriens de France",
     "quickLinks": "Liens rapides",
     "contact": "Contact",
     "newsletter": "Newsletter",

@@ -1,6 +1,6 @@
 # 🌉 ASARA
 
-**Association des Syriens d'Auvergne Rhône-Alpes**
+**Annuaire des Syriens de France**
 
 Plateforme web pour l'annuaire professionnel et la gestion des membres de l'association.
 
