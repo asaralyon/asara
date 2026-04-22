@@ -36,7 +36,7 @@ function generateEmailHTML(
   firstName: string,
   images: CampaignImage[] = []
 ) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-france.fr';
   
   // Remplacer les variables
   const personalizedContent = content
@@ -46,7 +46,7 @@ function generateEmailHTML(
   const header = includeHeader ? `
     <tr>
       <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 32px; text-align: center;">
-        <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 12px;">
+        <img src="${baseUrl}/images/logo.png" alt="ASARA France" width="160" style="margin-bottom: 12px;">
         <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">ASARA</h1>
         <p style="margin: 6px 0 0; color: #bbf7d0; font-size: 14px;">Annuaire des Syriens de France</p>
       </td>

@@ -22,12 +22,11 @@ export function Footer() {
             <Link href={`/${locale}`} className="flex items-center gap-3 mb-4">
               <Image
                 src="/images/logo.png"
-                alt="ASARA"
-                width={50}
-                height={50}
-                className="w-12 h-12"
+                alt="ASARA France"
+                width={160}
+                height={123}
+                className="h-16 w-auto brightness-0 invert"
               />
-              <span className="text-xl font-bold">ASARA</span>
             </Link>
             <p className="text-neutral-400 mb-4">
               {t('description')}
@@ -103,8 +102,8 @@ export function Footer() {
               </div>
               <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <a href="mailto:info@asara-lyon.fr" className="hover:text-white transition-colors">
-                  info@asara-lyon.fr
+                <a href="mailto:info@asara-france.fr" className="hover:text-white transition-colors">
+                  info@asara-france.fr
                 </a>
               </div>
               <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>

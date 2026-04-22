@@ -53,7 +53,7 @@ export default function CGUPage({ params }: Props) {
                   <ul className="list-disc pr-6 space-y-2 mt-4">
                     <li>الاسم: ASARA - دليل السوريين في فرنسا</li>
                     <li>العنوان: فرنسا</li>
-                    <li>البريد الإلكتروني: info@asara-lyon.fr</li>
+                    <li>البريد الإلكتروني: info@asara-france.fr</li>
                     <li>الموقع: www.asara-france.fr</li>
                   </ul>
                 </section>
@@ -113,7 +113,7 @@ export default function CGUPage({ params }: Props) {
                     <li><strong>حق النقل:</strong> استلام بياناتك بصيغة قابلة للقراءة</li>
                     <li><strong>حق الاعتراض:</strong> الاعتراض على معالجة بياناتك</li>
                   </ul>
-                  <p className="mt-4">لممارسة حقوقك، اتصل بنا على: info@asara-lyon.fr</p>
+                  <p className="mt-4">لممارسة حقوقك، اتصل بنا على: info@asara-france.fr</p>
                 </section>
 
                 <section>
@@ -155,7 +155,7 @@ export default function CGUPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-primary-700 mb-4">10. الاتصال</h2>
                   <p>لأي سؤال حول هذه الشروط أو بياناتك الشخصية:</p>
                   <ul className="list-disc pr-6 space-y-2 mt-4">
-                    <li>البريد الإلكتروني: info@asara-lyon.fr</li>
+                    <li>البريد الإلكتروني: info@asara-france.fr</li>
                     <li>الموقع: www.asara-france.fr/ar/contact</li>
                   </ul>
                 </section>
@@ -166,11 +166,11 @@ export default function CGUPage({ params }: Props) {
 
                 <section>
                   <h2 className="text-xl font-bold text-primary-700 mb-4">1. Mentions légales</h2>
-                  <p>Le site www.asara-france.fr est édité par l Association des Syriens d Auvergne Rhône-Alpes (ASARA), association loi 1901.</p>
+                  <p>Le site www.asara-france.fr est édité par l Annuaire des Syriens de France (ASARA), association loi 1901.</p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
-                    <li>Nom : ASARA - Association des Syriens d Auvergne Rhône-Alpes</li>
-                    <li>Adresse : Lyon, France</li>
-                    <li>Email : info@asara-lyon.fr</li>
+                    <li>Nom : ASARA - Annuaire des Syriens de France</li>
+                    <li>Adresse : France</li>
+                    <li>Email : info@asara-france.fr</li>
                     <li>Site : www.asara-france.fr</li>
                   </ul>
                 </section>
@@ -230,7 +230,7 @@ export default function CGUPage({ params }: Props) {
                     <li><strong>Droit à la portabilité :</strong> recevoir vos données dans un format lisible</li>
                     <li><strong>Droit d opposition :</strong> vous opposer au traitement de vos données</li>
                   </ul>
-                  <p className="mt-4">Pour exercer vos droits, contactez-nous à : info@asara-lyon.fr</p>
+                  <p className="mt-4">Pour exercer vos droits, contactez-nous à : info@asara-france.fr</p>
                 </section>
 
                 <section>
@@ -272,7 +272,7 @@ export default function CGUPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-primary-700 mb-4">10. Contact</h2>
                   <p>Pour toute question concernant ces CGU ou vos données personnelles :</p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
-                    <li>Email : info@asara-lyon.fr</li>
+                    <li>Email : info@asara-france.fr</li>
                     <li>Site : www.asara-france.fr/fr/contact</li>
                   </ul>
                 </section>

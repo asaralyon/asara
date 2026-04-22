@@ -341,7 +341,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}));
     const { customLinks = [], images = [] } = body;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://asara-lyon.fr";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://asara-france.fr";
 
     const [events, articles] = await Promise.all([getUpcomingEvents(), getPublishedArticles()]);
 

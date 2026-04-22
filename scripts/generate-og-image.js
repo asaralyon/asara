@@ -19,8 +19,8 @@ async function generateOGImage() {
         </linearGradient>
       </defs>
       <rect width="100%" height="100%" fill="url(#grad)"/>
-      <text x="600" y="480" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#2D8C3C" text-anchor="middle">ASARA Lyon</text>
-      <text x="600" y="540" font-family="Arial, sans-serif" font-size="28" fill="#666666" text-anchor="middle">Association des Syriens d'Auvergne Rhône-Alpes</text>
+      <text x="600" y="480" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#2D8C3C" text-anchor="middle">ASARA France</text>
+      <text x="600" y="540" font-family="Arial, sans-serif" font-size="28" fill="#666666" text-anchor="middle">Annuaire des Syriens de France</text>
     </svg>
   `;
 

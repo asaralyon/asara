@@ -1,4 +1,4 @@
-# ASARA Lyon — Règles du projet
+# ASARA France — Règles du projet
 
 ## Stack technique
 - Next.js 14 App Router, TypeScript
@@ -224,7 +224,7 @@ const publicPaths = [
 - Tous les emails passent par `src/lib/email.ts`
 - Templates dans l'objet `emailTemplates`
 - Envoi non-bloquant (try/catch séparé du flux principal)
-- Toujours notifier `info@asara-lyon.fr` pour nouvelles inscriptions
+- Toujours notifier `info@asara-france.fr` pour nouvelles inscriptions
 
 ```ts
 // ✅ Non-bloquant

@@ -7,12 +7,12 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'ASARA',
-    alternateName: 'Association des Syriens d\'Auvergne Rhône-Alpes',
-    url: 'https://asara-lyon.fr',
-    logo: 'https://asara-lyon.fr/images/logo.png',
+    alternateName: 'Annuaire des Syriens de France',
+    url: 'https://asara-france.fr',
+    logo: 'https://asara-france.fr/images/logo.png',
     description: locale === 'ar' 
       ? 'دليل السوريين في فرنسا - فرنسا'
-      : 'Association des Syriens d\'Auvergne Rhône-Alpes - Lyon, France',
+      : 'Association des Syriens d\'France - France',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Lyon',
@@ -21,7 +21,7 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
     },
     areaServed: {
       '@type': 'Place',
-      name: 'Auvergne-Rhône-Alpes',
+      name: 'France',
     },
     sameAs: [
       'https://www.facebook.com/asaralyon',
@@ -105,7 +105,7 @@ export function EventJsonLd({ event }: EventJsonLdProps) {
     organizer: {
       '@type': 'Organization',
       name: 'ASARA',
-      url: 'https://asara-lyon.fr',
+      url: 'https://asara-france.fr',
     },
   };
 

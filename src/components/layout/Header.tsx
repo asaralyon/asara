@@ -67,9 +67,9 @@ export function Header() {
             <Image
               src="/images/logo.png"
               alt="ASARA"
-              width={40}
-              height={40}
-              className="w-10 h-10"
+              width={160}
+              height={123}
+              className="h-10 w-auto"
             />
             <span className="font-bold text-primary-600 hidden sm:inline">
               ASARA

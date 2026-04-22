@@ -26,7 +26,7 @@ export async function generateMetadata({
         ? "انضم إلى مجتمع ASARA - دليل السوريين في فرنسا. اكتشف المحترفين السوريين وابق على اطلاع بأحداث المجتمع."
         : "Rejoignez la communauté ASARA - Annuaire des Syriens de France. Découvrez les professionnels syriens et restez informé des événements.",
     alternates: {
-      canonical: "https://asara-lyon.fr/" + locale,
+      canonical: "https://asara-france.fr/" + locale,
     },
   };
 }

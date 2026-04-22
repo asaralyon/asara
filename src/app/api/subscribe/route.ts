@@ -19,7 +19,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
           <tr>
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
-              <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 16px;">
+              <img src="${baseUrl}/images/logo.png" alt="ASARA France" width="160" style="margin-bottom: 16px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 24px;">دليل السوريين في فرنسا</h1>
               <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 16px;">ASARA</p>
             </td>
@@ -68,7 +68,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
           <tr>
             <td style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); padding: 40px; text-align: center;">
-              <img src="${baseUrl}/images/logo.png" alt="ASARA" width="80" style="margin-bottom: 16px;">
+              <img src="${baseUrl}/images/logo.png" alt="ASARA France" width="160" style="margin-bottom: 16px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 24px;">ASARA</h1>
               <p style="margin: 8px 0 0; color: #bbf7d0; font-size: 14px;">Annuaire des Syriens de France</p>
             </td>
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
           },
         });
 
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-france.fr';
         const emailContent = getConfirmationEmail(firstName, locale, baseUrl);
 
         await transporter.sendMail({

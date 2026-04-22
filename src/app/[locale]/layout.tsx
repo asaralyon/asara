@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   const title = t('title');
   const description = t('description');
-  const baseUrl = 'https://asara-lyon.fr';
+  const baseUrl = 'https://asara-france.fr';
 
   return {
     title: {
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: baseUrl + '/images/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: 'ASARA - Association des Syriens d\'Auvergne Rhône-Alpes',
+          alt: 'ASARA - Association des Syriens d\'France',
         },
       ],
     },
@@ -101,7 +101,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/images/logo.png" />
+        <link rel="apple-touch-icon" href="/images/logo-lg.png" />
         <meta name="theme-color" content="#2D8C3C" />
       </head>
       <body className="min-h-screen flex flex-col">

@@ -79,7 +79,7 @@ Plateforme web pour l'annuaire professionnel et la gestion des membres de l'asso
 ```bash
 # 1. Cloner le repo
 git clone https://github.com/votre-org/asara-lyon.git
-cd asara-lyon
+cd asara-france
 
 # 2. Installer les dépendances
 npm install
@@ -125,7 +125,7 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000)
 ## 📁 Structure du projet
 
 ```
-asara-lyon/
+asara-france/
 ├── .husky/              # Git hooks
 ├── __tests__/           # Tests
 ├── prisma/              # Schema et migrations
@@ -188,8 +188,8 @@ asara-lyon/
 ### DNS
 
 Configurer chez Infomaniak :
-- `A record` : asara-lyon.fr → IP du VPS
-- `CNAME` : www.asara-lyon.fr → asara-lyon.fr
+- `A record` : asara-france.fr → IP du VPS
+- `CNAME` : www.asara-france.fr → asara-france.fr
 
 ---
 

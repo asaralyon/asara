@@ -161,7 +161,7 @@ export async function POST(request: Request) {
           : 'Membre';
 
       await sendEmail({
-        to: 'info@asara-lyon.fr',
+        to: 'info@asara-france.fr',
         subject: `Nouvelle inscription - ${firstName} ${lastName}`,
         html: `
           <h2>Nouvelle inscription sur ASARA</h2>

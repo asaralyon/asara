@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ✅ Base URL configurable (Vercel/prod/staging)
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://asara-lyon.fr').replace(/\/$/, '');
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://asara-france.fr').replace(/\/$/, '');
 
   // Pages statiques
   const staticPages = [

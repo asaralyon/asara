@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     // Email à l'association
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
-      to: 'info@asara-lyon.fr',
+      to: 'info@asara-france.fr',
       replyTo: email,
       subject: `[Contact ASARA] ${subjectLabels[subject] || subject}`,
       html: `
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         <p style="color: #666; font-size: 12px;">
           Annuaire des Syriens de France<br>
           Rue Leon Blum, 69150 Decines<br>
-          info@asara-lyon.fr
+          info@asara-france.fr
         </p>
       `,
     });
