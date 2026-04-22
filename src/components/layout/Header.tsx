@@ -69,7 +69,7 @@ export function Header() {
               alt="ASARA"
               width={160}
               height={123}
-              className="h-14 w-auto"
+              className="h-20 w-auto"
             />
             
           </Link>
