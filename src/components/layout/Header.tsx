@@ -61,7 +61,7 @@ export function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="container-app">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2">
             <Image
@@ -69,7 +69,7 @@ export function Header() {
               alt="ASARA"
               width={160}
               height={123}
-              className="h-20 w-auto"
+              className="h-16 w-auto"
             />
             
           </Link>
