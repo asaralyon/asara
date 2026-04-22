@@ -69,11 +69,9 @@ export function Header() {
               alt="ASARA"
               width={160}
               height={123}
-              className="h-10 w-auto"
+              className="h-14 w-auto"
             />
-            <span className="font-bold text-primary-600 hidden sm:inline">
-              ASARA
-            </span>
+            
           </Link>
 
           {/* Navigation Desktop */}
