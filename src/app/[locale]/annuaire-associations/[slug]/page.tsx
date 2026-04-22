@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import {
   ArrowLeft, MapPin, Phone, Mail, Globe,
-  Facebook, Instagram,
+  Facebook, Instagram, Hash, Activity,
 } from 'lucide-react';
 
 function TikTokIcon({ className }: { className?: string }) {
