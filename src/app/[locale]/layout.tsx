@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ClientSessionProvider } from '@/components/auth/ClientSessionProvider';
 import '../globals.css';
+import { Analytics } from '@vercel/analytics/next';
 
 type Props = {
   children: React.ReactNode;
@@ -112,6 +113,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <Footer />
           </ClientSessionProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
