@@ -328,7 +328,7 @@ export default function ProfessionalSignupPage() {
 
           <div className="mt-6 p-4 bg-primary-50 rounded-xl text-center">
             <p className="text-primary-700 font-medium">
-              {isRTL ? 'رسوم العضوية: 100 يورو / سنة' : 'Cotisation : 100 € / an'}
+              {isRTL ? '✅ الإدراج في الدليل مجاني تمامًا' : '✅ Le référencement dans l'annuaire est totalement gratuit'}
             </p>
           </div>
         </div>
