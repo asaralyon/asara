@@ -328,7 +328,7 @@ export default function ProfessionalSignupPage() {
 
           <div className="mt-6 p-4 bg-primary-50 rounded-xl text-center">
             <p className="text-primary-700 font-medium">
-              {isRTL ? '✅ الإدراج في الدليل مجاني تمامًا' : '✅ Le référencement dans l'annuaire est totalement gratuit'}
+              {isRTL ? '✅ الإدراج في الدليل مجاني تمامًا' : "✅ Le référencement dans l'annuaire est totalement gratuit"}
             </p>
           </div>
         </div>
