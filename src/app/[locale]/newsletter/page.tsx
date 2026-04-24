@@ -5,6 +5,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { Calendar, Mail, ArrowLeft, ExternalLink, Newspaper } from 'lucide-react';
 import NewsletterSubscribeButton from '@/components/NewsletterSubscribeButton';
+import NewsletterArchive from '@/components/newsletter/NewsletterArchive';
 
 type Props = {
   params: { locale: string };
@@ -255,6 +256,9 @@ export default async function NewsletterPage({ params }: Props) {
               <NewsletterSubscribeButton locale={locale} />
             </div>
           </section>
+
+          {/* Archives */}
+          <NewsletterArchive locale={locale} />
 
           {/* Partager */}
           <section className="card text-center">

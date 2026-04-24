@@ -408,6 +408,7 @@ export async function POST(request: Request) {
         subject,
         sentAt: new Date(),
         recipientCount: sentCount,
+        htmlContent: html,
       },
     });
 
