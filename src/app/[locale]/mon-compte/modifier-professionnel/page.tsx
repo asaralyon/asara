@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getJwtSecret } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { getTranslations } from 'next-intl/server';
@@ -17,7 +18,7 @@ export default async function EditProfessionalPage({ params }: { params: { local
 
   let user;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     
     user = await prisma.user.findUnique({

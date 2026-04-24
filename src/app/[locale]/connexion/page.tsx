@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getJwtSecret } from '@/lib/jwt';
 import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
@@ -12,7 +13,7 @@ export default async function LoginPage({ params }: { params: { locale: string }
   
   if (token) {
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+      const secret = getJwtSecret();
       await jwtVerify(token, secret);
       redirect('/' + locale + '/mon-compte');
     } catch {

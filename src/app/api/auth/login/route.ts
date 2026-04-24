@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/jwt';
 import { compare } from 'bcryptjs';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    const secret = getJwtSecret();
     
     const token = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })

@@ -1,5 +1,6 @@
 // src/middleware.ts
 import createMiddleware from 'next-intl/middleware';
+import { getJwtSecret } from '@/lib/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import { locales, defaultLocale } from './i18n';
@@ -67,7 +68,7 @@ export async function middleware(request: NextRequest) {
 
   if (token) {
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+      const secret = getJwtSecret();
       const { payload } = await jwtVerify(token, secret);
       user = payload;
     } catch {

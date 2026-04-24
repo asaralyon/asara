@@ -5,14 +5,14 @@ import { jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'secret');
+import { getJwtSecret } from '@/lib/jwt';
 
 async function verifyAdmin() {
   const cookieStore = cookies();
   const token = cookieStore.get('token')?.value;
   if (!token) return false;
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     const user = await prisma.user.findUnique({ where: { id: payload.userId as string } });
     return user?.role === 'ADMIN';
   } catch {

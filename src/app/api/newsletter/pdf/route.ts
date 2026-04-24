@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import prisma from "@/lib/prisma";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "secret");
+import { getJwtSecret } from '@/lib/jwt';
 
 async function verifyAdmin() {
   const cookieStore = cookies();
@@ -13,7 +13,7 @@ async function verifyAdmin() {
   if (!token) return false;
 
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     const user = await prisma.user.findUnique({
       where: { id: payload.userId as string },
     });

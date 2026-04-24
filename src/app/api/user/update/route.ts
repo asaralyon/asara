@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
@@ -14,7 +15,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
 
     const body = await request.json();

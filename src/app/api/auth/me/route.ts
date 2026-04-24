@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
@@ -20,7 +21,7 @@ export async function GET() {
       );
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     
     console.log('Auth/me - Token valid, userId:', payload.userId);

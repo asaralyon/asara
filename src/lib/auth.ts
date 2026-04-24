@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { getJwtSecret } from '@/lib/jwt';
 import { jwtVerify } from 'jose';
 import { prisma } from '@/lib/prisma';
 
@@ -17,7 +18,7 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
 
     if (!token) return null;
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret-key');
+    const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
 
     // Le login signe avec { userId, role } — on lit payload.userId

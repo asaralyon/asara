@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'secret');
+import { getJwtSecret } from '@/lib/jwt';
 
 export async function DELETE(request: Request) {
   try {
@@ -16,7 +16,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Non authentifie' }, { status: 401 });
     }
 
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     const userId = payload.userId as string;
 
     // Verifier que l utilisateur existe
