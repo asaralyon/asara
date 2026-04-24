@@ -322,7 +322,7 @@ function generateNewsletterHTML(
     <div style="background: #1f2937; padding: 24px; text-align: center;">
       <p style="margin: 0 0 4px; color: #ffffff; font-size: 16px; font-weight: 700;">دليل السوريين في فرنسا</p>
       <p style="margin: 0 0 12px; color: #9ca3af; font-size: 13px;">ASARA</p>
-      <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-france.fr</a>
+      <a href="${baseUrl}" target="_blank" style="color: #22c55e; font-size: 14px; text-decoration: underline;">www.asara-lyon.fr</a>
     </div>
 
   </div>
@@ -341,7 +341,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}));
     const { customLinks = [], images = [] } = body;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://asara-france.fr";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://asara-lyon.fr";
 
     const [events, articles] = await Promise.all([getUpcomingEvents(), getPublishedArticles()]);
 

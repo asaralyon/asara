@@ -69,10 +69,10 @@ export default async function ContactPage({ params }: Props) {
                   <div>
                     <h3 className="font-semibold text-lg mb-1">{t('info.email')}</h3>
                     <a
-                      href="mailto:info@asara-france.fr"
+                      href="mailto:info@asara-lyon.fr"
                       className="text-primary-500 hover:text-primary-600"
                     >
-                      info@asara-france.fr
+                      info@asara-lyon.fr
                     </a>
                   </div>
                 </div>

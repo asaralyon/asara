@@ -86,7 +86,7 @@ async function getNewsletterLinks() {
 export default async function NewsletterPage({ params }: Props) {
   const { locale } = params;
   const isRTL = locale === 'ar';
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-france.fr';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
   
   const [events, articles, newsLinks] = await Promise.all([
     getUpcomingEvents(),

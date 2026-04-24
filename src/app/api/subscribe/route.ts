@@ -41,7 +41,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
           <tr>
             <td style="background: #1f2937; padding: 24px; text-align: center;">
               <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-france.fr</a>
+                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-lyon.fr</a>
               </p>
             </td>
           </tr>
@@ -90,7 +90,7 @@ function getConfirmationEmail(firstName: string, locale: string, baseUrl: string
           <tr>
             <td style="background: #1f2937; padding: 24px; text-align: center;">
               <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-france.fr</a>
+                <a href="${baseUrl}" style="color: #22c55e; text-decoration: none;">www.asara-lyon.fr</a>
               </p>
             </td>
           </tr>
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
           },
         });
 
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-france.fr';
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://asara-lyon.fr';
         const emailContent = getConfirmationEmail(firstName, locale, baseUrl);
 
         await transporter.sendMail({

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     });
 
     // Construire le lien
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://asara-france.fr';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://asara-lyon.fr';
     const resetLink = baseUrl + '/fr/reinitialiser-mot-de-passe?token=' + resetToken;
 
     // Envoyer l'email

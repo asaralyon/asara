@@ -22,22 +22,22 @@ export async function POST(request: Request) {
     maxAge: 0,
   });
   
-  // 2. Avec .asara-france.fr (anciens cookies)
+  // 2. Avec .asara-lyon.fr (anciens cookies)
   response.headers.append(
     'Set-Cookie',
-    'token=; Path=/; Domain=.asara-france.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
+    'token=; Path=/; Domain=.asara-lyon.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
   );
   
-  // 3. Avec www.asara-france.fr
+  // 3. Avec www.asara-lyon.fr
   response.headers.append(
     'Set-Cookie', 
-    'token=; Path=/; Domain=www.asara-france.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
+    'token=; Path=/; Domain=www.asara-lyon.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
   );
   
-  // 4. Avec asara-france.fr (sans point)
+  // 4. Avec asara-lyon.fr (sans point)
   response.headers.append(
     'Set-Cookie',
-    'token=; Path=/; Domain=asara-france.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
+    'token=; Path=/; Domain=asara-lyon.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
   );
 
   return response;

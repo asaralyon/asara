@@ -102,8 +102,8 @@ export function Footer() {
               </div>
               <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <a href="mailto:info@asara-france.fr" className="hover:text-white transition-colors">
-                  info@asara-france.fr
+                <a href="mailto:info@asara-lyon.fr" className="hover:text-white transition-colors">
+                  info@asara-lyon.fr
                 </a>
               </div>
               <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>

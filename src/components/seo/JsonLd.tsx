@@ -8,8 +8,8 @@ export function OrganizationJsonLd({ locale }: OrganizationJsonLdProps) {
     '@type': 'Organization',
     name: 'ASARA',
     alternateName: 'Annuaire des Syriens de France',
-    url: 'https://asara-france.fr',
-    logo: 'https://asara-france.fr/images/logo.png',
+    url: 'https://asara-lyon.fr',
+    logo: 'https://asara-lyon.fr/images/logo.png',
     description: locale === 'ar' 
       ? 'دليل السوريين في فرنسا - فرنسا'
       : 'Association des Syriens d\'France - France',
@@ -105,7 +105,7 @@ export function EventJsonLd({ event }: EventJsonLdProps) {
     organizer: {
       '@type': 'Organization',
       name: 'ASARA',
-      url: 'https://asara-france.fr',
+      url: 'https://asara-lyon.fr',
     },
   };
 

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   const title = t('title');
   const description = t('description');
-  const baseUrl = 'https://asara-france.fr';
+  const baseUrl = 'https://asara-lyon.fr';
 
   return {
     title: {
