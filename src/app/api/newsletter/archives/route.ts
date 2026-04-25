@@ -1,5 +1,4 @@
 export const dynamic = "force-dynamic";
-
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
@@ -18,8 +17,12 @@ export async function GET() {
       },
     });
     return NextResponse.json(archives);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Archives error:', error);
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Erreur serveur',
+      details: error?.message || 'unknown',
+      code: error?.code || 'unknown'
+    }, { status: 500 });
   }
 }
