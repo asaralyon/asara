@@ -17,12 +17,8 @@ export async function GET() {
       },
     });
     return NextResponse.json(archives);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Archives error:', error);
-    return NextResponse.json({ 
-      error: 'Erreur serveur',
-      details: error?.message || 'unknown',
-      code: error?.code || 'unknown'
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
