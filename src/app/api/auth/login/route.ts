@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getJwtSecret } from '@/lib/jwt';
+import { rateLimitAuth } from '@/lib/rate-limit';
 import { compare } from 'bcryptjs';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
@@ -8,6 +9,22 @@ import prisma from '@/lib/prisma';
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  // Rate limiting
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success, limit, remaining } = await rateLimitAuth.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+        }
+      }
+    );
+  }
+
   try {
     const { email, password } = await request.json();
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { rateLimitAuth } from '@/lib/rate-limit';
 import { hash } from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { sendEmail, emailTemplates } from '@/lib/email';
@@ -15,6 +16,14 @@ function generateSlug(base: string): string {
 }
 
 export async function POST(request: Request) {
+  const ip = (request as any).headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = await rateLimitAuth.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+      { status: 429 }
+    );
+  }
   try {
     const body = await request.json();
     console.log('Register attempt with email:', body.email);

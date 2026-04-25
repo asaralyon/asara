@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
+import { rateLimitPublic } from '@/lib/rate-limit';
 import nodemailer from 'nodemailer';
 
 export async function POST(request: Request) {
+  const ip = (request as any).headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = await rateLimitPublic.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez dans 10 minutes.' },
+      { status: 429 }
+    );
+  }
   try {
     const { name, email, phone, subject, message } = await request.json();
 

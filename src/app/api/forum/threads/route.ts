@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimitPublic } from '@/lib/rate-limit';
 import { prisma } from '@/lib/prisma';
 import { getAuthUser } from '@/lib/auth';
 import { z } from 'zod';
@@ -71,6 +72,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = await rateLimitPublic.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Trop de publications. Réessayez dans 10 minutes.' },
+      { status: 429 }
+    );
+  }
   try {
     const user = await getAuthUser(request);
     if (!user) {
