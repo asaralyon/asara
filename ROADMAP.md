@@ -112,7 +112,7 @@ export const rateLimitAPI = new Ratelimit({
 
 ---
 
-#### 🔴 FAILLE #3 — JWT sans refresh token
+#### ✅ FAILLE #3 — JWT sans refresh token — RÉGLÉE le 25/04/2026
 **Problème :** Token d'accès valide 7 jours, sans rotation. Si un token est volé, l'attaquant a 7 jours d'accès.  
 **Solution :** Access token 15min + Refresh token 7j avec rotation.
 
@@ -138,10 +138,10 @@ model RefreshToken {
 }
 ```
 
-- [ ] Ajouter modèle RefreshToken au schema Prisma
-- [ ] Créer `/api/auth/refresh` route
-- [ ] Modifier login pour émettre les deux tokens
-- [ ] Modifier middleware pour valider access token court
+- [x] Ajouter modèle RefreshToken au schema Prisma
+- [x] Créer `/api/auth/refresh` route avec rotation
+- [x] Modifier login — access token 15min + refresh token 7j
+- [x] Logout révoque le refresh token en BDD
 
 ---
 
@@ -616,6 +616,7 @@ git push origin main
 |---|---|---|
 | 25/04/2026 | Faille #1 JWT — suppression de 26 fallbacks hardcodés | ✅ |
 | 25/04/2026 | Faille #2 Rate limiting — 5 routes protégées via Upstash Redis | ✅ |
+| 25/04/2026 | Faille #3 Refresh tokens — rotation access 15min + refresh 7j | ✅ |
 | 25/04/2026 | Archive newsletter — 13 newsletters historiques | ✅ |
 | 25/04/2026 | BDD synchronisée — ep-ancient-cell = prod et local | ✅ |
 | 25/04/2026 | Tous les liens asara-france.fr → asara-lyon.fr | ✅ |
