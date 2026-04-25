@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getJwtSecret } from '@/lib/jwt';
+import crypto from 'crypto';
 import { rateLimitAuth } from '@/lib/rate-limit';
 import { compare } from 'bcryptjs';
 import { SignJWT } from 'jose';
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     
     const token = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('7d')
+      .setExpirationTime('15m')
       .sign(secret);
 
     // Cookie simple sans domain - le navigateur gère automatiquement
@@ -67,8 +68,18 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 15,
       path: '/',
+    });
+
+    // Créer refresh token (7 jours)
+    const refreshToken = crypto.randomBytes(64).toString('hex');
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
     });
 
     await prisma.user.update({
@@ -76,7 +87,7 @@ export async function POST(request: Request) {
       data: { lastLoginAt: new Date() },
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,

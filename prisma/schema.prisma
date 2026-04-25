@@ -105,7 +105,8 @@ forumThreads   ForumThread[]  @relation("ThreadAuthor")
 forumReplies   ForumReply[]   @relation("ReplyAuthor")
 deletedThreads ForumThread[]  @relation("ThreadDeletedBy")
 deletedReplies ForumReply[]   @relation("ReplyDeletedBy")
-forumBan       ForumBan?      @relation("BannedUser")
+refreshTokens  RefreshToken[]
+  forumBan       ForumBan?      @relation("BannedUser")
 forumBansGiven ForumBan[]     @relation("BannedBy")
 }
 
@@ -430,6 +431,18 @@ model ForumReply {
   @@index([threadId])
   @@index([authorId])
   @@map("forum_replies")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
 }
 
 model ForumBan {

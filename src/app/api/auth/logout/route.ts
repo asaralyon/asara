@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import prisma from '@/lib/prisma';
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,14 @@ export async function POST(request: Request) {
     'Set-Cookie',
     'token=; Path=/; Domain=asara-lyon.fr; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax'
   );
+
+  response.cookies.set('refresh_token', '', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  });
 
   return response;
 }
