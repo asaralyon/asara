@@ -2,7 +2,8 @@
 ## Document de référence CTO — Vivant et mis à jour en continu
 
 > **Dernière mise à jour :** Avril 2026  
-> **Statut global :** 🟡 Phase 1 en cours  
+> **Statut global :** 🟡 Phase 1 en cours
+> **Dernière mise à jour :** 25 Avril 2026  
 > **Stack :** Next.js 14 · Prisma · Neon PostgreSQL · Vercel · Stripe · Cloudinary
 
 ---
@@ -53,7 +54,7 @@ asara-france/
 
 ### 1.1 Failles critiques immédiates
 
-#### 🔴 FAILLE #1 — Fallback secret JWT hardcodé
+#### ✅ FAILLE #1 — Fallback secret JWT hardcodé — RÉGLÉE le 25/04/2026
 **Fichier :** `src/app/api/auth/login/route.ts`  
 **Problème :** `process.env.JWT_SECRET || 'secret-key'` — si JWT_SECRET n'est pas défini, n'importe qui peut forger un token valide.  
 **Risque :** Compromission totale de tous les comptes utilisateurs.
@@ -71,8 +72,9 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 ```
 **Fichiers à corriger :** `auth/login/route.ts` · `auth/reset-password/route.ts` · `src/middleware.ts` · `src/lib/auth.ts`
 
-- [ ] Corriger tous les fallbacks JWT_SECRET
-- [ ] Vérifier que JWT_SECRET est bien défini sur Vercel
+- [x] Corriger tous les fallbacks JWT_SECRET (26 fichiers corrigés)
+- [x] Vérifier que JWT_SECRET est bien défini sur Vercel
+- [x] Créer src/lib/jwt.ts — helper centralisé getJwtSecret()
 
 ---
 
@@ -604,6 +606,19 @@ git push origin main
 ```
 
 **Ce fichier doit vivre à la racine du repo sous le nom `ROADMAP.md`**
+
+---
+
+## 📝 Journal des modifications
+
+| Date | Action | Statut |
+|---|---|---|
+| 25/04/2026 | Faille #1 JWT — suppression de 26 fallbacks hardcodés | ✅ |
+| 25/04/2026 | Archive newsletter — 13 newsletters historiques | ✅ |
+| 25/04/2026 | BDD synchronisée — ep-ancient-cell = prod et local | ✅ |
+| 25/04/2026 | Tous les liens asara-france.fr → asara-lyon.fr | ✅ |
+| 25/04/2026 | Logo ASARA France intégré sur toutes les pages | ✅ |
+| 25/04/2026 | Forum bilingue FR/AR avec modération admin | ✅ |
 
 ---
 
