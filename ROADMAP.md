@@ -78,7 +78,7 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 ---
 
-#### 🔴 FAILLE #2 — Aucun rate limiting sur les APIs
+#### ✅ FAILLE #2 — Rate limiting — RÉGLÉE le 25/04/2026
 **Problème :** Les endpoints `/api/auth/login`, `/api/auth/register`, `/api/contact` sont totalement exposés aux attaques par force brute et spam.  
 **Risque :** Brute force des mots de passe, spam de formulaires, coût Neon/Vercel explosif.
 
@@ -104,10 +104,11 @@ export const rateLimitAPI = new Ratelimit({
 - `UPSTASH_REDIS_REST_URL`
 - `UPSTASH_REDIS_REST_TOKEN`
 
-- [ ] Créer compte Upstash (gratuit)
-- [ ] Installer `@upstash/ratelimit @upstash/redis`
-- [ ] Appliquer sur `/api/auth/*` · `/api/contact` · `/api/forum/*`
-- [ ] Ajouter variables sur Vercel
+- [x] Créer compte Upstash (gratuit)
+- [x] Installer `@upstash/ratelimit @upstash/redis`
+- [x] Appliquer sur `/api/auth/*` · `/api/contact` · `/api/forum/*`
+- [x] Ajouter variables sur Vercel
+- [x] src/lib/rate-limit.ts créé avec 3 limiteurs (auth/api/public)
 
 ---
 
@@ -614,6 +615,7 @@ git push origin main
 | Date | Action | Statut |
 |---|---|---|
 | 25/04/2026 | Faille #1 JWT — suppression de 26 fallbacks hardcodés | ✅ |
+| 25/04/2026 | Faille #2 Rate limiting — 5 routes protégées via Upstash Redis | ✅ |
 | 25/04/2026 | Archive newsletter — 13 newsletters historiques | ✅ |
 | 25/04/2026 | BDD synchronisée — ep-ancient-cell = prod et local | ✅ |
 | 25/04/2026 | Tous les liens asara-france.fr → asara-lyon.fr | ✅ |
