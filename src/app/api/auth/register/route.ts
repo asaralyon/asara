@@ -169,17 +169,86 @@ export async function POST(request: Request) {
           ? `Association: ${associationName}`
           : 'Membre';
 
+      const adminUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://asara-lyon.fr') + '/fr/admin/utilisateurs';
       await sendEmail({
         to: 'info@asara-lyon.fr',
-        subject: `Nouvelle inscription - ${firstName} ${lastName}`,
+        subject: `🔔 Nouvelle inscription en attente — ${firstName} ${lastName} (${roleLabel})`,
         html: `
-          <h2>Nouvelle inscription sur ASARA</h2>
-          <p><strong>Nom:</strong> ${firstName} ${lastName}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Type:</strong> ${roleLabel}</p>
-          ${role === 'PROFESSIONAL' ? `<p><strong>Profession:</strong> ${profession}</p>` : ''}
-          ${role === 'ASSOCIATION' ? `<p><strong>Activités:</strong> ${activities}</p>` : ''}
-          <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/utilisateurs">Voir dans l'admin</a></p>
+<!DOCTYPE html>
+<html dir="ltr">
+<head><meta charset="utf-8"></head>
+<body style="font-family: Arial, sans-serif; background: #f3f4f6; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    
+    <div style="background: linear-gradient(135deg, #0c2140 0%, #1a3a5c 100%); padding: 30px; text-align: center;">
+      <img src="https://asara-lyon.fr/images/logo.png" alt="ASARA" width="120" style="margin-bottom: 12px;">
+      <h1 style="color: white; margin: 0; font-size: 20px;">🔔 Nouvelle inscription en attente</h1>
+    </div>
+
+    <div style="padding: 30px;">
+      <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; color: #92400e; font-weight: bold; font-size: 16px;">
+          ⏳ Action requise : Valider ou refuser cette inscription
+        </p>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px; width: 140px;">Nom complet</td>
+          <td style="padding: 12px 0; font-weight: bold; color: #1f2937;">${firstName} ${lastName}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Email</td>
+          <td style="padding: 12px 0; color: #1f2937;"><a href="mailto:${email}" style="color: #0c2140;">${email}</a></td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Type</td>
+          <td style="padding: 12px 0;">
+            <span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold;">
+              ${roleLabel}
+            </span>
+          </td>
+        </tr>
+        ${role === 'PROFESSIONAL' ? `
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Profession</td>
+          <td style="padding: 12px 0; color: #1f2937;">${profession}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Catégorie</td>
+          <td style="padding: 12px 0; color: #1f2937;">${category}</td>
+        </tr>
+        ${city ? `<tr><td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Ville</td><td style="padding: 12px 0; color: #1f2937;">${city}</td></tr>` : ''}
+        ` : ''}
+        ${role === 'ASSOCIATION' ? `
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Association</td>
+          <td style="padding: 12px 0; color: #1f2937;">${associationName}</td>
+        </tr>
+        ${activities ? `<tr><td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Activités</td><td style="padding: 12px 0; color: #1f2937;">${activities}</td></tr>` : ''}
+        ${city ? `<tr><td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Ville</td><td style="padding: 12px 0; color: #1f2937;">${city}</td></tr>` : ''}
+        ` : ''}
+        <tr>
+          <td style="padding: 12px 0; color: #6b7280; font-size: 14px;">Date</td>
+          <td style="padding: 12px 0; color: #1f2937;">${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+        </tr>
+      </table>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${adminUrl}" 
+           style="display: inline-block; background: #0c2140; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
+          👤 Gérer les inscriptions →
+        </a>
+      </div>
+    </div>
+
+    <div style="background: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+      <p style="margin: 0; color: #9ca3af; font-size: 12px;">ASARA — Annuaire des Syriens de France</p>
+      <p style="margin: 4px 0 0; color: #9ca3af; font-size: 12px;">www.asara-lyon.fr</p>
+    </div>
+  </div>
+</body>
+</html>
         `,
       });
     } catch (emailError) {
