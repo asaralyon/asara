@@ -108,6 +108,10 @@ deletedReplies ForumReply[]   @relation("ReplyDeletedBy")
 refreshTokens  RefreshToken[]
   forumBan       ForumBan?      @relation("BannedUser")
 forumBansGiven ForumBan[]     @relation("BannedBy")
+  listings       Listing[]       @relation("ListingAuthor")
+  sentMessages   ListingMessage[] @relation("MessageSender")
+  receivedMessages ListingMessage[] @relation("MessageReceiver")
+  listingReports ListingReport[] @relation("ListingReporter")
 }
 
 // ===========================================
@@ -496,4 +500,93 @@ model AssociationProfile {
   @@index([isPublished])
   @@index([slug])
   @@map("association_profiles")
+}
+// ===========================================
+// Petites Annonces
+// ===========================================
+
+enum ListingStatus {
+  PENDING
+  ACTIVE
+  SOLD
+  EXPIRED
+  REJECTED
+}
+
+enum ListingCategory {
+  EMPLOI
+  IMMOBILIER
+  SERVICES
+  VENTE
+  DONS
+  EVENEMENTS
+  COURS
+  AUTRES
+}
+
+model Listing {
+  id          String          @id @default(cuid())
+  title       String
+  description String          @db.Text
+  price       Float?
+  isFree      Boolean         @default(false)
+  category    ListingCategory @default(AUTRES)
+  status      ListingStatus   @default(PENDING)
+  slug        String          @unique
+
+  authorId    String
+  author      User            @relation("ListingAuthor", fields: [authorId], references: [id])
+
+  city        String?
+  postalCode  String?
+
+  imageUrl1   String?
+  imageUrl2   String?
+  imageUrl3   String?
+
+  views       Int             @default(0)
+  isDeleted   Boolean         @default(false)
+  expiresAt   DateTime?
+
+  messages    ListingMessage[]
+  reports     ListingReport[]
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([authorId])
+  @@index([city])
+  @@map("listings")
+}
+
+model ListingMessage {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([listingId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("listing_messages")
+}
+
+model ListingReport {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("ListingReporter", fields: [userId], references: [id])
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@map("listing_reports")
 }
