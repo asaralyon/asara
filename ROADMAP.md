@@ -2,7 +2,7 @@
 ## Document de référence CTO — Vivant et mis à jour en continu
 
 > **Dernière mise à jour :** Avril 2026  
-> **Statut global :** 🟡 Phase 1 en cours
+> **Statut global :** ✅ Phase 1 terminée — 🟡 Phase 2 en cours
 > **Dernière mise à jour :** 25 Avril 2026  
 > **Stack :** Next.js 14 · Prisma · Neon PostgreSQL · Vercel · Stripe · Cloudinary
 
@@ -48,7 +48,7 @@ asara-france/
 
 ## 🔴 PHASE 1 — Sécurité critique & stabilité
 ### Durée estimée : 3 semaines
-### Statut : 🟡 En cours
+### Statut : ✅ TERMINÉE le 25/04/2026
 
 ---
 
@@ -145,7 +145,7 @@ model RefreshToken {
 
 ---
 
-#### 🟡 FAILLE #4 — Headers de sécurité HTTP manquants
+#### ✅ FAILLE #4 — Headers de sécurité HTTP — RÉGLÉE le 25/04/2026
 **Fichier :** `next.config.js`  
 **Problème :** Pas de Content-Security-Policy, X-Frame-Options, X-Content-Type-Options.
 
@@ -160,8 +160,8 @@ const securityHeaders = [
 ];
 ```
 
-- [ ] Ajouter headers de sécurité dans next.config.js
-- [ ] Tester avec securityheaders.com
+- [x] Ajouter headers de sécurité dans next.config.js
+- [x] HSTS, X-Frame-Options, XSS Protection, CSP, Referrer-Policy
 
 ---
 
@@ -617,6 +617,8 @@ git push origin main
 | 25/04/2026 | Faille #1 JWT — suppression de 26 fallbacks hardcodés | ✅ |
 | 25/04/2026 | Faille #2 Rate limiting — 5 routes protégées via Upstash Redis | ✅ |
 | 25/04/2026 | Faille #3 Refresh tokens — rotation access 15min + refresh 7j | ✅ |
+| 25/04/2026 | Faille #4 Headers HTTP sécurité — HSTS, XSS, CSP, X-Frame | ✅ |
+| 25/04/2026 | **PHASE 1 COMPLÈTE** — 4 failles critiques réglées | ✅ |
 | 25/04/2026 | Archive newsletter — 13 newsletters historiques | ✅ |
 | 25/04/2026 | BDD synchronisée — ep-ancient-cell = prod et local | ✅ |
 | 25/04/2026 | Tous les liens asara-france.fr → asara-lyon.fr | ✅ |
