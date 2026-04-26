@@ -8,7 +8,6 @@ const STATIC_ASSETS = [
   '/images/logo-sm.png',
 ];
 
-// Installation — mise en cache des assets statiques
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
@@ -16,7 +15,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activation — nettoyage des anciens caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -26,11 +24,16 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch — stratégie Network First pour les APIs, Cache First pour les assets
 self.addEventListener('fetch', (event) => {
+  // ✅ CRITIQUE : ignorer toutes les requêtes non-GET (POST, PUT, DELETE...)
+  // Cache.put() ne supporte que GET — sans ce guard, TypeError sur logout/login
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
-  // APIs → Network only (toujours frais)
+  // APIs → Network only (jamais en cache — données fraîches obligatoires)
   if (url.pathname.startsWith('/api/')) {
     return;
   }
@@ -52,8 +55,21 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        // ✅ Ne cacher que les réponses GET valides (status 200, type basic/cors)
+        if (
+          response &&
+          response.status === 200 &&
+          (response.type === 'basic' || response.type === 'cors')
+        ) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            try {
+              cache.put(event.request, clone);
+            } catch {
+              // Certaines réponses ne peuvent pas être mises en cache — silent
+            }
+          });
+        }
         return response;
       })
       .catch(() => caches.match(event.request))

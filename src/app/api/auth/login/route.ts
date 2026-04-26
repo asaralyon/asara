@@ -58,21 +58,13 @@ export async function POST(request: Request) {
 
     const secret = getJwtSecret();
     
+    // Access token 15 minutes
     const token = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('15m')
       .sign(secret);
 
-    // Cookie simple sans domain - le navigateur gère automatiquement
-    cookies().set('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 15,
-      path: '/',
-    });
-
-    // Créer refresh token (7 jours)
+    // Refresh token 7 jours
     const refreshToken = crypto.randomBytes(64).toString('hex');
     await prisma.refreshToken.create({
       data: {
@@ -87,6 +79,7 @@ export async function POST(request: Request) {
       data: { lastLoginAt: new Date() },
     });
 
+    // Construction de la réponse
     const response = NextResponse.json({
       success: true,
       user: {
@@ -97,6 +90,27 @@ export async function POST(request: Request) {
         role: user.role,
       },
     });
+
+    // Cookie access token (15 min)
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 15,
+      path: '/',
+    });
+
+    // Cookie refresh token (7 jours)
+    response.cookies.set('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    return response;
+
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
