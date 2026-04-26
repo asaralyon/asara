@@ -1,35 +1,34 @@
 {
   "name": "ASARA - Annuaire des Syriens de France",
   "short_name": "ASARA",
-  "description": "Annuaire des Syriens de France",
-  "start_url": "/",
+  "description": "Annuaire des Syriens de France - Professionnels, associations et communauté",
+  "start_url": "/fr",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2D8C3C",
+  "theme_color": "#0c2140",
   "orientation": "portrait-primary",
-  "scope": "/",
   "lang": "fr",
   "icons": [
+    { "src": "/images/logo-favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "/images/logo.png", "sizes": "200x154", "type": "image/png" },
+    { "src": "/images/logo-lg.png", "sizes": "400x308", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
     {
-      "src": "/images/logo-favicon.png",
-      "sizes": "64x64",
-      "type": "image/png"
+      "name": "Annuaire",
+      "url": "/fr/annuaire",
+      "description": "Annuaire des professionnels syriens"
     },
     {
-      "src": "/images/logo.png",
-      "sizes": "200x154",
-      "type": "image/png"
+      "name": "Forum",
+      "url": "/fr/forum",
+      "description": "Forum de la communauté"
     },
     {
-      "src": "/images/logo-lg.png",
-      "sizes": "400x308",
-      "type": "image/png"
+      "name": "Événements",
+      "url": "/fr/evenements",
+      "description": "Événements à venir"
     }
   ],
-  "categories": [
-    "community",
-    "business"
-  ],
-  "screenshots": [],
-  "prefer_related_applications": false
+  "categories": ["community", "social", "directory"]
 }
