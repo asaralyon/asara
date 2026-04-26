@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import { rateLimitAuth } from '@/lib/rate-limit';
 import { compare } from 'bcryptjs';
 import { SignJWT } from 'jose';
-import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 
 export const dynamic = "force-dynamic";
@@ -16,7 +15,7 @@ export async function POST(request: Request) {
   if (!success) {
     return NextResponse.json(
       { error: 'Trop de tentatives. Réessayez dans 15 minutes.' },
-      { 
+      {
         status: 429,
         headers: {
           'X-RateLimit-Limit': limit.toString(),
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
     }
 
     const secret = getJwtSecret();
-    
+
     // Access token 15 minutes
     const token = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
@@ -112,7 +111,7 @@ export async function POST(request: Request) {
     return response;
 
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error instanceof Error ? error.message : error);
     return NextResponse.json(
       { error: 'Erreur serveur' },
       { status: 500 }

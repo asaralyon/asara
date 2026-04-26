@@ -7,7 +7,6 @@ export function ClientSessionProvider({ children }: { children: React.ReactNode 
   const router = useRouter();
   const pathname = usePathname();
 
-  // Tente de rafraîchir le token access via le refresh token
   const tryRefresh = useCallback(async (): Promise<boolean> => {
     try {
       const res = await fetch('/api/auth/refresh', {
@@ -20,7 +19,6 @@ export function ClientSessionProvider({ children }: { children: React.ReactNode 
     }
   }, []);
 
-  // Vérifie /api/auth/me — si 401, tente un refresh, sinon déconnecte
   const checkAndRefreshSession = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/me', {
@@ -28,25 +26,20 @@ export function ClientSessionProvider({ children }: { children: React.ReactNode 
         cache: 'no-store',
       });
 
-      if (res.ok) return; // Token encore valide, rien à faire
+      if (res.ok) return;
 
       if (res.status === 401) {
-        // Token expiré → tenter refresh
         const refreshed = await tryRefresh();
         if (refreshed) {
-          // Refresh réussi → le nouveau token est dans le cookie
-          // On force un re-render du Header via router.refresh()
           router.refresh();
         }
-        // Si refresh échoue → l'utilisateur sera redirigé par le middleware
-        // lors de la prochaine navigation vers une page protégée
       }
     } catch {
-      // Erreur réseau — on ne déconnecte pas, peut être temporaire
+      // Erreur réseau temporaire — on ne déconnecte pas
     }
   }, [router, tryRefresh]);
 
-  // Vérification au montage et à chaque changement de route
+  // Vérification à chaque changement de route
   useEffect(() => {
     checkAndRefreshSession();
   }, [pathname, checkAndRefreshSession]);

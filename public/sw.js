@@ -25,15 +25,14 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // ✅ CRITIQUE : ignorer toutes les requêtes non-GET (POST, PUT, DELETE...)
-  // Cache.put() ne supporte que GET — sans ce guard, TypeError sur logout/login
+  // CRITIQUE : ignorer toutes les requêtes non-GET
   if (event.request.method !== 'GET') {
     return;
   }
 
   const url = new URL(event.request.url);
 
-  // APIs → Network only (jamais en cache — données fraîches obligatoires)
+  // APIs → Network only
   if (url.pathname.startsWith('/api/')) {
     return;
   }
@@ -55,7 +54,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // ✅ Ne cacher que les réponses GET valides (status 200, type basic/cors)
         if (
           response &&
           response.status === 200 &&
@@ -66,7 +64,7 @@ self.addEventListener('fetch', (event) => {
             try {
               cache.put(event.request, clone);
             } catch {
-              // Certaines réponses ne peuvent pas être mises en cache — silent
+              // silent
             }
           });
         }
