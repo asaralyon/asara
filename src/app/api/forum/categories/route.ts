@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthUser } from '@/lib/auth';
+import { getCached } from '@/lib/cache';
 import { z } from 'zod';
 
 const categorySchema = z.object({
@@ -17,13 +18,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const locale = searchParams.get('locale') || 'fr';
 
-    const categories = await prisma.forumCategory.findMany({
+    const categories = await getCached('forum:categories', () => prisma.forumCategory.findMany({
       where: { isActive: true },
       include: {
         _count: { select: { threads: { where: { isDeleted: false } } } },
       },
       orderBy: { order: 'asc' },
-    });
+    }), 3600);
 
     // Retourner le nom arabe si disponible et locale=ar
     const localized = categories.map((cat) => ({
