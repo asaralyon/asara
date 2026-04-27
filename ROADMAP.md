@@ -299,9 +299,8 @@ self.addEventListener('install', (e) => {
 
 ---
 
-## 🟢 PHASE 3 — Petites annonces & messagerie
-### Durée estimée : 6 semaines
-### Statut : 🔴 Non démarré
+## ✅ PHASE 3 — Petites annonces & messagerie
+### Statut : ✅ TERMINÉE le 25/04/2026
 
 ---
 
