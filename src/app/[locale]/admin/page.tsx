@@ -169,6 +169,14 @@ export default async function AdminPage({ params }: { params: { locale: string }
             <p className="text-primary-600 text-sm">Envoyer des emails aux membres et professionnels</p>
           </Link>
 
+          <Link href={'/' + locale + '/admin/annonces'} className="card hover:shadow-strong transition-shadow border-2 border-orange-100">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xl">📋</span>
+              <h3 className="font-semibold text-lg text-orange-700">Annonces</h3>
+            </div>
+            <p className="text-orange-600 text-sm">Modérer les petites annonces</p>
+          </Link>
+
           <Link href={'/' + locale + '/admin/categories'} className="card hover:shadow-strong transition-shadow">
             <div className="flex items-center gap-2 mb-2">
               <UserCheck className="w-5 h-5 text-neutral-500" />

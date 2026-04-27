@@ -24,7 +24,6 @@ export function Header() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Vérifier l'auth à chaque changement de route
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -43,18 +42,18 @@ export function Header() {
       }
       setLoading(false);
     };
-    
     checkAuth();
-  }, [pathname]); // Re-vérifier à chaque navigation
+  }, [pathname]);
 
   const navigation = [
-  { name: t('home'), href: `/${locale}` },
-  { name: t('directory'), href: `/${locale}/annuaire` },
-  { name: t('associations'), href: `/${locale}/annuaire-associations` },
-  { name: t('events'), href: `/${locale}/evenements` },
-  { name: t('contact'), href: `/${locale}/contact` },
-  { name: t('newsletter'), href: `/${locale}/newsletter` },
-];
+    { name: t('home'), href: `/${locale}` },
+    { name: t('directory'), href: `/${locale}/annuaire` },
+    { name: t('associations'), href: `/${locale}/annuaire-associations` },
+    { name: t('events'), href: `/${locale}/evenements` },
+    { name: t('listings'), href: `/${locale}/annonces` },
+    { name: t('contact'), href: `/${locale}/contact` },
+    { name: t('newsletter'), href: `/${locale}/newsletter` },
+  ];
 
   const isRTL = locale === 'ar';
 
@@ -62,7 +61,6 @@ export function Header() {
     <header className="bg-white shadow-sm sticky top-0 z-50" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="container-app">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2">
             <Image
               src="/images/logo.png"
@@ -71,10 +69,8 @@ export function Header() {
               height={123}
               className="h-16 w-auto"
             />
-            
           </Link>
 
-          {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center gap-6">
             {navigation.map((item) => (
               <Link
@@ -87,7 +83,6 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
 
