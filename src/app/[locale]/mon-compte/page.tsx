@@ -252,14 +252,7 @@ export default async function AccountPage({ params }: { params: { locale: string
                         : (isRTL ? 'عضو' : 'Membre')}
                     </span>
                   </div>
-                  {user.role !== 'ASSOCIATION' && (
-                    <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <span className="text-neutral-600">{isRTL ? 'السعر' : 'Prix'}</span>
-                      <span className="font-semibold text-primary-600">
-                        {user.role === 'PROFESSIONAL' ? '100 €/an' : '15 €/an'}
-                      </span>
-                    </div>
-                  )}
+
                   <div className="border-t border-neutral-200 pt-3 mt-3" />
                   <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <span className="text-neutral-600">{t('membershipStart')}</span>
