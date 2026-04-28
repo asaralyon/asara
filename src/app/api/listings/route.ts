@@ -7,14 +7,14 @@ import { z } from 'zod';
 const createSchema = z.object({
   title: z.string().min(5).max(100),
   description: z.string().min(20).max(3000),
-  price: z.number().min(0).optional(),
+  price: z.number().min(0).optional().nullable(),
   isFree: z.boolean().default(false),
   category: z.enum(['EMPLOI','IMMOBILIER','SERVICES','VENTE','DONS','EVENEMENTS','COURS','AUTRES']),
   city: z.string().optional(),
   postalCode: z.string().optional(),
-  imageUrl1: z.string().url().optional(),
-  imageUrl2: z.string().url().optional(),
-  imageUrl3: z.string().url().optional(),
+  imageUrl1: z.string().url().optional().or(z.literal('')).transform(v => v || undefined),
+  imageUrl2: z.string().url().optional().or(z.literal('')).transform(v => v || undefined),
+  imageUrl3: z.string().url().optional().or(z.literal('')).transform(v => v || undefined),
 });
 
 function generateSlug(title: string): string {
@@ -64,9 +64,14 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const parsed = createSchema.safeParse(body);
-    if (!parsed.success) return NextResponse.json({ error: 'Données invalides' }, { status: 400 });
+    if (!parsed.success) {
+      console.error('Validation errors:', parsed.error.flatten());
+      return NextResponse.json({ 
+        error: 'Données invalides', 
+        details: parsed.error.flatten() 
+      }, { status: 400 });
+    }
 
-    // Limite : 3 annonces actives par utilisateur
     const activeCount = await prisma.listing.count({
       where: { authorId: user.id, status: { in: ['ACTIVE', 'PENDING'] }, isDeleted: false },
     });
@@ -84,7 +89,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier admin
     try {
       const { sendEmail } = await import('@/lib/email');
       await sendEmail({

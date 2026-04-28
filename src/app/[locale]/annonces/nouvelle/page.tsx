@@ -29,24 +29,34 @@ export default function NouvellAnnoncePage() {
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
-    try {
-      const res = await fetch('/api/listings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          price: form.isFree ? null : parseFloat(form.price) || null,
-        }),
-      });
-      if (res.status === 401) { router.push(`/${locale}/connexion`); return; }
-      if (!res.ok) { const d = await res.json(); setError(d.error || 'Erreur'); return; }
-      router.push(`/${locale}/annonces?success=1`);
-    } catch { setError('Erreur de connexion'); }
-    finally { setSubmitting(false); }
-  };
+  e.preventDefault();
+  setSubmitting(true);
+  setError('');
+  try {
+    const res = await fetch('/api/listings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',  // ← MANQUAIT
+      body: JSON.stringify({
+        ...form,
+        price: form.isFree ? null : (parseFloat(form.price) || null),
+        // Nettoyer les chaînes vides
+        imageUrl1: form.imageUrl1 || undefined,
+        imageUrl2: form.imageUrl2 || undefined,
+        imageUrl3: form.imageUrl3 || undefined,
+        city: form.city || undefined,
+        postalCode: form.postalCode || undefined,
+      }),
+    });
+    if (res.status === 401) { router.push(`/${locale}/connexion`); return; }
+    if (!res.ok) { const d = await res.json(); setError(d.error || 'Erreur'); return; }
+    router.push(`/${locale}/mon-compte/annonces`);
+  } catch { 
+    setError('Erreur de connexion'); 
+  } finally { 
+    setSubmitting(false); 
+  }
+};
 
   return (
     <div className="min-h-screen bg-neutral-50 py-8" dir={isRTL ? 'rtl' : 'ltr'}>

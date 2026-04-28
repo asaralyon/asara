@@ -283,7 +283,27 @@ export default async function AccountPage({ params }: { params: { locale: string
                   </div>
                 </div>
               </div>
-
+            
+            {/* Card Annonces */}
+<Link
+  href={`/${locale}/mon-compte/annonces`}
+  className="card border-2 border-orange-100 bg-orange-50 hover:shadow-strong transition-shadow block"
+>
+  <div className={`flex items-center gap-3 mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+      <span className="text-xl">📋</span>
+    </div>
+    <h2 className={`text-lg font-semibold text-orange-800 ${isRTL ? 'text-right' : ''}`}>
+      {isRTL ? 'إعلاناتي' : 'Mes annonces'}
+    </h2>
+  </div>
+  <p className={`text-sm text-orange-700 ${isRTL ? 'text-right' : ''}`}>
+    {isRTL ? 'إدارة إعلاناتي ونشر إعلان جديد' : 'Gérer mes annonces et en déposer'}
+  </p>
+  <p className={`text-xs text-orange-600 mt-2 font-medium ${isRTL ? 'text-right' : ''}`}>
+    {isRTL ? '← انقر للوصول' : '→ Accéder'}
+  </p>
+</Link>
               {/* Zone de danger */}
               <div className="card border-red-200 bg-red-50/50">
                 <h2 className={`text-lg font-semibold text-red-700 mb-4 ${isRTL ? 'text-right' : ''}`}>
