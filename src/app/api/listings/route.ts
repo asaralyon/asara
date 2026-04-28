@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = 20;
 
-    const where: any = { status: 'ACTIVE', isDeleted: false };
+    const myListings = searchParams.get('myListings');
+    const where: any = myListings ? { isDeleted: false } : { status: 'ACTIVE', isDeleted: false };
     if (category) where.category = category;
     if (city) where.city = { contains: city, mode: 'insensitive' };
     if (search) where.OR = [
