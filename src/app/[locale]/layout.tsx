@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ClientSessionProvider } from '@/components/auth/ClientSessionProvider';
 import '../globals.css';
 import { Analytics } from '@vercel/analytics/next';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 type Props = {
   children: React.ReactNode;
@@ -113,16 +114,9 @@ export default async function LocaleLayout({ children, params }: Props) {
             <Footer />
           </ClientSessionProvider>
         </NextIntlClientProvider>
+        <ServiceWorkerRegister />
         <Analytics />
-        <script dangerouslySetInnerHTML={{ __html: `
-          if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-              navigator.serviceWorker.register('/sw.js')
-                .then(function(reg) { console.log('SW registered'); })
-                .catch(function(err) { console.log('SW error:', err); });
-            });
-          }
-        `}} />
+
       </body>
     </html>
   );
