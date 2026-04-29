@@ -3,50 +3,99 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getAuthUser } from '@/lib/auth';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+async function findListing(idOrSlug: string) {
+  // Essayer par ID d'abord, puis par slug
+  const listing = await prisma.listing.findFirst({
+    where: {
+      OR: [
+        { id: idOrSlug },
+        { slug: idOrSlug },
+      ],
+      isDeleted: false,
+    },
+    include: {
+      author: { select: { id: true, firstName: true, lastName: true } },
+      images: { orderBy: { order: 'asc' } },
+    },
+  });
+  return listing;
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const listing = await prisma.listing.findFirst({
-      where: { OR: [{ id: params.id }, { slug: params.id }], isDeleted: false },
-      include: { author: { select: { id: true, firstName: true, lastName: true, createdAt: true } } },
+    const listing = await findListing(params.id);
+    if (!listing) {
+      return NextResponse.json({ error: 'Annonce introuvable' }, { status: 404 });
+    }
+
+    // Incrémenter les vues
+    await prisma.listing.update({
+      where: { id: listing.id },
+      data: { views: { increment: 1 } },
     });
-    if (!listing) return NextResponse.json({ error: 'Annonce introuvable' }, { status: 404 });
-    // Incrémenter vues
-    await prisma.listing.update({ where: { id: listing.id }, data: { views: { increment: 1 } } });
+
     return NextResponse.json(listing);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const user = await getAuthUser(request);
     if (!user) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
-    const body = await request.json();
-    const listing = await prisma.listing.findUnique({ where: { id: params.id } });
+
+    const listing = await findListing(params.id);
     if (!listing) return NextResponse.json({ error: 'Annonce introuvable' }, { status: 404 });
+
+    // Seul l'auteur ou admin peut modifier
     if (listing.authorId !== user.id && user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
     }
-    const updated = await prisma.listing.update({ where: { id: params.id }, data: body });
+
+    const body = await request.json();
+    const updated = await prisma.listing.update({
+      where: { id: listing.id },
+      data: body,
+    });
+
     return NextResponse.json(updated);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const user = await getAuthUser(request);
     if (!user) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
-    const listing = await prisma.listing.findUnique({ where: { id: params.id } });
+
+    const listing = await findListing(params.id);
     if (!listing) return NextResponse.json({ error: 'Annonce introuvable' }, { status: 404 });
+
     if (listing.authorId !== user.id && user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
     }
-    await prisma.listing.update({ where: { id: params.id }, data: { isDeleted: true } });
+
+    await prisma.listing.update({
+      where: { id: listing.id },
+      data: { isDeleted: true },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
