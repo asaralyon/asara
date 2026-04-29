@@ -1,17 +1,6 @@
-const CACHE_NAME = 'asara-v2';
-const STATIC_ASSETS = [
-  '/',
-  '/fr/forum',
-  '/fr/annuaire',
-  '/fr/newsletter',
-  '/images/logo.png',
-  '/images/logo-sm.png',
-];
+const CACHE_NAME = 'asara-v1';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-  );
   self.skipWaiting();
 });
 
@@ -25,51 +14,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // CRITIQUE : ignorer toutes les requêtes non-GET
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
   const url = new URL(event.request.url);
 
-  // APIs → Network only
-  if (url.pathname.startsWith('/api/')) {
-    return;
-  }
-
-  // Assets statiques → Cache First
+  // Ne rien intercepter sauf les images statiques
   if (
-    url.pathname.startsWith('/images/') ||
-    url.pathname.startsWith('/_next/static/')
+    event.request.method !== 'GET' ||
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/_next/') ||
+    !url.pathname.startsWith('/images/')
   ) {
-    event.respondWith(
-      caches.match(event.request).then(
-        (cached) => cached || fetch(event.request)
-      )
-    );
-    return;
+    return; // Laisser passer sans interception
   }
 
-  // Pages → Network First avec fallback cache
+  // Cache uniquement les images
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (
-          response &&
-          response.status === 200 &&
-          (response.type === 'basic' || response.type === 'cors')
-        ) {
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (response && response.ok && response.type === 'basic') {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            try {
-              cache.put(event.request, clone);
-            } catch {
-              // silent
-            }
-          });
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      })
-      .catch(() => caches.match(event.request))
+      });
+    })
   );
 });
