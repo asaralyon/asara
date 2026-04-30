@@ -1,55 +1,63 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 export function ClientSessionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const isRefreshing = useRef(false);
+  const lastCheck = useRef(0);
 
   const tryRefresh = useCallback(async (): Promise<boolean> => {
+    if (isRefreshing.current) return false;
+    isRefreshing.current = true;
     try {
       const res = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include',
       });
-      return res.ok;
+      if (res.ok) {
+        router.refresh();
+        return true;
+      }
+      return false;
     } catch {
       return false;
+    } finally {
+      isRefreshing.current = false;
     }
-  }, []);
+  }, [router]);
 
-  const checkAndRefreshSession = useCallback(async () => {
+  const checkSession = useCallback(async () => {
+    // Throttle : max une vérification toutes les 30 secondes
+    const now = Date.now();
+    if (now - lastCheck.current < 30000) return;
+    lastCheck.current = now;
+
     try {
       const res = await fetch('/api/auth/me', {
         credentials: 'include',
         cache: 'no-store',
       });
-
-      if (res.ok) return;
-
       if (res.status === 401) {
-        const refreshed = await tryRefresh();
-        if (refreshed) {
-          router.refresh();
-        }
+        await tryRefresh();
       }
     } catch {
-      // Erreur réseau temporaire — on ne déconnecte pas
+      // Erreur réseau temporaire — silencieux
     }
-  }, [router, tryRefresh]);
+  }, [tryRefresh]);
 
-  // Vérification à chaque changement de route
+  // Vérification au changement de route (throttlée)
   useEffect(() => {
-    checkAndRefreshSession();
-  }, [pathname, checkAndRefreshSession]);
+    checkSession();
+  }, [pathname, checkSession]);
 
-  // Refresh proactif toutes les 13 minutes (avant expiration des 15min)
+  // Refresh proactif toutes les 13 minutes
   useEffect(() => {
     const interval = setInterval(() => {
       tryRefresh();
     }, 13 * 60 * 1000);
-
     return () => clearInterval(interval);
   }, [tryRefresh]);
 

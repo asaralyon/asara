@@ -131,14 +131,23 @@ export default function NewsletterArchive({ locale }: Props) {
               </button>
             </div>
 
-            <div className="p-4">
-              <iframe
-                srcDoc={selectedArchive.htmlContent || ''}
-                className="w-full rounded-xl border border-neutral-200"
-                style={{ height: '70vh' }}
-                title="Newsletter"
-                sandbox="allow-same-origin"
-              />
+            <div className="p-4 text-center">
+              <p className="text-neutral-500 mb-4">
+                {isRTL ? 'انقر لعرض النشرة في نافذة جديدة' : 'Cliquez pour voir la newsletter dans un nouvel onglet'}
+              </p>
+              <button
+                onClick={() => {
+                  const win = window.open('', '_blank');
+                  if (win && selectedArchive.htmlContent) {
+                    win.document.write(selectedArchive.htmlContent);
+                    win.document.close();
+                  }
+                }}
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                {isRTL ? 'فتح النشرة' : 'Ouvrir la newsletter'}
+              </button>
             </div>
 
             <div className={"flex items-center justify-end gap-3 p-5 border-t " + (isRTL ? 'flex-row-reverse' : '')}>
