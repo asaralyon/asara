@@ -277,7 +277,28 @@ export default async function AccountPage({ params }: { params: { locale: string
                 </div>
               </div>
             
-            {/* Card Annonces */}
+            {/* Card Messages */}
+<Link
+  href={`/${locale}/mon-compte/messages`}
+  className="card border-2 border-blue-100 bg-blue-50 hover:shadow-strong transition-shadow block"
+>
+  <div className={`flex items-center gap-3 mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+      <span className="text-xl">💬</span>
+    </div>
+    <h2 className={`text-lg font-semibold text-blue-800 ${isRTL ? 'text-right' : ''}`}>
+      {isRTL ? 'رسائلي' : 'Mes messages'}
+    </h2>
+  </div>
+  <p className={`text-sm text-blue-700 ${isRTL ? 'text-right' : ''}`}>
+    {isRTL ? 'محادثاتي مع المعلنين' : 'Mes conversations avec les annonceurs'}
+  </p>
+  <p className={`text-xs text-blue-600 mt-2 font-medium ${isRTL ? 'text-right' : ''}`}>
+    {isRTL ? '← انقر للوصول' : '→ Accéder'}
+  </p>
+</Link>
+
+{/* Card Annonces */}
 <Link
   href={`/${locale}/mon-compte/annonces`}
   className="card border-2 border-orange-100 bg-orange-50 hover:shadow-strong transition-shadow block"

@@ -33,6 +33,7 @@ const publicPaths = [
 // Routes réservées aux utilisateurs connectés
 const protectedPaths = [
   'mon-compte',
+  'mon-compte/messages',
 ];
 
 // Routes réservées aux admins
