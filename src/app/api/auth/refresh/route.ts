@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Créer nouveau access token (15 minutes)
     const accessToken = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('15m')
+      .setExpirationTime('24h')
       .sign(getJwtSecret());
 
     // Créer nouveau refresh token (7 jours) - rotation
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 15,
+      maxAge: 60 * 60 * 24,
       path: '/',
     });
 

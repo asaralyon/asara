@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     // Access token 15 minutes
     const token = await new SignJWT({ userId: user.id, role: user.role })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('15m')
+      .setExpirationTime('24h')
       .sign(secret);
 
     // Refresh token 7 jours
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 15,
+      maxAge: 60 * 60 * 24,
       path: '/',
     });
 

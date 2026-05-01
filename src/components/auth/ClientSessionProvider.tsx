@@ -41,7 +41,12 @@ export function ClientSessionProvider({ children }: { children: React.ReactNode 
         cache: 'no-store',
       });
       if (res.status === 401) {
-        await tryRefresh();
+        const refreshed = await tryRefresh();
+        // Si le refresh échoue aussi, on arrête silencieusement
+        // L'utilisateur devra se reconnecter à la prochaine action protégée
+        if (!refreshed) {
+          lastCheck.current = Date.now() + 5 * 60 * 1000; // Pause 5 min avant retry
+        }
       }
     } catch {
       // Erreur réseau temporaire — silencieux

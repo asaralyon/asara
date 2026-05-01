@@ -1,7 +1,7 @@
-export const dynamic = "force-dynamic";
+'use client';
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import prisma from '@/lib/prisma';
 
 const CATEGORIES: Record<string, { fr: string; ar: string; icon: string }> = {
   EMPLOI: { fr: 'Emploi', ar: 'عمل', icon: '💼' },
@@ -14,44 +14,49 @@ const CATEGORIES: Record<string, { fr: string; ar: string; icon: string }> = {
   AUTRES: { fr: 'Autres', ar: 'أخرى', icon: '📌' },
 };
 
-type Props = { params: { locale: string; slug: string } };
-
-async function getListing(slug: string) {
-  // Appel direct Prisma — pas de fetch HTTP qui peut boucler
-  const listing = await prisma.listing.findFirst({
-    where: {
-      OR: [{ slug }, { id: slug }],
-      isDeleted: false,
-      status: 'ACTIVE',
-    },
-    include: {
-      author: {
-        select: { id: true, firstName: true, lastName: true, createdAt: true },
-      },
-    },
-  });
-
-  if (listing) {
-    await prisma.listing.update({
-      where: { id: listing.id },
-      data: { views: { increment: 1 } },
-    });
-  }
-
-  return listing;
-}
-
-export default async function ListingPage({ params }: Props) {
-  const { locale, slug } = params;
+export default function ListingPage() {
+  const params = useParams();
+  const locale = params?.locale as string;
+  const slug = params?.slug as string;
   const isRTL = locale === 'ar';
-  const listing = await getListing(slug);
-  if (!listing) notFound();
+
+  const [listing, setListing] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/listings/${slug}`)
+      .then(r => {
+        if (!r.ok) { setError(true); setLoading(false); return null; }
+        return r.json();
+      })
+      .then(data => {
+        if (data) setListing(data);
+        setLoading(false);
+      })
+      .catch(() => { setError(true); setLoading(false); });
+  }, [slug]);
+
+  if (loading) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="animate-pulse text-neutral-400">{isRTL ? 'جارٍ التحميل...' : 'Chargement...'}</div>
+    </div>
+  );
+
+  if (error || !listing) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-neutral-600 mb-4">{isRTL ? 'الإعلان غير موجود' : 'Annonce introuvable'}</p>
+        <Link href={`/${locale}/annonces`} className="btn-primary">{isRTL ? 'العودة' : 'Retour'}</Link>
+      </div>
+    </div>
+  );
 
   const cat = CATEGORIES[listing.category];
-  const date = new Date(listing.createdAt).toLocaleDateString(
-    isRTL ? 'ar-SA' : 'fr-FR',
-    { day: 'numeric', month: 'long', year: 'numeric' }
-  );
+  const date = new Date(listing.createdAt).toLocaleDateString(isRTL ? 'ar-SA' : 'fr-FR', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
 
   return (
     <main dir={isRTL ? 'rtl' : 'ltr'}>
@@ -67,20 +72,12 @@ export default async function ListingPage({ params }: Props) {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             {listing.imageUrl1 && (
-              <div className="grid grid-cols-1 gap-3">
-                <img
-                  src={listing.imageUrl1}
-                  alt={listing.title}
-                  className="w-full h-72 object-cover rounded-2xl"
-                />
+              <div className="space-y-3">
+                <img src={listing.imageUrl1} alt={listing.title} className="w-full h-72 object-cover rounded-2xl" />
                 {(listing.imageUrl2 || listing.imageUrl3) && (
                   <div className="grid grid-cols-2 gap-3">
-                    {listing.imageUrl2 && (
-                      <img src={listing.imageUrl2} alt="" className="w-full h-40 object-cover rounded-xl" />
-                    )}
-                    {listing.imageUrl3 && (
-                      <img src={listing.imageUrl3} alt="" className="w-full h-40 object-cover rounded-xl" />
-                    )}
+                    {listing.imageUrl2 && <img src={listing.imageUrl2} alt="" className="w-full h-40 object-cover rounded-xl" />}
+                    {listing.imageUrl3 && <img src={listing.imageUrl3} alt="" className="w-full h-40 object-cover rounded-xl" />}
                   </div>
                 )}
               </div>
@@ -98,7 +95,7 @@ export default async function ListingPage({ params }: Props) {
                 )}
               </div>
               <h1 className="text-2xl font-bold text-neutral-900 mb-4">{listing.title}</h1>
-              {!listing.isFree && listing.price !== null && listing.price !== undefined && (
+              {!listing.isFree && listing.price != null && (
                 <p className="text-3xl font-bold text-primary-600 mb-4">{listing.price} €</p>
               )}
               <div className="flex items-center gap-4 text-sm text-neutral-500 mb-6 flex-wrap">
@@ -108,9 +105,7 @@ export default async function ListingPage({ params }: Props) {
               </div>
               <div className="border-t pt-4">
                 <h3 className="font-semibold mb-3">{isRTL ? 'الوصف' : 'Description'}</h3>
-                <p className="text-neutral-700 whitespace-pre-wrap leading-relaxed">
-                  {listing.description}
-                </p>
+                <p className="text-neutral-700 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
               </div>
             </div>
           </div>
@@ -123,30 +118,17 @@ export default async function ListingPage({ params }: Props) {
                   {listing.author?.firstName?.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-medium">
-                    {listing.author?.firstName} {listing.author?.lastName}
-                  </p>
+                  <p className="font-medium">{listing.author?.firstName} {listing.author?.lastName}</p>
                   <p className="text-sm text-neutral-500">
-                    {isRTL ? 'عضو منذ' : 'Membre depuis'}{' '}
-                    {new Date(listing.author.createdAt).toLocaleDateString(
-                      isRTL ? 'ar-SA' : 'fr-FR',
-                      { month: 'long', year: 'numeric' }
-                    )}
+                    {isRTL ? 'عضو منذ' : 'Membre depuis'} {new Date(listing.author?.createdAt).toLocaleDateString(isRTL ? 'ar-SA' : 'fr-FR', { month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </div>
-              <Link
-                href={`/${locale}/annonces/${slug}/contact`}
-                className="btn-primary w-full text-center block"
-              >
+              <Link href={`/${locale}/annonces/${slug}/contact`} className="btn-primary w-full text-center block">
                 ✉️ {isRTL ? 'تواصل مع المعلن' : "Contacter l'annonceur"}
               </Link>
             </div>
-
-            <Link
-              href={`/${locale}/annonces`}
-              className="block text-center text-neutral-500 hover:text-primary-600 text-sm"
-            >
+            <Link href={`/${locale}/annonces`} className="block text-center text-neutral-500 hover:text-primary-600 text-sm">
               ← {isRTL ? 'العودة إلى الإعلانات' : 'Retour aux annonces'}
             </Link>
           </div>
