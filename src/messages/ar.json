@@ -156,7 +156,9 @@
     "website": "الموقع الإلكتروني",
     "linkedinUrl": "لينكد إن",
     "facebookUrl": "فيسبوك",
-    "instagramUrl": "إنستغرام"
+    "instagramUrl": "إنستغرام",
+    "pseudo": "الاسم المستعار (الرسائل والمنتدى)",
+    "pseudoHelper": "يُعرض بدلاً من اسمك. اتركه فارغاً لاستخدام اسمك الأول."
   },
   "membership": {
     "professional": {

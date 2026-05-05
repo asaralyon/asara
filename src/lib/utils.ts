@@ -117,3 +117,14 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     return false;
   }
 }
+
+
+// Retourne le pseudo si défini, sinon le prénom uniquement
+export function getDisplayName(user: {
+  firstName: string;
+  lastName?: string;
+  pseudo?: string | null;
+}): string {
+  if (user.pseudo?.trim()) return user.pseudo.trim();
+  return user.firstName;
+}

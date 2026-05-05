@@ -156,7 +156,9 @@
     "website": "Site web",
     "linkedinUrl": "LinkedIn",
     "facebookUrl": "Facebook",
-    "instagramUrl": "Instagram"
+    "instagramUrl": "Instagram",
+    "pseudo": "Pseudo (messages & forum)",
+    "pseudoHelper": "Affiché à la place de votre nom. Laissez vide pour utiliser votre prénom."
   },
   "membership": {
     "professional": {

@@ -25,8 +25,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         OR: [{ senderId: user.id }, { receiverId: user.id }],
       },
       include: {
-        sender: { select: { id: true, firstName: true, lastName: true } },
-        receiver: { select: { id: true, firstName: true, lastName: true } },
+        sender: { select: { id: true, firstName: true, lastName: true, pseudo: true } },
+        receiver: { select: { id: true, firstName: true, lastName: true, pseudo: true } },
       },
       orderBy: { createdAt: 'asc' },
     });
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         receiverId: listing.authorId,
       },
       include: {
-        sender: { select: { id: true, firstName: true, lastName: true } },
+        sender: { select: { id: true, firstName: true, lastName: true, pseudo: true } },
       },
     });
 

@@ -22,6 +22,7 @@ export default function EditAccountForm({ user, locale }: EditAccountFormProps) 
     address: user.address || '',
     city: user.city || '',
     postalCode: user.postalCode || '',
+    pseudo: user.pseudo || '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -176,6 +177,33 @@ export default function EditAccountForm({ user, locale }: EditAccountFormProps) 
             className="input"
           />
         </div>
+      </div>
+
+      {/* Pseudo messagerie */}
+      <div className="sm:col-span-2 border-t border-neutral-200 pt-6">
+        <label htmlFor="pseudo" className="label font-semibold">
+          {isRTL ? 'الاسم المستعار (للرسائل)' : 'Pseudo (pour les messages)'}
+        </label>
+        <p className="text-xs text-neutral-500 mb-2">
+          {isRTL
+            ? 'اختياري — سيظهر بدلاً من اسمك الحقيقي في المراسلات والمنتدى'
+            : 'Optionnel — sera affiché à la place de votre nom dans les messages et le forum'}
+        </p>
+        <input
+          type="text"
+          id="pseudo"
+          name="pseudo"
+          value={formData.pseudo}
+          onChange={handleChange}
+          className="input"
+          maxLength={30}
+          placeholder={isRTL ? 'مثال: أبو علي، سارة123' : 'Ex: Safwan123, Sara_Lyon'}
+          pattern="[a-zA-Z0-9_\u0600-\u06FF\s]{2,30}"
+          title={isRTL ? '2-30 حرف، أحرف وأرقام فقط' : '2-30 caractères, lettres et chiffres uniquement'}
+        />
+        <p className="text-xs text-neutral-400 mt-1">
+          {formData.pseudo.length}/30 — {isRTL ? 'حروف، أرقام و _ مسموح' : 'Lettres, chiffres et _ autorisés'}
+        </p>
       </div>
 
       <div className="flex gap-4 pt-4">

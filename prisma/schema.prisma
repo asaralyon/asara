@@ -93,6 +93,9 @@ model User {
   // Newsletter preference (marketing uniquement)
   newsletterOptIn Boolean @default(true)
 
+  // Pseudo pour les messages et le forum (optionnel)
+  pseudo          String?   @unique
+
   @@index([email])
   @@index([status])
   @@index([role])

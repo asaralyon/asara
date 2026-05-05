@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         threadId,
       },
       include: {
-        author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true } },
+        author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true, pseudo: true } },
       },
     });
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       ...reply,
       author: {
         ...reply.author,
-        name: `${reply.author.firstName} ${reply.author.lastName}`.trim(),
+        name: reply.author.pseudo?.trim() || reply.author.firstName,
       },
     }, { status: 201 });
   } catch (error) {

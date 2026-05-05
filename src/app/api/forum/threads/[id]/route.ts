@@ -7,12 +7,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const thread = await prisma.forumThread.findFirst({
       where: { OR: [{ id: params.id }, { slug: params.id }], isDeleted: false },
       include: {
-        author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true } },
+        author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true, pseudo: true } },
         category: { select: { id: true, name: true, color: true, slug: true } },
         replies: {
           where: { isDeleted: false },
           include: {
-            author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true } },
+            author: { select: { id: true, firstName: true, lastName: true, email: true, createdAt: true, pseudo: true } },
           },
           orderBy: { createdAt: 'asc' },
         },
@@ -32,13 +32,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       ...thread,
       author: {
         ...thread.author,
-        name: `${thread.author.firstName} ${thread.author.lastName}`.trim(),
+        name: thread.author.pseudo?.trim() || thread.author.firstName,
       },
       replies: thread.replies.map((r) => ({
         ...r,
         author: {
           ...r.author,
-          name: `${r.author.firstName} ${r.author.lastName}`.trim(),
+          name: r.author.pseudo?.trim() || r.author.firstName,
         },
       })),
     };

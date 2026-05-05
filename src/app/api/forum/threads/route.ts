@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       prisma.forumThread.findMany({
         where,
         include: {
-          author: { select: { id: true, firstName: true, lastName: true, email: true } },
+          author: { select: { id: true, firstName: true, lastName: true, email: true, pseudo: true } },
           category: { select: { id: true, name: true, color: true, slug: true } },
           _count: { select: { replies: { where: { isDeleted: false } } } },
         },
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       ...t,
       author: {
         ...t.author,
-        name: `${t.author.firstName} ${t.author.lastName}`.trim(),
+        name: t.author.pseudo?.trim() || t.author.firstName,
       },
     }));
 

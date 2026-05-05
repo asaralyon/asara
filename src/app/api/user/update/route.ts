@@ -19,9 +19,22 @@ export async function PATCH(request: NextRequest) {
     const { payload } = await jwtVerify(token, secret);
 
     const body = await request.json();
-    const { firstName, lastName, phone, address, city, postalCode } = body;
+    const { firstName, lastName, phone, address, city, postalCode, pseudo } = body;
 
     // Mise à jour des informations utilisateur
+    // Vérifier unicité du pseudo si fourni
+    if (pseudo && pseudo.trim()) {
+      const existing = await prisma.user.findUnique({
+        where: { pseudo: pseudo.trim() },
+      });
+      if (existing && existing.id !== payload.userId) {
+        return NextResponse.json(
+          { error: 'Ce pseudo est déjà utilisé par un autre membre' },
+          { status: 400 }
+        );
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: payload.userId as string },
       data: {
@@ -31,6 +44,7 @@ export async function PATCH(request: NextRequest) {
         address,
         city,
         postalCode,
+        pseudo: pseudo?.trim() || null,
       },
     });
 
@@ -44,6 +58,7 @@ export async function PATCH(request: NextRequest) {
         address: updatedUser.address,
         city: updatedUser.city,
         postalCode: updatedUser.postalCode,
+        pseudo: updatedUser.pseudo,
       },
     });
   } catch (error) {
