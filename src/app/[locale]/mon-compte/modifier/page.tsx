@@ -23,7 +23,11 @@ export default async function EditAccountPage({ params }: { params: { locale: st
     
     user = await prisma.user.findUnique({
       where: { id: payload.userId as string },
-      include: { profile: true },
+      select: {
+        id: true, firstName: true, lastName: true,
+        phone: true, address: true, city: true, postalCode: true,
+        pseudo: true, profile: true,
+      },
     });
 
     if (!user) {
