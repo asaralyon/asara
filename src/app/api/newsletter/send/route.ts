@@ -45,7 +45,6 @@ async function getPublishedArticles() {
 }
 
 async function getAllRecipients() {
-  // Membres de l'association
   const members = await prisma.user.findMany({
     where: {
       OR: [{ role: "MEMBER" }, { role: "PROFESSIONAL" }, { role: "ADMIN" }],
@@ -54,13 +53,11 @@ async function getAllRecipients() {
     select: { email: true, firstName: true, lastName: true },
   });
 
-  // Inscrits a la newsletter
   const subscribers = await prisma.subscriber.findMany({
     where: { isActive: true },
     select: { email: true, firstName: true, lastName: true },
   });
 
-  // Fusionner et dedupliquer par email
   const allEmails = new Map<string, { email: string; firstName: string; lastName: string }>();
 
   members.forEach((m) => {
@@ -197,7 +194,6 @@ function generateNewsletterHTML(
           .join("")
       : "";
 
-  // ✅ Images sous le header (mode A)
   const imagesHTML =
     images && images.length > 0
       ? images
@@ -223,6 +219,57 @@ function generateNewsletterHTML(
           )
           .join("")
       : "";
+
+  // ✅ NOUVEAU — Bloc CTA inscription newsletter
+  const subscribeCtaHTML = `
+          <!-- CTA Inscription Newsletter -->
+          <tr>
+            <td style="padding: 0 24px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #166534 0%, #14532d 100%); border-radius: 16px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 32px 24px; text-align: center;" dir="rtl">
+
+                    <!-- Icône cloche -->
+                    <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
+                      <span style="font-size: 28px;">🔔</span>
+                    </div>
+
+                    <!-- Titre -->
+                    <h2 style="margin: 0 0 10px; color: #ffffff; font-size: 22px; font-weight: 700; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+                      هل أعجبتك هذه النشرة؟
+                    </h2>
+
+                    <!-- Sous-titre -->
+                    <p style="margin: 0 0 8px; color: #bbf7d0; font-size: 15px; line-height: 1.7; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+                      اشترك مجاناً وستصلك النشرة كل أسبوع مباشرة في بريدك
+                    </p>
+                    <p style="margin: 0 0 24px; color: #86efac; font-size: 13px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+                      أخبار · فعاليات · مقالات المجتمع السوري في فرنسا
+                    </p>
+
+                    <!-- Bouton principal -->
+                    <a href="${baseUrl}/ar/newsletter#inscription"
+                       style="display: inline-block; background: #ffffff; color: #166534; font-size: 17px; font-weight: 700; text-decoration: none; padding: 14px 36px; border-radius: 50px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                      📧 اشترك في النشرة — مجاناً
+                    </a>
+
+                    <!-- Séparateur -->
+                    <p style="margin: 20px 0 12px; color: #6ee7b7; font-size: 13px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+                      — أو شارك هذه النشرة مع أصدقائك —
+                    </p>
+
+                    <!-- Bouton WhatsApp partage -->
+                    <a href="https://wa.me/?text=${encodeURIComponent('النشرة الأسبوعية من دليل السوريين في فرنسا ASARA: ' + baseUrl + '/ar/newsletter')}"
+                       style="display: inline-block; background: #25D366; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 11px 28px; border-radius: 50px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+                      📲 شارك على واتساب
+                    </a>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+  `;
 
   return `
 <!DOCTYPE html>
@@ -301,6 +348,8 @@ function generateNewsletterHTML(
               : ""
           }
 
+          ${subscribeCtaHTML}
+
           <!-- Footer -->
           <tr>
             <td style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%); padding: 32px; text-align: center;">
@@ -378,7 +427,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Recuperer tous les destinataires (membres + subscribers)
     const { recipients, membersCount, subscribersCount } = await getAllRecipients();
 
     if (recipients.length === 0) {

@@ -243,7 +243,7 @@ export default async function NewsletterPage({ params }: Props) {
           )}
 
           {/* Inscription */}
-          <section className="card bg-gradient-to-br from-primary-50 to-green-50 border-2 border-primary-200">
+          <section id="inscription" className="card bg-gradient-to-br from-primary-50 to-green-50 border-2 border-primary-200">
             <div className="text-center py-4">
               <h2 className="text-xl font-bold text-primary-700 mb-3">
                 {isRTL ? 'اشترك في نشرتنا الأسبوعية' : 'Inscrivez-vous à notre newsletter'}
