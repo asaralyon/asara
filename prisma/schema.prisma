@@ -357,6 +357,10 @@ model Newsletter {
   pdfUrl         String?
   htmlContent    String?   @db.Text
   createdAt      DateTime  @default(now())
+
+  // Tracking ouvertures et clics
+  opens   NewsletterOpen[]
+  clicks  NewsletterClick[]
 }
 
 model Subscriber {
@@ -503,6 +507,36 @@ model AssociationProfile {
   @@index([isPublished])
   @@index([slug])
   @@map("association_profiles")
+}
+model NewsletterOpen {
+  id           String     @id @default(cuid())
+  newsletterId String
+  newsletter   Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  email        String
+  openedAt     DateTime   @default(now())
+  userAgent    String?
+  ipAddress    String?
+
+  @@index([newsletterId])
+  @@index([email])
+  @@map("newsletter_opens")
+}
+
+model NewsletterClick {
+  id           String     @id @default(cuid())
+  newsletterId String
+  newsletter   Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  email        String
+  url          String     @db.Text
+  label        String?
+  clickedAt    DateTime   @default(now())
+  userAgent    String?
+  ipAddress    String?
+
+  @@index([newsletterId])
+  @@index([email])
+  @@index([label])
+  @@map("newsletter_clicks")
 }
 // ===========================================
 // Petites Annonces
