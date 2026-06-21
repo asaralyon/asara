@@ -5,6 +5,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { Users, Building2, UserCheck, Clock, Calendar, Mail, Newspaper, Building } from 'lucide-react';
 import { LogoutButton } from '@/components/admin/LogoutButton';
+import { BarChart2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Administration',
@@ -160,6 +161,13 @@ export default async function AdminPage({ params }: { params: { locale: string }
             </div>
             <p className="text-green-600 text-sm">Envoyer la newsletter hebdomadaire</p>
           </Link>
+          <Link href={'/' + locale + '/admin/newsletter/stats'} className="card hover:shadow-strong transition-shadow border-2 border-blue-100">
+            <div className="flex items-center gap-2 mb-2">
+            <BarChart2 className="w-5 h-5 text-blue-600" />
+            <h3 className="font-semibold text-lg text-blue-700">Stats Newsletter</h3>
+         </div>
+         <p className="text-blue-600 text-sm">Taux d'ouverture, clics, openers</p>
+       </Link>
 
           <Link href={'/' + locale + '/admin/emails'} className="card hover:shadow-strong transition-shadow border-2 border-primary-200 bg-primary-50">
             <div className="flex items-center gap-2 mb-2">
