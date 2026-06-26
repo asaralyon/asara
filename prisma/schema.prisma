@@ -373,6 +373,8 @@ model Subscriber {
   confirmedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("subscribers")   
 }
 
 model NewsletterLink {
