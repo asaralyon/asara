@@ -22,7 +22,17 @@
     @apply bg-white rounded-2xl p-6;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
+@layer utilities {
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 
+  .animate-ticker {
+    animation: ticker 60s linear infinite;
+    will-change: transform;
+  }
+}
   .btn-primary {
     @apply inline-flex items-center justify-center px-6 py-3 
            bg-primary-500 text-white font-semibold rounded-xl
@@ -42,4 +52,22 @@
   .heading-2 {
     @apply text-2xl sm:text-3xl font-bold;
   }
+  @keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 60s linear infinite;
+  will-change: transform;
+}
+
+/* Pause au survol */
+.group:hover .animate-ticker {
+  animation-play-state: paused;
+}
 }
