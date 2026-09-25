@@ -9,7 +9,10 @@ export function GlobalMarketsBanner({ locale }: { locale: string }) {
   const [tiles, setTiles] = useState<Tile[]>([]);
 
   useEffect(() => {
-    fetch('/api/markets/international').then((r) => r.json()).then((d) => setTiles(Array.isArray(d) ? d : []));
+    fetch('/api/markets/live')
+      .then((r) => r.json())
+      .then((d) => setTiles(Array.isArray(d) ? d : []))
+      .catch(() => setTiles([]));
   }, []);
 
   if (tiles.length === 0) return null;
@@ -24,7 +27,7 @@ export function GlobalMarketsBanner({ locale }: { locale: string }) {
           <div key={i} className="flex items-center gap-2 whitespace-nowrap">
             <span className="text-xs text-neutral-400">{tile.label}</span>
             <span className="text-sm font-mono font-semibold">
-              {tile.value.toLocaleString(isRTL ? 'ar-SA' : 'fr-FR', { maximumFractionDigits: 2 })} {tile.unit}
+              {tile.value.toLocaleString(isRTL ? 'ar-SA' : 'fr-FR', { maximumFractionDigits: 4 })} {tile.unit}
             </span>
           </div>
         ))}
