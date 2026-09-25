@@ -24,7 +24,7 @@ export const economyParser = new Parser({
       ['media:thumbnail', 'media:thumbnail', { keepArray: true }],
       ['content:encoded', 'content:encoded'],
       ['enclosure', 'enclosure'],
-      ['image', 'image'],           // ← AJOUT (non-standard, syria.news & co)
+      ['image', 'image'],
     ],
   },
   timeout: 15000,
@@ -37,16 +37,19 @@ export const economyParser = new Parser({
   },
 });
 
-function googleNews(query: string, hl = 'ar', gl = 'SA'): string {
-  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
-}
-
-// ✅ Uniquement des sources ARABES
+// ✅ Sources ARABES natives uniquement (fin des proxies Google News)
+//    Priorité aux sources qui fournissent des images par article.
 export const ARAB_ECONOMY_FEEDS: EconomyFeed[] = [
-  { provider: 'Reuters', source: 'رويترز', url: googleNews('when:7d site:reuters.com (اقتصاد OR أسواق OR استثمار)', 'ar', 'SA') },
+  // ── Avec images par article ──
+  { provider: 'Asharq Al-Awsat', source: 'الشرق الأوسط — اقتصاد', url: 'https://aawsat.com/feed' },
+  { provider: 'BBC Arabic', source: 'BBC عربي — اقتصاد', url: 'https://feeds.bbci.co.uk/arabic/rss.xml' },
+  { provider: 'Sky News Arabia', source: 'سكاي نيوز عربية — اقتصاد', url: 'https://www.skynewsarabia.com/web/rss/business.xml' },
   { provider: 'Al Jazeera', source: 'الجزيرة — اقتصاد', url: 'https://www.aljazeera.net/aljazeerarss/ebusiness' },
-  { provider: 'Al Arabiya', source: 'العربية — أسواق', url: googleNews('when:7d site:alarabiya.net (اقتصاد OR أسواق OR استثمار)', 'ar', 'AE') },
-  { provider: 'Google Finance', source: 'Google Finance', url: googleNews('when:2d (بورصة OR أسواق المال OR اقتصاد OR استثمار)', 'ar', 'AE') },
+
+  // ── Sans images (fallback ambré) ──
+  { provider: 'CNBC Arabia', source: 'CNBC عربية', url: 'https://www.cnbcarabia.com/rss' },
+  { provider: 'Okaz', source: 'عكاظ — اقتصاد', url: 'https://www.okaz.com.sa/rss/business' },
+  { provider: 'Al-Quds Al-Arabi', source: 'القدس العربي — اقتصاد', url: 'https://www.alquds.co.uk/feed' },
 ];
 
 // Rédactions syriennes — syria.news retiré (liens cassés -ID.html)
@@ -55,7 +58,7 @@ export const SYRIA_FEEDS: EconomyFeed[] = [
   { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
 ];
 
-// ✅ Mots-clés économiques (élargis mais pas génériques)
+// Mots-clés économiques
 export const ECONOMY_KEYWORDS = [
   'اقتصاد', 'اقتصادي', 'دولار', 'يورو', 'ليرة', 'سعر الصرف', 'تجارة', 'تجاري',
   'استثمار', 'استثمارات', 'المصرف', 'مصرف', 'البنك', 'بنك', 'صادرات', 'واردات',
@@ -64,7 +67,7 @@ export const ECONOMY_KEYWORDS = [
   'تصدير', 'صناعة', 'زراعة', 'عقار', 'شركات', 'ريال', 'درهم', 'دينار',
 ];
 
-// ✅ Mots-clés strictement syriens
+// Mots-clés strictement syriens
 export const SYRIA_KEYWORDS = [
   'سوريا','سورية','سوري','دمشق','حلب','حمص','حماة','اللاذقية','طرطوس','إدلب','ادلب',
   'دير الزور','الرقة','الحسكة','السويداء','درعا','القامشلي','الشرع','الجولاني',
@@ -74,7 +77,7 @@ export const SYRIA_KEYWORDS = [
   'syrian pound',
 ];
 
-// ✅ Détection arabe (rejette les items anglais si le flux en mélange)
+// Détection arabe
 const ARABIC_RE = /[\u0600-\u06FF]/;
 export function isArabicText(text: string): boolean {
   return ARABIC_RE.test(text || '');
@@ -100,8 +103,13 @@ function isUsableLink(link: string): boolean {
   return isValidLink(link);
 }
 
-const KNOWN_SOURCES = ['Reuters','رويترز','Al Arabiya','العربية','الجزيرة','Al Jazeera',
-  'Bloomberg','بلومبرغ','Yahoo Finance','Arab News','Google News'];
+const KNOWN_SOURCES = [
+  'Reuters','رويترز','Al Arabiya','العربية','الجزيرة','Al Jazeera',
+  'Bloomberg','بلومبرغ','Yahoo Finance','Arab News','Google News',
+  'Asharq Al-Awsat','الشرق الأوسط','BBC Arabic','BBC عربي',
+  'Sky News Arabia','سكاي نيوز عربية','CNBC Arabia','CNBC عربية',
+  'Okaz','عكاظ','Al-Quds Al-Arabi','القدس العربي',
+];
 
 function cleanTitle(title: string): string {
   const trimmed = title.trim();
