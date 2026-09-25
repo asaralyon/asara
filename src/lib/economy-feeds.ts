@@ -178,26 +178,44 @@ export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Pro
 
   try {
     const parsed = await economyParser.parseURL(feed.url);
-    return (parsed.items || [])
-      .filter((item) => {
+    const out: EconomyItem[] = [];
+
+    for (const item of parsed.items || []) {
+      try {
         const title = item.title || '';
         const desc = item.contentSnippet || item.content || '';
-        if (!isUsableLink(item.link || '')) return false;
-        if (requireArabic && !isArabicText(title)) return false;
-        if (requireEconomy && !isEconomyItem(title, desc)) return false;
-        if (requireSyria && !isAboutSyria(title, desc)) return false;
-        return true;
-      })
-      .slice(0, 12)
-      .map((item) => ({
-        title: cleanTitle(item.title || ''),
-        link: item.link as string,
-        pubDate: item.isoDate || item.pubDate || new Date().toISOString(),
-        source: feed.source,
-        provider: feed.provider,
-        image: extractImage(item as RSSItem & Record<string, any>),
-      }));
-  } catch {
+
+        if (!isUsableLink(item.link || '')) continue;
+        if (requireArabic && !isArabicText(title)) continue;
+        if (requireEconomy && !isEconomyItem(title, desc)) continue;
+        if (requireSyria && !isAboutSyria(title, desc)) continue;
+
+        let image: string | null = null;
+        try {
+          image = extractImage(item as RSSItem & Record<string, any>);
+        } catch (e) {
+          console.warn(`[extractImage] failed for ${feed.provider}:`, e instanceof Error ? e.message : e);
+        }
+
+        out.push({
+          title: cleanTitle(title),
+          link: item.link as string,
+          pubDate: item.isoDate || item.pubDate || new Date().toISOString(),
+          source: feed.source,
+          provider: feed.provider,
+          image,
+        });
+
+        if (out.length >= 12) break;
+      } catch (e) {
+        console.warn(`[fetchFeed] skipped item from ${feed.provider}:`, e instanceof Error ? e.message : e);
+        continue;
+      }
+    }
+
+    return out;
+  } catch (e) {
+    console.warn(`[fetchFeed] feed ${feed.provider} failed:`, e instanceof Error ? e.message : e);
     return [];
   }
 }
