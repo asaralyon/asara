@@ -30,6 +30,11 @@ const parser: Parser<any, CustomItem> = new Parser({
     ],
   },
   timeout: 15000,
+  requestOptions: {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    },
+  },
 });
 
 const RSS_FEEDS = [
@@ -44,10 +49,6 @@ const RSS_FEEDS = [
   {
     name: 'سوريا نيوز',
     url: 'https://syria.news/rss.php',
-  },
-  {
-    name: 'وزارة الخارجية السورية',
-    url: 'https://mfa.sy/rss',
   },
 ];
 
@@ -90,7 +91,7 @@ function extractImage(item: CustomItem): string | null {
 
     // 4. Chercher img dans content:encoded ou description
     const content = item['content:encoded'] || item.content || item.description || '';
-    
+
     // Pattern pour src avec guillemets simples ou doubles
     const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
     if (imgMatch?.[1]) {
@@ -124,7 +125,6 @@ function getDefaultImage(source: string): string {
     'عنب بلدي': 'https://www.enabbaladi.net/wp-content/themes/flavor-flavor-flavor/flavor/assets/images/enab-logo.png',
     'سانا': 'https://sana.sy/wp-content/uploads/2019/01/logo-sana.png',
     'سوريا نيوز': 'https://syria.news/images/logo.png',
-    'وزارة الخارجية السورية': 'https://mfa.sy/images/mfa-logo.png',
   };
   return defaults[source] || '/images/logo.png';
 }
@@ -142,10 +142,10 @@ export async function GET() {
     const fetchPromises = RSS_FEEDS.map(async (feed) => {
       try {
         const result = await parser.parseURL(feed.url);
-        
+
         return result.items.slice(0, 4).map((item: CustomItem) => {
           const extractedImage = extractImage(item);
-          
+
           return {
             title: item.title || '',
             link: item.link || '',

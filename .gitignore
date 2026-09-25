@@ -59,3 +59,4 @@ uploads/
 cookies.txt
 ecosystem.config.js
 .vercel
+.env*
