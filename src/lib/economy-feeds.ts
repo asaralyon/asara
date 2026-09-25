@@ -37,28 +37,46 @@ export const economyParser = new Parser({
   },
 });
 
-// ✅ Sources ARABES natives uniquement (fin des proxies Google News)
-//    Priorité aux sources qui fournissent des images par article.
+// ═══ ÉCONOMIE ARABE (onglet "Monde arabe") ═══
 export const ARAB_ECONOMY_FEEDS: EconomyFeed[] = [
-  // ── Avec images par article ──
-  { provider: 'Asharq Al-Awsat', source: 'الشرق الأوسط — اقتصاد', url: 'https://aawsat.com/feed' },
-  { provider: 'BBC Arabic', source: 'BBC عربي — اقتصاد', url: 'https://feeds.bbci.co.uk/arabic/rss.xml' },
   { provider: 'Sky News Arabia', source: 'سكاي نيوز عربية — اقتصاد', url: 'https://www.skynewsarabia.com/web/rss/business.xml' },
+  { provider: 'Asharq Al-Awsat', source: 'الشرق الأوسط — اقتصاد', url: 'https://aawsat.com/feed' },
   { provider: 'Al Jazeera', source: 'الجزيرة — اقتصاد', url: 'https://www.aljazeera.net/aljazeerarss/ebusiness' },
-
-  // ── Sans images (fallback ambré) ──
-  { provider: 'CNBC Arabia', source: 'CNBC عربية', url: 'https://www.cnbcarabia.com/rss' },
-  { provider: 'Okaz', source: 'عكاظ — اقتصاد', url: 'https://www.okaz.com.sa/rss/business' },
-  { provider: 'Al-Quds Al-Arabi', source: 'القدس العربي — اقتصاد', url: 'https://www.alquds.co.uk/feed' },
+  { provider: 'BBC Arabic', source: 'BBC عربي — اقتصاد', url: 'https://feeds.bbci.co.uk/arabic/rss.xml' },
 ];
 
-// Rédactions syriennes — syria.news retiré (liens cassés -ID.html)
+// ═══ SYRIE — ÉCONOMIE (onglet "Syrie") ═══
 export const SYRIA_FEEDS: EconomyFeed[] = [
-  { provider: 'عنب بلدي', source: 'عنب بلدي', url: 'https://www.enabbaladi.net/feed' },
   { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
+  { provider: 'Syria Report', source: 'Syria Report', url: 'https://syria-report.com/feed' },
 ];
 
-// Mots-clés économiques
+// ═══ SYRIE — POLITIQUE (futur onglet) ═══
+export const SYRIA_POLITICS_FEEDS: EconomyFeed[] = [
+  { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
+  { provider: 'Syria Report', source: 'Syria Report', url: 'https://syria-report.com/feed' },
+  { provider: 'Google News', source: 'أخبار سوريا', url: 'https://news.google.com/rss/search?q=سوريا+سياسة+when:3d&hl=ar&gl=SA&ceid=SA:ar' },
+  { provider: 'Google News', source: 'Syria News', url: 'https://news.google.com/rss/search?q=Syria+politics+when:3d&hl=en-US&gl=US&ceid=US:en' },
+];
+
+// ═══ ISLAMIC FINANCE (futur onglet) ═══
+export const ISLAMIC_FINANCE_FEEDS: EconomyFeed[] = [
+  { provider: 'Zawya', source: 'Zawya — Islamic Finance', url: 'https://news.google.com/rss/search?q=when:7d+site:zawya.com+islamic+finance&hl=en-US&gl=US&ceid=US:en' },
+  { provider: 'Google News', source: 'Islamic Finance EN', url: 'https://news.google.com/rss/search?q=islamic+finance+OR+sukuk+when:7d&hl=en-US&gl=US&ceid=US:en' },
+  { provider: 'Google News', source: 'التمويل الإسلامي', url: 'https://news.google.com/rss/search?q=التمويل+الإسلامي+OR+صكوك+when:7d&hl=ar&gl=AE&ceid=AE:ar' },
+  { provider: 'IFG', source: 'Islamic Finance Guru', url: 'https://www.islamicfinanceguru.com/rss' },
+];
+
+// ═══ STARTUPS MENA (futur onglet) ═══
+export const STARTUPS_MENA_FEEDS: EconomyFeed[] = [
+  { provider: 'Wamda', source: 'Wamda', url: 'https://www.wamda.com/feed' },
+  { provider: 'WAYA', source: 'WAYA Media', url: 'https://waya.media/feed' },
+  { provider: 'Enterprise', source: 'Enterprise Egypt', url: 'https://enterprise.news/rss' },
+  { provider: 'Arab Founders', source: 'Arab Founders', url: 'https://arabfounders.net/feed' },
+  { provider: 'TechCrunch', source: 'TechCrunch Startups', url: 'https://techcrunch.com/category/startups/feed/' },
+];
+
+// ═══ MOTS-CLÉS ═══
 export const ECONOMY_KEYWORDS = [
   'اقتصاد', 'اقتصادي', 'دولار', 'يورو', 'ليرة', 'سعر الصرف', 'تجارة', 'تجاري',
   'استثمار', 'استثمارات', 'المصرف', 'مصرف', 'البنك', 'بنك', 'صادرات', 'واردات',
@@ -67,7 +85,6 @@ export const ECONOMY_KEYWORDS = [
   'تصدير', 'صناعة', 'زراعة', 'عقار', 'شركات', 'ريال', 'درهم', 'دينار',
 ];
 
-// Mots-clés strictement syriens
 export const SYRIA_KEYWORDS = [
   'سوريا','سورية','سوري','دمشق','حلب','حمص','حماة','اللاذقية','طرطوس','إدلب','ادلب',
   'دير الزور','الرقة','الحسكة','السويداء','درعا','القامشلي','الشرع','الجولاني',
@@ -77,7 +94,7 @@ export const SYRIA_KEYWORDS = [
   'syrian pound',
 ];
 
-// Détection arabe
+// ═══ FONCTIONS UTILITAIRES ═══
 const ARABIC_RE = /[\u0600-\u06FF]/;
 export function isArabicText(text: string): boolean {
   return ARABIC_RE.test(text || '');
@@ -107,8 +124,9 @@ const KNOWN_SOURCES = [
   'Reuters','رويترز','Al Arabiya','العربية','الجزيرة','Al Jazeera',
   'Bloomberg','بلومبرغ','Yahoo Finance','Arab News','Google News',
   'Asharq Al-Awsat','الشرق الأوسط','BBC Arabic','BBC عربي',
-  'Sky News Arabia','سكاي نيوز عربية','CNBC Arabia','CNBC عربية',
-  'Okaz','عكاظ','Al-Quds Al-Arabi','القدس العربي',
+  'Sky News Arabia','سكاي نيوز عربية',
+  'Wamda','WAYA','Enterprise','Arab Founders','TechCrunch',
+  'Zawya','IFG','Islamic Finance Guru','Syria Report',
 ];
 
 function cleanTitle(title: string): string {
@@ -146,9 +164,9 @@ export function byDateDesc(a: EconomyItem, b: EconomyItem): number {
 }
 
 interface FetchOptions {
-  requireArabic?: boolean;   // défaut: true
-  requireEconomy?: boolean;  // défaut: true
-  requireSyria?: boolean;    // défaut: false
+  requireArabic?: boolean;
+  requireEconomy?: boolean;
+  requireSyria?: boolean;
 }
 
 export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Promise<EconomyItem[]> {
