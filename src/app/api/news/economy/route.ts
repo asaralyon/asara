@@ -3,37 +3,19 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getCached } from '@/lib/cache';
 import {
-  ARAB_ECONOMY_FEEDS, fetchAllFeeds, isAboutSyria, dedupe, byDateDesc,
+  ARAB_ECONOMY_FEEDS, SYRIA_FEEDS, fetchAllFeeds, dedupe, byDateDesc,
   type EconomyItem,
 } from '@/lib/economy-feeds';
 import { fetchSyriaOneEconomy } from '@/lib/scrape-syriaone';
 
-// Rédactions syriennes — syria.news retiré (liens placeholders "-ID.html")
-const SYRIA_FEEDS = [
-  { provider: 'عنب بلدي', source: 'عنب بلدي', url: 'https://www.enabbaladi.net/feed' },
-  { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
-];
-
-const ECONOMY_KEYWORDS = [
-  'اقتصاد','دولار','ليرة سورية','سعر الصرف','تجارة','استثمار','المصرف المركزي',
-  'البنك المركزي','صادرات','واردات','سوق العمل','تضخم','ميزانية','قطاع خاص',
-  'عقوبات اقتصادية','ناتج محلي',
-];
-
-function isEconomyItem(title: string, content: string): boolean {
-  const text = `${title} ${content}`.toLowerCase();
-  return ECONOMY_KEYWORDS.some((kw) => text.includes(kw));
-}
-
 async function buildSyriaEconomy(): Promise<EconomyItem[]> {
-  const [syriaFeedItems, providerItems, syriaOneItems] = await Promise.all([
-    fetchAllFeeds(SYRIA_FEEDS),
-    fetchAllFeeds(ARAB_ECONOMY_FEEDS),
+  const [syriaLocal, providersAboutSyria, syriaOneItems] = await Promise.all([
+    // Rédactions syriennes : éco + arabe, pas besoin du filtre Syrie (source = Syrie)
+    fetchAllFeeds(SYRIA_FEEDS, { requireArabic: true, requireEconomy: true, requireSyria: false }),
+    // Grands fournisseurs arabes : éco + arabe + mention Syrie
+    fetchAllFeeds(ARAB_ECONOMY_FEEDS, { requireArabic: true, requireEconomy: true, requireSyria: true }),
     fetchSyriaOneEconomy(),
   ]);
-
-  const localEconomy = syriaFeedItems.filter((i) => isEconomyItem(i.title, i.title));
-  const providerAboutSyria = providerItems.filter((i) => isAboutSyria(i.title, i.title));
 
   const syriaOne: EconomyItem[] = (syriaOneItems as EconomyItem[]).map((item) => ({
     ...item,
@@ -41,7 +23,7 @@ async function buildSyriaEconomy(): Promise<EconomyItem[]> {
     pubDate: item.pubDate || new Date().toISOString(),
   }));
 
-  return dedupe([...localEconomy, ...providerAboutSyria, ...syriaOne])
+  return dedupe([...syriaLocal, ...providersAboutSyria, ...syriaOne])
     .sort(byDateDesc)
     .slice(0, 18);
 }

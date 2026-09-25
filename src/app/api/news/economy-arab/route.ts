@@ -9,7 +9,11 @@ export async function GET() {
     const items = await getCached(
       'news:economy-arab',
       async () => {
-        const all = await fetchAllFeeds(ARAB_ECONOMY_FEEDS);
+        const all = await fetchAllFeeds(ARAB_ECONOMY_FEEDS, {
+          requireArabic: true,
+          requireEconomy: true,
+          requireSyria: false,
+        });
         return dedupe(all).sort(byDateDesc).slice(0, 12);
       },
       900

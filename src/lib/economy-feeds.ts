@@ -24,6 +24,7 @@ export const economyParser = new Parser({
       ['media:thumbnail', 'media:thumbnail', { keepArray: true }],
       ['content:encoded', 'content:encoded'],
       ['enclosure', 'enclosure'],
+      ['image', 'image'],           // ← AJOUT (non-standard, syria.news & co)
     ],
   },
   timeout: 15000,
@@ -40,19 +41,30 @@ function googleNews(query: string, hl = 'ar', gl = 'SA'): string {
   return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
 }
 
+// ✅ Uniquement des sources ARABES
 export const ARAB_ECONOMY_FEEDS: EconomyFeed[] = [
-  { provider: 'Bloomberg', source: 'بلومبرغ — الأسواق', url: 'https://feeds.bloomberg.com/markets/news.rss' },
-  { provider: 'Bloomberg', source: 'بلومبرغ — الاقتصاد', url: 'https://feeds.bloomberg.com/economics/news.rss' },
-  { provider: 'Reuters', source: 'رويترز', url: googleNews('when:7d site:reuters.com (economy OR business OR markets)', 'ar', 'SA') },
-  { provider: 'Reuters', source: 'Reuters', url: googleNews('when:7d site:reuters.com (economy OR business OR markets)', 'en-US', 'US') },
+  { provider: 'Reuters', source: 'رويترز', url: googleNews('when:7d site:reuters.com (اقتصاد OR أسواق OR استثمار)', 'ar', 'SA') },
   { provider: 'Al Jazeera', source: 'الجزيرة — اقتصاد', url: 'https://www.aljazeera.net/aljazeerarss/ebusiness' },
   { provider: 'Al Arabiya', source: 'العربية — أسواق', url: googleNews('when:7d site:alarabiya.net (اقتصاد OR أسواق OR استثمار)', 'ar', 'AE') },
-  { provider: 'Yahoo Finance', source: 'Yahoo Finance', url: 'https://finance.yahoo.com/news/rssindex' },
-  { provider: 'Google Finance', source: 'Google Finance', url: googleNews('when:2d (بورصة OR أسواق المال OR oil OR gold OR dollar)', 'ar', 'AE') },
-  { provider: 'Arab News', source: 'Arab News', url: 'https://www.arabnews.com/rss.xml' },
+  { provider: 'Google Finance', source: 'Google Finance', url: googleNews('when:2d (بورصة OR أسواق المال OR اقتصاد OR استثمار)', 'ar', 'AE') },
 ];
 
-// Mots-clés strictement syriens (durci — plus de "reconstruction" seul)
+// Rédactions syriennes — syria.news retiré (liens cassés -ID.html)
+export const SYRIA_FEEDS: EconomyFeed[] = [
+  { provider: 'عنب بلدي', source: 'عنب بلدي', url: 'https://www.enabbaladi.net/feed' },
+  { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
+];
+
+// ✅ Mots-clés économiques (élargis mais pas génériques)
+export const ECONOMY_KEYWORDS = [
+  'اقتصاد', 'اقتصادي', 'دولار', 'يورو', 'ليرة', 'سعر الصرف', 'تجارة', 'تجاري',
+  'استثمار', 'استثمارات', 'المصرف', 'مصرف', 'البنك', 'بنك', 'صادرات', 'واردات',
+  'سوق العمل', 'تضخم', 'ميزانية', 'قطاع خاص', 'عقوبات اقتصادية', 'ناتج محلي',
+  'بورصة', 'أسهم', 'أسواق المال', 'نفط', 'بترول', 'ذهب', 'تمويل', 'استيراد',
+  'تصدير', 'صناعة', 'زراعة', 'عقار', 'شركات', 'ريال', 'درهم', 'دينار',
+];
+
+// ✅ Mots-clés strictement syriens
 export const SYRIA_KEYWORDS = [
   'سوريا','سورية','سوري','دمشق','حلب','حمص','حماة','اللاذقية','طرطوس','إدلب','ادلب',
   'دير الزور','الرقة','الحسكة','السويداء','درعا','القامشلي','الشرع','الجولاني',
@@ -61,6 +73,17 @@ export const SYRIA_KEYWORDS = [
   'hasakah','sweida','daraa','qamishli','al-sharaa','sharaa','jolani','assad',
   'syrian pound',
 ];
+
+// ✅ Détection arabe (rejette les items anglais si le flux en mélange)
+const ARABIC_RE = /[\u0600-\u06FF]/;
+export function isArabicText(text: string): boolean {
+  return ARABIC_RE.test(text || '');
+}
+
+export function isEconomyItem(title = '', content = ''): boolean {
+  const text = `${title} ${content}`.toLowerCase();
+  return ECONOMY_KEYWORDS.some((kw) => text.includes(kw.toLowerCase()));
+}
 
 export function isAboutSyria(title = '', content = ''): boolean {
   const text = `${title} ${content}`.toLowerCase();
@@ -71,7 +94,6 @@ export function isValidLink(link: string): boolean {
   try { new URL(link); return true; } catch { return false; }
 }
 
-/** Rejette les liens placeholders du type "-ID.html" (bug côté certaines sources) */
 function isUsableLink(link: string): boolean {
   if (!link) return false;
   if (link.includes('-ID.html')) return false;
@@ -115,11 +137,31 @@ export function byDateDesc(a: EconomyItem, b: EconomyItem): number {
   return (new Date(b.pubDate).getTime() || 0) - (new Date(a.pubDate).getTime() || 0);
 }
 
-export async function fetchFeed(feed: EconomyFeed): Promise<EconomyItem[]> {
+interface FetchOptions {
+  requireArabic?: boolean;   // défaut: true
+  requireEconomy?: boolean;  // défaut: true
+  requireSyria?: boolean;    // défaut: false
+}
+
+export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Promise<EconomyItem[]> {
+  const {
+    requireArabic = true,
+    requireEconomy = true,
+    requireSyria = false,
+  } = opts;
+
   try {
     const parsed = await economyParser.parseURL(feed.url);
     return (parsed.items || [])
-      .filter((item) => isUsableLink(item.link || ''))
+      .filter((item) => {
+        const title = item.title || '';
+        const desc = item.contentSnippet || item.content || '';
+        if (!isUsableLink(item.link || '')) return false;
+        if (requireArabic && !isArabicText(title)) return false;
+        if (requireEconomy && !isEconomyItem(title, desc)) return false;
+        if (requireSyria && !isAboutSyria(title, desc)) return false;
+        return true;
+      })
       .slice(0, 12)
       .map((item) => ({
         title: cleanTitle(item.title || ''),
@@ -134,7 +176,7 @@ export async function fetchFeed(feed: EconomyFeed): Promise<EconomyItem[]> {
   }
 }
 
-export async function fetchAllFeeds(feeds: EconomyFeed[]): Promise<EconomyItem[]> {
-  const results = await Promise.all(feeds.map((feed) => fetchFeed(feed)));
+export async function fetchAllFeeds(feeds: EconomyFeed[], opts: FetchOptions = {}): Promise<EconomyItem[]> {
+  const results = await Promise.all(feeds.map((feed) => fetchFeed(feed, opts)));
   return results.flat();
 }
