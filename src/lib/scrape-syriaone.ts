@@ -7,7 +7,16 @@ export interface SyriaOneItem {
   source: string;
 }
 
-const CATEGORY_URL = 'https://syriaone.tv/category/%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF'; // اقتصاد
+const CATEGORY_URL = 'https://syriaone.tv/category/%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF';
+
+function safeLink(href: string): string | null {
+  try {
+    const url = new URL(href, 'https://syriaone.tv');
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
 
 export async function fetchSyriaOneEconomy(): Promise<SyriaOneItem[]> {
   try {
@@ -26,6 +35,9 @@ export async function fetchSyriaOneEconomy(): Promise<SyriaOneItem[]> {
       const href = $(el).attr('href');
       if (!href || seen.has(href)) return;
 
+      const link = safeLink(href);
+      if (!link) return;
+
       let title = $(el).find('h1, h2, h3, h4').first().text().trim();
       if (!title) {
         const raw = $(el).text().trim();
@@ -34,14 +46,12 @@ export async function fetchSyriaOneEconomy(): Promise<SyriaOneItem[]> {
       if (!title || title.length < 8) return;
 
       seen.add(href);
-      const image = $(el).find('img').attr('src') || null;
+      let image = $(el).find('img').attr('src') || null;
+      if (image) {
+        image = safeLink(image);
+      }
 
-      items.push({
-        title,
-        link: href.startsWith('http') ? href : `https://syriaone.tv${href}`,
-        image: image && !image.startsWith('http') ? `https://syriaone.tv${image}` : image,
-        source: 'سيريا ون',
-      });
+      items.push({ title, link, image, source: 'سيريا ون' });
     });
 
     return items.slice(0, 8);

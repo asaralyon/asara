@@ -13,30 +13,34 @@ export function ArticleUne({ article, locale, isRTL }: Props) {
   return (
     <section className="bg-white border-b-4 border-neutral-900">
       <div className="container-app py-8 sm:py-12">
-        <div className={`flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-widest text-primary-600 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <div className={`flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-widest text-primary-600 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
           <span className="w-6 h-px bg-primary-600" />
           {isRTL ? 'من مجتمعنا' : 'De notre communauté'}
         </div>
 
         <Link href={href}>
           <h1
-            className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-neutral-900 mb-4 hover:text-primary-700 transition-colors cursor-pointer ${isRTL ? 'text-right' : ''}`}
+            className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-neutral-900 mb-4 hover:text-primary-700 transition-colors cursor-pointer break-words ${isRTL ? 'text-right' : 'text-left'}`}
             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           >
             {article.title}
           </h1>
         </Link>
 
-        <div className={`grid lg:grid-cols-3 gap-8 mt-6 ${isRTL ? 'text-right' : ''}`}>
-          <Link href={href} className="lg:col-span-2 group">
-            <p className="text-lg text-neutral-700 leading-relaxed font-serif" style={{ fontFamily: 'Georgia, serif' }}>
+        <div className={`flex flex-col lg:flex-row gap-8 mt-6 ${isRTL ? 'lg:flex-row-reverse' : ''}`}>
+          <Link href={href} className="lg:flex-1 group order-2 lg:order-none">
+            <p
+              className={`text-lg text-neutral-700 leading-relaxed font-serif break-words ${isRTL ? 'text-right' : 'text-left'}`}
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
               {excerpt}
             </p>
             <span className="inline-block mt-3 text-sm font-semibold text-primary-600 group-hover:underline">
               {isRTL ? 'قراءة المزيد ←' : 'Lire la suite →'}
             </span>
           </Link>
-          <div className={`border-t lg:border-t-0 lg:border-l pt-4 lg:pt-0 lg:pl-6 border-neutral-200 ${isRTL ? 'lg:border-l-0 lg:border-r lg:pl-0 lg:pr-6' : ''}`}>
+
+          <div className={`lg:w-56 flex-shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-neutral-200 ${isRTL ? 'lg:border-r lg:pr-6 text-right' : 'lg:border-l lg:pl-6 text-left'}`}>
             <p className="text-sm text-neutral-500 uppercase tracking-wide mb-1">{isRTL ? 'بقلم' : 'Par'}</p>
             <p className="font-semibold text-neutral-900">{article.authorName}</p>
             <p className="text-sm text-neutral-400 mt-1">
