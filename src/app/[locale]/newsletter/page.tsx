@@ -147,21 +147,36 @@ export default async function NewsletterPage({ params }: Props) {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 bg-neutral-50 rounded-xl hover:bg-primary-50 transition-colors border border-transparent hover:border-primary-200"
+                    className="block bg-neutral-50 rounded-xl hover:bg-primary-50 transition-colors border border-transparent hover:border-primary-200 overflow-hidden"
                   >
-                    <div className={'flex items-start gap-3 ' + (isRTL ? 'flex-row-reverse' : '')}>
-                      <span className="text-xl">🔗</span>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-primary-700 hover:text-primary-800">
-                          {link.title}
-                        </h3>
-                        {link.source && (
-                          <p className="text-sm text-neutral-500 mt-1">
-                            {isRTL ? 'المصدر: ' : 'Source: '}{link.source}
-                          </p>
-                        )}
+                    {/* ✅ Image optionnelle au-dessus - indépendante du titre */}
+                    {(link.imageUrl || link.image) && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={link.imageUrl || link.image}
+                        alt={link.title}
+                        className="w-full h-48 object-cover block"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <div className="p-4">
+                      <div className={'flex items-start gap-3 ' + (isRTL ? 'flex-row-reverse' : '')}>
+                        <span className="text-xl">🔗</span>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-primary-700 hover:text-primary-800">
+                            {link.title}
+                          </h3>
+                          {link.source && (
+                            <p className="text-sm text-neutral-500 mt-1">
+                              {isRTL ? 'المصدر: ' : 'Source: '}{link.source}
+                            </p>
+                          )}
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-neutral-400" />
                       </div>
-                      <ExternalLink className="w-4 h-4 text-neutral-400" />
                     </div>
                   </a>
                 ))}
