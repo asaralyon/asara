@@ -1,37 +1,23 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import Parser from 'rss-parser';
-import { extractImage } from '@/lib/rss-image';
+import { getCached } from '@/lib/cache';
+import {
+  ARAB_ECONOMY_FEEDS, fetchAllFeeds, isAboutSyria, dedupe, byDateDesc,
+  type EconomyItem,
+} from '@/lib/economy-feeds';
 import { fetchSyriaOneEconomy } from '@/lib/scrape-syriaone';
 
-const parser = new Parser({
-  customFields: {
-    item: [
-      ['media:content', 'media:content', { keepArray: true }],
-      ['media:thumbnail', 'media:thumbnail', { keepArray: true }],
-      ['content:encoded', 'content:encoded'],
-      ['enclosure', 'enclosure'],
-    ],
-  },
-  timeout: 15000,
-  requestOptions: {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-    },
-  },
-});
-
-const ECONOMY_FEEDS = [
-  { name: 'عنب بلدي', url: 'https://www.enabbaladi.net/feed' },
-  { name: 'سانا', url: 'https://sana.sy/?feed=rss2' },
-  { name: 'سوريا نيوز', url: 'https://syria.news/rss.php' },
+// Rédactions syriennes — syria.news retiré (liens placeholders "-ID.html")
+const SYRIA_FEEDS = [
+  { provider: 'عنب بلدي', source: 'عنب بلدي', url: 'https://www.enabbaladi.net/feed' },
+  { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
 ];
 
 const ECONOMY_KEYWORDS = [
-  'اقتصاد', 'دولار', 'ليرة سورية', 'سعر الصرف', 'تجارة', 'استثمار',
-  'المصرف المركزي', 'البنك المركزي', 'صادرات', 'واردات', 'سوق العمل',
-  'تضخم', 'ميزانية', 'قطاع خاص', 'عقوبات اقتصادية', 'ناتج محلي',
+  'اقتصاد','دولار','ليرة سورية','سعر الصرف','تجارة','استثمار','المصرف المركزي',
+  'البنك المركزي','صادرات','واردات','سوق العمل','تضخم','ميزانية','قطاع خاص',
+  'عقوبات اقتصادية','ناتج محلي',
 ];
 
 function isEconomyItem(title: string, content: string): boolean {
@@ -39,46 +25,31 @@ function isEconomyItem(title: string, content: string): boolean {
   return ECONOMY_KEYWORDS.some((kw) => text.includes(kw));
 }
 
-async function fetchRSSFeeds() {
-  const results = await Promise.all(
-    ECONOMY_FEEDS.map(async (feed) => {
-      try {
-        const parsed = await parser.parseURL(feed.url);
-        return parsed.items
-          .filter((item) => isEconomyItem(item.title || '', item.contentSnippet || ''))
-          .slice(0, 5)
-          .map((item) => ({
-            title: item.title || '',
-            link: item.link || '',
-            pubDate: item.pubDate || item.isoDate || new Date().toISOString(),
-            source: feed.name,
-            image: extractImage(item),
-          }));
-      } catch {
-        return [];
-      }
-    })
-  );
-  return results.flat();
+async function buildSyriaEconomy(): Promise<EconomyItem[]> {
+  const [syriaFeedItems, providerItems, syriaOneItems] = await Promise.all([
+    fetchAllFeeds(SYRIA_FEEDS),
+    fetchAllFeeds(ARAB_ECONOMY_FEEDS),
+    fetchSyriaOneEconomy(),
+  ]);
+
+  const localEconomy = syriaFeedItems.filter((i) => isEconomyItem(i.title, i.title));
+  const providerAboutSyria = providerItems.filter((i) => isAboutSyria(i.title, i.title));
+
+  const syriaOne: EconomyItem[] = (syriaOneItems as EconomyItem[]).map((item) => ({
+    ...item,
+    provider: item.provider || 'Syria One',
+    pubDate: item.pubDate || new Date().toISOString(),
+  }));
+
+  return dedupe([...localEconomy, ...providerAboutSyria, ...syriaOne])
+    .sort(byDateDesc)
+    .slice(0, 18);
 }
 
 export async function GET() {
   try {
-    const [rssItems, syriaOneItems] = await Promise.all([
-      fetchRSSFeeds(),
-      fetchSyriaOneEconomy(),
-    ]);
-
-    const syriaOneWithDate = syriaOneItems.map((item) => ({
-      ...item,
-      pubDate: new Date().toISOString(),
-    }));
-
-    const merged = [...rssItems, ...syriaOneWithDate]
-      .sort((a, b) => (new Date(b.pubDate).getTime() || 0) - (new Date(a.pubDate).getTime() || 0))
-      .slice(0, 12);
-
-    return NextResponse.json(merged);
+    const items = await getCached('news:economy-syria', buildSyriaEconomy, 900);
+    return NextResponse.json(items);
   } catch (error) {
     console.error('Economy news API error:', error);
     return NextResponse.json([]);
