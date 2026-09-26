@@ -8,10 +8,10 @@ import { OrganizationJsonLd } from "@/components/seo/JsonLd";
 import { GlobalMarketsBanner } from "@/components/home/GlobalMarketsBanner";
 import { ArticleUne } from "@/components/home/ArticleUne";
 import { EconomySection } from "@/components/home/EconomySection";
-import { NewsSection } from "@/components/home/NewsSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import { IslamicFinanceSection } from "@/components/home/IslamicFinanceSection";
 import { StartupsSection } from "@/components/home/StartupsSection";
+import { SyriaPoliticsSection } from "@/components/home/SyriaPoliticsSection";
 
 export async function generateMetadata({
   params,
@@ -67,7 +67,7 @@ export default async function HomePage({ params }: Props) {
       <GlobalMarketsBanner locale={locale} />
 
       {latestArticle && <ArticleUne article={latestArticle} locale={locale} isRTL={isRTL} />}
-
+      <SyriaPoliticsSection locale={locale} />
       <EconomySection locale={locale} />
       <IslamicFinanceSection locale={locale} /> 
       <StartupsSection locale={locale} />
@@ -79,7 +79,7 @@ export default async function HomePage({ params }: Props) {
               {isRTL ? "أخبار سوريا" : "Actualités de Syrie"}
             </h2>
           </div>
-          <NewsSection />
+         
         </div>
       </section>
 

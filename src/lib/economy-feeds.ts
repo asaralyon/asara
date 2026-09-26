@@ -61,11 +61,53 @@ export const SYRIA_FEEDS: EconomyFeed[] = [
   { provider: 'Google News', source: 'Syria Economy', url: googleNews('when:3d Syria economy', 'en-US', 'US') },
 ];
 
-// ═══ SYRIE — POLITIQUE (futur onglet) ═══
+// ═══ SYRIE — POLITIQUE (nouvel onglet) ═══
 export const SYRIA_POLITICS_FEEDS: EconomyFeed[] = [
-  { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
-  { provider: 'Google News', source: 'أخبار سوريا', url: googleNews('when:3d سوريا سياسة', 'ar', 'SA') },
-  { provider: 'Google News', source: 'Syria News', url: googleNews('when:3d Syria politics', 'en-US', 'US') },
+  // Source syrienne indépendante (anglais)
+  {
+    provider: 'Enab Baladi',
+    source: 'عنب بلدي',
+    url: 'https://english.enabbaladi.net/feed/'
+  },
+  // Source syrienne indépendante (arabe)
+  {
+    provider: 'X Media News',
+    source: 'إكس ميديا نيوز',
+    url: 'https://www.xmedia-news.com/feed/'
+  },
+  // Source syrienne officielle (arabe)
+  {
+    provider: 'سانا',
+    source: 'سانا',
+    url: 'https://www.sana.sy/?feed=rss2'
+  },
+  // Sources arabes généralistes (filtre isAboutSyria appliqué)
+  {
+    provider: 'France 24',
+    source: 'فرانس 24',
+    url: 'https://www.france24.com/ar/rss'
+  },
+  {
+    provider: 'Sky News Arabia',
+    source: 'سكاي نيوز عربية — الشرق الأوسط',
+    url: 'https://www.skynewsarabia.com/web/rss/middle-east.xml'
+  },
+  {
+    provider: 'Al Jazeera',
+    source: 'الجزيرة',
+    url: 'https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9'
+  },
+  // Google News : relais pour capter la Syrie dans la presse mondiale
+  {
+    provider: 'Google News',
+    source: 'أخبار سوريا',
+    url: googleNews('when:3d سوريا', 'ar', 'SA')
+  },
+  {
+    provider: 'Google News',
+    source: 'Syria News',
+    url: googleNews('when:3d Syria', 'en-US', 'US')
+  },
 ];
 
 // ═══ ISLAMIC FINANCE (nouvel onglet) ═══
