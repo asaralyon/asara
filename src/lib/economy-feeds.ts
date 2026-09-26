@@ -106,13 +106,40 @@ export const ISLAMIC_FINANCE_FEEDS: EconomyFeed[] = [
   },
 ];
 
-// ═══ STARTUPS MENA (futur onglet) ═══
+// ═══ STARTUPS MENA (nouvel onglet) ═══
 export const STARTUPS_MENA_FEEDS: EconomyFeed[] = [
+  // ── Sources internationales ──
   { provider: 'Wamda', source: 'Wamda', url: 'https://www.wamda.com/feed' },
   { provider: 'WAYA', source: 'WAYA Media', url: 'https://waya.media/feed' },
   { provider: 'Enterprise', source: 'Enterprise Egypt', url: 'https://enterprise.news/rss' },
   { provider: 'Arab Founders', source: 'Arab Founders', url: 'https://arabfounders.net/feed' },
   { provider: 'TechCrunch', source: 'TechCrunch Startups', url: 'https://techcrunch.com/category/startups/feed/' },
+  // ── Rowad Al-Aamal — tags startup/tech (provider distincts pour la diversification) ──
+  {
+    provider: 'Rowad Startups',
+    source: 'رواد الأعمال — مشاريع ناشئة',
+    url: 'https://www.rowadalaamal.com/tag/%d9%85%d8%b4%d8%a7%d8%b1%d9%8a%d8%b9-%d9%86%d8%a7%d8%b4%d8%a6%d8%a9/feed/',
+  },
+  {
+    provider: 'Rowad Entrepreneurs',
+    source: 'رواد الأعمال — رواد أعمال',
+    url: 'https://www.rowadalaamal.com/tag/%d8%b1%d9%88%d8%a7%d8%af-%d8%a3%d8%b9%d9%85%d8%a7%d9%84/feed/',
+  },
+  {
+    provider: 'Rowad Entrepreneurship',
+    source: 'رواد الأعمال — ريادة الأعمال',
+    url: 'https://www.rowadalaamal.com/tag/%d8%b1%d9%8a%d8%a7%d8%af%d8%a9-%d8%a7%d9%84%d8%a3%d8%b9%d9%85%d8%a7%d9%84/feed/',
+  },
+  {
+    provider: 'Rowad AI',
+    source: 'رواد الأعمال — الذكاء الاصطناعي',
+    url: 'https://www.rowadalaamal.com/tag/%d8%a7%d9%84%d8%b0%d9%83%d8%a7%d8%a1-%d8%a7%d9%84%d8%a7%d8%b5%d8%b7%d9%86%d8%a7%d8%b9%d9%8a/feed/',
+  },
+  {
+    provider: 'Rowad Emerging Tech',
+    source: 'رواد الأعمال — التقنيات الناشئة',
+    url: 'https://www.rowadalaamal.com/tag/%d9%82%d8%b7%d8%a7%d8%b9-%d8%a7%d9%84%d8%aa%d9%82%d9%86%d9%8a%d8%a7%d8%aa-%d8%a7%d9%84%d9%86%d8%a7%d8%b4%d8%a6%d8%a9/feed/',
+  },
 ];
 
 // ═══ MOTS-CLÉS ═══
