@@ -10,7 +10,7 @@ import { ArticleUne } from "@/components/home/ArticleUne";
 import { EconomySection } from "@/components/home/EconomySection";
 import { NewsSection } from "@/components/home/NewsSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
-
+import { IslamicFinanceSection } from "@/components/home/IslamicFinanceSection";
 export async function generateMetadata({
   params,
 }: {
@@ -67,7 +67,7 @@ export default async function HomePage({ params }: Props) {
       {latestArticle && <ArticleUne article={latestArticle} locale={locale} isRTL={isRTL} />}
 
       <EconomySection locale={locale} />
-
+      <IslamicFinanceSection locale={locale} /> 
       <section className="py-10 bg-white border-t border-neutral-200">
         <div className="container-app">
           <div className={`flex items-center gap-3 mb-6 ${isRTL ? "flex-row-reverse" : ""}`}>

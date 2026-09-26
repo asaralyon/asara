@@ -37,7 +37,7 @@ export const economyParser = new Parser({
   },
 });
 
-// Helper : construit une URL Google News correctement encodée (caractères arabes inclus)
+// Helper : encode proprement les requêtes Google News (arabe inclus)
 function googleNews(query: string, hl = 'ar', gl = 'SA'): string {
   return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
 }
@@ -57,7 +57,6 @@ export const ARAB_ECONOMY_FEEDS: EconomyFeed[] = [
 // ═══ SYRIE — ÉCONOMIE (onglet "Syrie") ═══
 export const SYRIA_FEEDS: EconomyFeed[] = [
   { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
-  // Désactivés : Syria Report (XML malformé), عنب بلدي (403 Cloudflare)
   { provider: 'Google News', source: 'اقتصاد سوريا', url: googleNews('when:3d اقتصاد سوريا', 'ar', 'SA') },
   { provider: 'Google News', source: 'Syria Economy', url: googleNews('when:3d Syria economy', 'en-US', 'US') },
 ];
@@ -69,12 +68,42 @@ export const SYRIA_POLITICS_FEEDS: EconomyFeed[] = [
   { provider: 'Google News', source: 'Syria News', url: googleNews('when:3d Syria politics', 'en-US', 'US') },
 ];
 
-// ═══ ISLAMIC FINANCE (futur onglet) ═══
+// ═══ ISLAMIC FINANCE (nouvel onglet) ═══
+// ⚠️ URLs arabes URL-encodées manuellement (les %d8... sont obligatoires)
 export const ISLAMIC_FINANCE_FEEDS: EconomyFeed[] = [
-  { provider: 'Zawya', source: 'Zawya — Islamic Finance', url: googleNews('when:7d site:zawya.com islamic finance', 'en-US', 'US') },
-  { provider: 'Google News', source: 'Islamic Finance EN', url: googleNews('when:7d islamic finance OR sukuk', 'en-US', 'US') },
-  { provider: 'Google News', source: 'التمويل الإسلامي', url: googleNews('when:7d التمويل الإسلامي OR صكوك', 'ar', 'AE') },
-  { provider: 'IFG', source: 'Islamic Finance Guru', url: 'https://www.islamicfinanceguru.com/rss' },
+  // Sources arabes natives
+  {
+    provider: 'Unlimited News',
+    source: 'أخبار بلا حدود — الصيرفة الإسلامية',
+    url: 'https://www.unlimited-news.com/tag/%d8%a7%d9%84%d8%b5%d9%8a%d8%b1%d9%81%d8%a9-%d8%a7%d9%84%d8%a5%d8%b3%d9%84%d8%a7%d9%85%d9%8a%d8%a9/feed/',
+  },
+  {
+    provider: 'Rowad Al-Aamal',
+    source: 'رواد الأعمال — التمويل الإسلامي',
+    url: 'https://www.rowadalaamal.com/tag/%d8%a7%d9%84%d8%aa%d9%85%d9%88%d9%8a%d9%84-%d8%a7%d9%84%d8%a5%d8%b3%d9%84%d8%a7%d9%85%d9%8a/feed/',
+  },
+  {
+    provider: 'Eleqtisade News',
+    source: 'الاقتصادي نيوز — الصكوك الإسلامية',
+    url: 'https://eleqtisadenews.com/tag/%d8%a7%d9%84%d8%b5%d9%83%d9%88%d9%83-%d8%a7%d9%84%d8%a5%d8%b3%d9%84%d8%a7%d9%85%d9%8a%d8%a9/feed/',
+  },
+  // Source anglaise
+  {
+    provider: 'IFG',
+    source: 'Islamic Finance Guru',
+    url: 'https://www.islamicfinanceguru.com/rss',
+  },
+  // Relais Google News (via helper qui encode automatiquement)
+  {
+    provider: 'Google News',
+    source: 'Islamic Finance EN',
+    url: googleNews('islamic finance sukuk', 'en-US', 'US'),
+  },
+  {
+    provider: 'Google News',
+    source: 'التمويل الإسلامي',
+    url: googleNews('التمويل الإسلامي صكوك', 'ar', 'AE'),
+  },
 ];
 
 // ═══ STARTUPS MENA (futur onglet) ═══
@@ -138,6 +167,8 @@ const KNOWN_SOURCES = [
   'CNN Arabic','CNN بالعربية','DW Arabic','DW عربية',
   'Wamda','WAYA','Enterprise','Arab Founders','TechCrunch',
   'Zawya','IFG','Islamic Finance Guru','Syria Report',
+  'Unlimited News','أخبار بلا حدود','Rowad Al-Aamal','رواد الأعمال',
+  'Eleqtisade News','الاقتصادي نيوز',
 ];
 
 function cleanTitle(title: string): string {
