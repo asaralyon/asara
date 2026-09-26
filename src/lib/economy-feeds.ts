@@ -37,33 +37,43 @@ export const economyParser = new Parser({
   },
 });
 
+// Helper : construit une URL Google News correctement encodée (caractères arabes inclus)
+function googleNews(query: string, hl = 'ar', gl = 'SA'): string {
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
+}
+
 // ═══ ÉCONOMIE ARABE (onglet "Monde arabe") ═══
 export const ARAB_ECONOMY_FEEDS: EconomyFeed[] = [
   { provider: 'Sky News Arabia', source: 'سكاي نيوز عربية — اقتصاد', url: 'https://www.skynewsarabia.com/web/rss/business.xml' },
   { provider: 'Asharq Al-Awsat', source: 'الشرق الأوسط — اقتصاد', url: 'https://aawsat.com/feed' },
   { provider: 'Al Jazeera', source: 'الجزيرة — اقتصاد', url: 'https://www.aljazeera.net/aljazeerarss/ebusiness' },
   { provider: 'BBC Arabic', source: 'BBC عربي — اقتصاد', url: 'https://feeds.bbci.co.uk/arabic/rss.xml' },
+  { provider: 'CNBC Arabia', source: 'CNBC عربية', url: googleNews('when:3d site:cnbcarabia.com', 'ar', 'AE') },
+  { provider: 'CNN Arabic', source: 'CNN بالعربية — اقتصاد', url: googleNews('when:3d site:arabic.cnn.com اقتصاد', 'ar', 'AE') },
+  { provider: 'Al Arabiya', source: 'العربية — أسواق', url: googleNews('when:3d site:alarabiya.net اقتصاد', 'ar', 'AE') },
+  { provider: 'DW Arabic', source: 'DW عربية — اقتصاد', url: googleNews('when:3d site:arabic.dw.com اقتصاد', 'ar', 'AE') },
 ];
 
 // ═══ SYRIE — ÉCONOMIE (onglet "Syrie") ═══
 export const SYRIA_FEEDS: EconomyFeed[] = [
   { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
-  { provider: 'Syria Report', source: 'Syria Report', url: 'https://syria-report.com/feed' },
+  // Désactivés : Syria Report (XML malformé), عنب بلدي (403 Cloudflare)
+  { provider: 'Google News', source: 'اقتصاد سوريا', url: googleNews('when:3d اقتصاد سوريا', 'ar', 'SA') },
+  { provider: 'Google News', source: 'Syria Economy', url: googleNews('when:3d Syria economy', 'en-US', 'US') },
 ];
 
 // ═══ SYRIE — POLITIQUE (futur onglet) ═══
 export const SYRIA_POLITICS_FEEDS: EconomyFeed[] = [
   { provider: 'سانا', source: 'سانا', url: 'https://www.sana.sy/?feed=rss2' },
-  { provider: 'Syria Report', source: 'Syria Report', url: 'https://syria-report.com/feed' },
-  { provider: 'Google News', source: 'أخبار سوريا', url: 'https://news.google.com/rss/search?q=سوريا+سياسة+when:3d&hl=ar&gl=SA&ceid=SA:ar' },
-  { provider: 'Google News', source: 'Syria News', url: 'https://news.google.com/rss/search?q=Syria+politics+when:3d&hl=en-US&gl=US&ceid=US:en' },
+  { provider: 'Google News', source: 'أخبار سوريا', url: googleNews('when:3d سوريا سياسة', 'ar', 'SA') },
+  { provider: 'Google News', source: 'Syria News', url: googleNews('when:3d Syria politics', 'en-US', 'US') },
 ];
 
 // ═══ ISLAMIC FINANCE (futur onglet) ═══
 export const ISLAMIC_FINANCE_FEEDS: EconomyFeed[] = [
-  { provider: 'Zawya', source: 'Zawya — Islamic Finance', url: 'https://news.google.com/rss/search?q=when:7d+site:zawya.com+islamic+finance&hl=en-US&gl=US&ceid=US:en' },
-  { provider: 'Google News', source: 'Islamic Finance EN', url: 'https://news.google.com/rss/search?q=islamic+finance+OR+sukuk+when:7d&hl=en-US&gl=US&ceid=US:en' },
-  { provider: 'Google News', source: 'التمويل الإسلامي', url: 'https://news.google.com/rss/search?q=التمويل+الإسلامي+OR+صكوك+when:7d&hl=ar&gl=AE&ceid=AE:ar' },
+  { provider: 'Zawya', source: 'Zawya — Islamic Finance', url: googleNews('when:7d site:zawya.com islamic finance', 'en-US', 'US') },
+  { provider: 'Google News', source: 'Islamic Finance EN', url: googleNews('when:7d islamic finance OR sukuk', 'en-US', 'US') },
+  { provider: 'Google News', source: 'التمويل الإسلامي', url: googleNews('when:7d التمويل الإسلامي OR صكوك', 'ar', 'AE') },
   { provider: 'IFG', source: 'Islamic Finance Guru', url: 'https://www.islamicfinanceguru.com/rss' },
 ];
 
@@ -124,7 +134,8 @@ const KNOWN_SOURCES = [
   'Reuters','رويترز','Al Arabiya','العربية','الجزيرة','Al Jazeera',
   'Bloomberg','بلومبرغ','Yahoo Finance','Arab News','Google News',
   'Asharq Al-Awsat','الشرق الأوسط','BBC Arabic','BBC عربي',
-  'Sky News Arabia','سكاي نيوز عربية',
+  'Sky News Arabia','سكاي نيوز عربية','CNBC Arabia','CNBC عربية',
+  'CNN Arabic','CNN بالعربية','DW Arabic','DW عربية',
   'Wamda','WAYA','Enterprise','Arab Founders','TechCrunch',
   'Zawya','IFG','Islamic Finance Guru','Syria Report',
 ];
@@ -163,10 +174,53 @@ export function byDateDesc(a: EconomyItem, b: EconomyItem): number {
   return (new Date(b.pubDate).getTime() || 0) - (new Date(a.pubDate).getTime() || 0);
 }
 
+/**
+ * Diversifie les sources dans le résultat final.
+ * Évite qu'une seule source (ex: Syria One, Asharq) monopolise le top.
+ */
+export function diversify(
+  items: EconomyItem[],
+  maxPerSource: number = 3,
+  total: number = 18
+): EconomyItem[] {
+  const byProvider = new Map<string, EconomyItem[]>();
+  for (const item of items) {
+    const key = item.provider || 'unknown';
+    if (!byProvider.has(key)) byProvider.set(key, []);
+    byProvider.get(key)!.push(item);
+  }
+
+  for (const [, list] of byProvider) {
+    list.sort(byDateDesc);
+    list.splice(maxPerSource);
+  }
+
+  const providers = Array.from(byProvider.keys());
+  const result: EconomyItem[] = [];
+  let round = 0;
+
+  while (result.length < total && round < maxPerSource) {
+    let added = false;
+    for (const p of providers) {
+      const list = byProvider.get(p)!;
+      if (round < list.length) {
+        result.push(list[round]);
+        added = true;
+        if (result.length >= total) break;
+      }
+    }
+    if (!added) break;
+    round++;
+  }
+
+  return result;
+}
+
 interface FetchOptions {
   requireArabic?: boolean;
   requireEconomy?: boolean;
   requireSyria?: boolean;
+  requireImage?: boolean;
 }
 
 export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Promise<EconomyItem[]> {
@@ -174,6 +228,7 @@ export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Pro
     requireArabic = true,
     requireEconomy = true,
     requireSyria = false,
+    requireImage = false,
   } = opts;
 
   try {
@@ -196,6 +251,8 @@ export async function fetchFeed(feed: EconomyFeed, opts: FetchOptions = {}): Pro
         } catch (e) {
           console.warn(`[extractImage] failed for ${feed.provider}:`, e instanceof Error ? e.message : e);
         }
+
+        if (requireImage && !image) continue;
 
         out.push({
           title: cleanTitle(title),

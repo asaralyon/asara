@@ -3,16 +3,14 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getCached } from '@/lib/cache';
 import {
-  ARAB_ECONOMY_FEEDS, SYRIA_FEEDS, fetchAllFeeds, dedupe, byDateDesc,
+  ARAB_ECONOMY_FEEDS, SYRIA_FEEDS, fetchAllFeeds, dedupe, diversify,
   type EconomyItem,
 } from '@/lib/economy-feeds';
 import { fetchSyriaOneEconomy } from '@/lib/scrape-syriaone';
 
 async function buildSyriaEconomy(): Promise<EconomyItem[]> {
   const [syriaLocal, providersAboutSyria, syriaOneItems] = await Promise.all([
-    // Rédactions syriennes : éco + arabe, pas besoin du filtre Syrie (source = Syrie)
     fetchAllFeeds(SYRIA_FEEDS, { requireArabic: true, requireEconomy: true, requireSyria: false }),
-    // Grands fournisseurs arabes : éco + arabe + mention Syrie
     fetchAllFeeds(ARAB_ECONOMY_FEEDS, { requireArabic: true, requireEconomy: true, requireSyria: true }),
     fetchSyriaOneEconomy(),
   ]);
@@ -23,14 +21,22 @@ async function buildSyriaEconomy(): Promise<EconomyItem[]> {
     pubDate: item.pubDate || new Date().toISOString(),
   }));
 
-  return dedupe([...syriaLocal, ...providersAboutSyria, ...syriaOne])
-    .sort(byDateDesc)
-    .slice(0, 18);
+  const all = dedupe([...syriaLocal, ...providersAboutSyria, ...syriaOne]);
+
+  // ✅ Diversification : max 3 par source, total 18
+  return diversify(all, 3, 18);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const items = await getCached('news:economy-syria', buildSyriaEconomy, 900);
+    const url = new URL(request.url);
+    const nocache = url.searchParams.get('nocache') === '1';
+
+    if (nocache) {
+      return NextResponse.json(await buildSyriaEconomy());
+    }
+
+    const items = await getCached('news:economy-syria-v3', buildSyriaEconomy, 900);
     return NextResponse.json(items);
   } catch (error) {
     console.error('Economy news API error:', error);
